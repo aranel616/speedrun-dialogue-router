@@ -1059,7 +1059,7 @@ export const script:Script = {
     "chloe_7": {
         "choices": [
             {
-                "name": "So what happend?",
+                "name": "So what happened?",
                 "text": [
                     "So, what happened? Did your folks, your mom, try to stop you?",
                     "My mom was too busy hooked up with Sergeant Shithead."
