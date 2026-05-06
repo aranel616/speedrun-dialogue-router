@@ -775,7 +775,7 @@ export const script:Script = {
                     "Nobody...nobody lectures me. Everyone tries though... They try...",
                     "You should talk to somebody, Nathan..."
                 ],
-                "next": "nathan_2"
+                "next": "nathan_1_5_bridge"
             },
             {
                 "name": "What are you talking about?",
@@ -786,7 +786,7 @@ export const script:Script = {
                     "Then you should know the Prescotts own this shithole.",
                     "Then you don't have to worry about me... Worry about yourself."
                 ],
-                "next": "nathan_2"
+                "next": "nathan_1_5_bridge"
             }
         ]
     },
@@ -801,7 +801,7 @@ export const script:Script = {
                     "Then you should know the Prescotts own this shithole.",
                     "Then you don't have to worry about me... Worry about yourself."
                 ],
-                "next": "nathan_2"
+                "next": "nathan_1_5_bridge"
             },
             {
                 "name": "Nothing.",
@@ -812,9 +812,13 @@ export const script:Script = {
                     "You're clueless. You have no idea who I am or what I can do!",
                     "Actually, I have a pretty good idea of who you are."
                 ],
-                "next": "nathan_2"
-            },
+                "next": "nathan_1_5_bridge"
+            }
         ]
+    },
+    "nathan_1_5_bridge": {
+        "text": "Do not analyze me! I pay people for that. Worry about yourself, Max Caulfield.",
+        "next": "nathan_2"
     },
     "nathan_2": {
         "choices": [
@@ -980,6 +984,26 @@ export const script:Script = {
             "I just wanted to settle in first and not be such a shy cliché geek. I totally would have contacted you...",
             "I bet you don't use these sad excuses on Mr. Jefferson... Don't use them on me, Max."
         ],
+        "next": "chloe_house_bridge"
+    },
+    "chloe_house_bridge": {
+        "text": [
+            "Broken. Oh man, are you cereal?",
+            "Wow, haven't heard that one in a while...",
+            "Not everything changes. Except my camera has officially taken a shit.",
+            "My step-douche has a boatload of tools. Maybe you can fix it at my place...",
+            "I need very specific, tiny tools.",
+            "Nerd alert! My stepdad has a fully-stocked garage. And he actually is a tiny tool. Welcome home, Max.",
+            "Come on in, don't be shy.",
+            "The house still looks...nice.",
+            "Home, shit home.",
+            "My room looks a bit different than the last time you saw it.",
+            "It's cool. At least we can chill out.",
+            "This isn't exactly my \"chill-out zone\"... My step-führer makes sure of that. Come in and close the door. Put on some music while I medicate.",
+            "Hey, give me that!",
+            "Sorry. I wasn't trying to be nosy. Obviously, she was a good friend...",
+            "That's putting it mildly."
+        ],
         "next": "chloe_5"
     },
     "chloe_5": {
@@ -1097,6 +1121,11 @@ export const script:Script = {
             "Anyway... You can find tools to fix your camera in the garage...",
             "Chloe, are you okay?",
             "Sure, I'm awesome. I just want to blaze and be alone for a moment...",
+            "I haven't seen this place in five years...seems like forever.",
+            "I should be able to find the tools I need here.",
+            "Boom! Precision screwdrivers! Except, I can't reach them...",
+            "That was very smart, dumbass. No can reach.",
+            "Yes! You have mad skills, Max. I've got the tools, I should go back upstairs before Chloe freaks.",
             "You found the tools? Sweet. You can sit at my desk and fix your camera.",
             "So?",
             "I can't fix this thing.",
@@ -1391,7 +1420,8 @@ export const script:Script = {
             "You're the ones who'll end up in jail.",
             "You only think you're tough and clever. This too shall pass... Now, clean this pigsty up.",
             "I'm sorry, Chloe... I didn't know what to do...",
-            "Whatever. Everybody bails on me. Even my \"best friend\" Max... Don't you? I'm so done with everyone in this town... I wish I hadn't even seen you. As if you care. Color me outta here..."
+            "Whatever. Everybody bails on me. Even my \"best friend\" Max... Don't you? I'm so done with everyone in this town... I wish I hadn't even seen you. As if you care. Color me outta here...",
+            "David was such a mean bastard to Chloe... What if I had stepped up to help?"
         ],
         "next": "lighthouse_bad_intro"
     },
@@ -1402,7 +1432,8 @@ export const script:Script = {
             "You're the ones who'll end up in jail.",
             "You only think you're tough and clever. This too shall pass... Now, clean this pigsty up.",
             "I'm sorry, Chloe... I didn't know what to do...",
-            "Whatever. Everybody bails on me. Even my \"best friend\" Max... I'm so done with everyone in this town..."
+            "Whatever. Everybody bails on me. Even my \"best friend\" Max... I'm so done with everyone in this town...",
+            "David was such a mean bastard to Chloe... What if I had stepped up to help?"
         ],
         "next": "lighthouse_bad_intro"
     },
