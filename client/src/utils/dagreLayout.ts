@@ -10,7 +10,6 @@ export function applyDagreLayout(nodes: Node[], edges: Edge[]): Node[] {
   if (nodes.length === 0) return nodes;
 
   const nodeIds = new Set(nodes.map(n => n.id));
-  const maxRankAllowed = nodes.length - 1; // cycle guard: rank can't exceed N-1 in any DAG
 
   const childrenOf = new Map<string, string[]>();
   const parentsOf = new Map<string, string[]>();
@@ -25,35 +24,65 @@ export function applyDagreLayout(nodes: Node[], edges: Edge[]): Node[] {
     }
   }
 
-  // BFS from roots (nodes with no parents), assigning ranks
-  const rank = new Map<string, number>();
   const roots = nodes.filter(n => parentsOf.get(n.id)!.length === 0);
   const starts = roots.length > 0 ? roots : [nodes[0]!];
-  console.log(`[dagreLayout] ${roots.length} root(s), starting BFS`);
+  console.log(`[dagreLayout] ${roots.length} root(s), detecting back-edges via DFS`);
 
+  // Iterative DFS to find back-edges (edges to ancestors in the current DFS path).
+  // Removing only back-edges breaks cycles while leaving all forward/cross edges intact,
+  // so the subsequent Bellman-Ford BFS can assign correct max-ranks to merge points.
+  const dfsVisited = new Set<string>();
+  const dfsStack = new Set<string>(); // current DFS path (ancestors)
+  const backEdges = new Set<string>(); // "source→target" pairs to skip during ranking
+
+  for (const start of starts) {
+    if (dfsVisited.has(start.id)) continue;
+    const stack: [string, number][] = [[start.id, 0]];
+    dfsVisited.add(start.id);
+    dfsStack.add(start.id);
+    while (stack.length > 0) {
+      const frame = stack[stack.length - 1]!;
+      const [id, ci] = frame;
+      const children = childrenOf.get(id) ?? [];
+      if (ci >= children.length) {
+        stack.pop();
+        dfsStack.delete(id);
+        continue;
+      }
+      frame[1] = ci + 1;
+      const child = children[ci]!;
+      if (dfsStack.has(child)) {
+        backEdges.add(`${id}→${child}`);
+      } else if (!dfsVisited.has(child)) {
+        dfsVisited.add(child);
+        dfsStack.add(child);
+        stack.push([child, 0]);
+      }
+    }
+  }
+  console.log(`[dagreLayout] found ${backEdges.size} back-edge(s), starting Bellman-Ford BFS`);
+
+  // Bellman-Ford-style BFS: re-enqueue a node whenever its rank increases.
+  // Terminates because back-edges are excluded, so the graph is now a DAG
+  // and every node's rank is bounded by the longest non-cyclic path to it.
+  const rank = new Map<string, number>();
   const queue: string[] = starts.map(n => n.id);
   for (const n of starts) rank.set(n.id, 0);
 
   let head = 0;
-  let iterations = 0;
   while (head < queue.length) {
     const id = queue[head++]!;
     const r = rank.get(id)!;
-    iterations++;
-    if (iterations % 5000 === 0) {
-      console.warn(`[dagreLayout] BFS iteration ${iterations}, queue length ${queue.length - head} — possible cycle`);
-    }
     for (const child of childrenOf.get(id) ?? []) {
+      if (backEdges.has(`${id}→${child}`)) continue;
       const newRank = r + 1;
-      if (newRank > maxRankAllowed) continue; // cycle guard: prevents infinite loop on cyclic graphs
-      // take the maximum rank (ensures nodes appear below all their parents)
       if (!rank.has(child) || rank.get(child)! < newRank) {
         rank.set(child, newRank);
         queue.push(child);
       }
     }
   }
-  console.log(`[dagreLayout] BFS done in ${iterations} iterations`);
+  console.log(`[dagreLayout] BFS done in ${queue.length} steps`);
 
   // Any nodes unreachable from roots get placed at the bottom
   const maxRank = Math.max(0, ...rank.values());
