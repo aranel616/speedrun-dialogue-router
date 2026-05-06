@@ -1,4 +1,5 @@
 node_modules/
+coverage/
 *.js
 !jest.config.js
 *.js.map
