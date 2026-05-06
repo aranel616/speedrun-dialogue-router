@@ -279,7 +279,7 @@ export const script:Script = {
                         "name": "made_fun_of_victoria",
                         "type": "eq",
                         "value": false,
-                        "node": "warren_made_fun_of_victoria_1"
+                        "node": "warren_comforted_victoria_1"
                     }
                 ]
             },
@@ -298,7 +298,7 @@ export const script:Script = {
                 "set": {
                     "name": "took_photo_of_kate",
                     "type": "set",
-                    "value": true
+                    "value": false
                 },
                 "next": [
                     {
@@ -311,7 +311,7 @@ export const script:Script = {
                         "name": "made_fun_of_victoria",
                         "type": "eq",
                         "value": false,
-                        "node": "warren_made_fun_of_victoria_1"
+                        "node": "warren_comforted_victoria_1"
                     }
                 ]
             }
@@ -810,15 +810,527 @@ export const script:Script = {
                     "I know I look a lot different.",
                     "I was scared, too. I couldn't see straight.",
                     "I don't blame you, Max."
-                ]
+                ],
+                "next": "chloe_11"
             },
             {
                 "name": "Not at all.",
                 "text": [
                     "Not at all. Your hair and clothes are so different...",
                     "I hope so. I'm sure this is all so weird to you after coming back."
+                ],
+                "next": "chloe_11"
+            }
+        ]
+    },
+    "chloe_11": {
+        "choices": [
+            {
+                "name": "Just a bit...",
+                "text": [
+                    "Just a bit...",
+                    "There is no way you didn't hear every single vowel."
+                ],
+                "next": "chloe_12"
+            },
+            {
+                "name": "Not really...",
+                "text": [
+                    "I was freaking out! I could only hear Nathan ranting...",
+                    "So then you did hear us?",
+                    "Okay, I only heard something about money...drugs...but that's it."
+                ],
+                "next": "chloe_12"
+            }
+        ]
+    },
+    "chloe_12": {
+        "text": "Now for the big question: did you tell anybody?",
+        "next": [
+            { "name": "reported_nathan", "type": "eq", "value": true, "node": "chloe_reported_1" },
+            { "name": "reported_nathan", "type": "eq", "value": false, "node": "chloe_hid_1" }
+        ]
+    },
+    "chloe_reported_1": {
+        "choices": [
+            {
+                "name": "Absolutely.",
+                "text": [
+                    "Absolutely. Nathan Prescott had a fucking gun on you.",
+                    "Gutless prick...that was scary. Who did you tell?",
+                    "The principal...but he didn't seem to believe me.",
+                    "The principal? Are you still twelve? That drunk jackass only cares about cash for Blackwell Academy... Don't trust him.",
+                    "I didn't mention you at all. Swear."
+                ],
+                "next": "david_hide"
+            },
+            {
+                "name": "Like who?",
+                "text": [
+                    "Like who?",
+                    "Like anybody! Stop stalling, sister.",
+                    "The principal...but he didn't seem to believe me.",
+                    "The principal? Are you still twelve? That drunk jackass only cares about cash for Blackwell Academy... Don't trust him.",
+                    "I didn't mention you at all. Swear."
+                ],
+                "next": "david_hide"
+            }
+        ]
+    },
+    "chloe_hid_1": {
+        "choices": [
+            {
+                "name": "I wanted to...",
+                "text": [
+                    "I wanted to... What if he goes on some rampage?",
+                    "Nathan fronts like a thug, but he's a spoiled punkass beeatch.",
+                    "He would have shot you, Chloe. That's a fact. I should tell the Principal...",
+                    "The principal? Are you still twelve? That drunk jackass only cares about cash for Blackwell Academy... Don't trust him.",
+                    "Seriously, I didn't blab to anybody. Promise.",
+                    "Thank God... I'll tell you more someday, and I seriously owe you, Max."
+                ],
+                "next": "david_hide"
+            },
+            {
+                "name": "No.",
+                "text": [
+                    "No. I didn't know what to do...",
+                    "I don't blame you... That's some intense shit.",
+                    "Maybe I should go to the principal...",
+                    "The principal? Are you still twelve? That drunk jackass only cares about cash for Blackwell Academy... Don't trust him.",
+                    "Seriously, I didn't blab to anybody. Promise.",
+                    "Thank God... I'll tell you more someday, and I seriously owe you, Max."
+                ],
+                "next": "david_hide"
+            }
+        ]
+    },
+    "david_hide": {
+        "choices": [
+            {
+                "name": "Don't hide",
+                "text": [
+                    "What's going on in here? Why is she here?",
+                    "None of your business.",
+                    "I don't like strangers here.",
+                    "Stop freaking, she's not a stranger. This is my friend.",
+                    "Great, another one of your \"friends\".",
+                    "Wait, is that grass? You've been toking up again in here?",
+                    "Oh yeah, guns, weed... You're trippin' balls.",
+                    "I'm sick of your disrespect! Tell me the truth, that's an order!",
+                    "It's not my pot, it's from Max!",
+                    "Is this true?"
+                ],
+                "next": "david_exposed"
+            },
+            {
+                "name": "Hide in closet",
+                "text": [
+                    "What's going on in here?",
+                    "Jesus, I'm just trying on clothes. You're so friggin' paranoid.",
+                    "Yeah, combat will do that to you.",
+                    "One of my guns is missing. Did you take it?",
+                    "Oh, God, I didn't take your stupid gun. You do know I believe in gun control?",
+                    "Wait! Is that grass? You've been toking up again in here?",
+                    "Oh, yeah, guns, weed... You're trippin' balls.",
+                    "I'm sick of your disrespect! Tell me the truth, that's an order! Whose is it?"
+                ],
+                "next": "david_hidden"
+            }
+        ]
+    },
+    "david_exposed": {
+        "choices": [
+            {
+                "name": "BLAME CHLOE",
+                "text": [
+                    "No way. It's not mine.",
+                    "Of course not. I'm sure Chloe gets all the best shit, right? I bet she gave you \"good friend\" rates...",
+                    "Why don't you get off my crack? Stop taking your war rage out on high school girls.",
+                    "You haven't seen rage, you little—",
+                    "Fuck you, pig."
+                ],
+                "next": [
+                    { "name": "took_photo_of_kate", "type": "eq", "value": true, "node": "david_blame_photo" },
+                    { "name": "took_photo_of_kate", "type": "eq", "value": false, "node": "david_blame_intervene" }
+                ]
+            },
+            {
+                "name": "TAKE THE BLAME",
+                "text": [
+                    "Uh, yeah. My pot...",
+                    "So you're bringing drugs into my home. How about if I call the police? That would screw up your spotless Blackwell record... You do seem to get around...\"Max\". I'm sick of you losers dragging Chloe down."
+                ],
+                "next": [
+                    { "name": "took_photo_of_kate", "type": "eq", "value": true, "node": "david_take_photo" },
+                    { "name": "took_photo_of_kate", "type": "eq", "value": false, "node": "david_take_intervene" }
                 ]
             }
+        ]
+    },
+    "david_blame_photo": {
+        "text": [
+            "For your own good, you should stay away from Chloe. She's a loser and she'll only drag you down. Stick to doing your homework.",
+            "Listen, David. I have proof you got all up in Kate Marsh's face today. Surveillance proof.",
+            "What are you talking about?",
+            "You know what I'm talking about.",
+            "You're the ones who'll end up in jail.",
+            "You only think you're tough and clever. This too shall pass... Now, clean this pigsty up.",
+            "I'm sorry, Chloe... I didn't know what to do...",
+            "Whatever. Everybody bails on me. Even my \"best friend\" Max... Don't you? I'm so done with everyone in this town... I wish I hadn't even seen you. As if you care. Color me outta here..."
+        ],
+        "next": "lighthouse_bad_intro"
+    },
+    "david_blame_intervene": {
+        "text": [
+            "I can already tell from today that you're trouble, Max. I hope this doesn't affect your status at Blackwell. Don't ever come back here.",
+            "Listen, dipshit, if you ever lay a hand on me again, I'll have your ass in jail. Then you can guard yourself all night...",
+            "You're the ones who'll end up in jail.",
+            "You only think you're tough and clever. This too shall pass... Now, clean this pigsty up.",
+            "I'm sorry, Chloe... I didn't know what to do...",
+            "Whatever. Everybody bails on me. Even my \"best friend\" Max... I'm so done with everyone in this town..."
+        ],
+        "next": "lighthouse_bad_intro"
+    },
+    "david_take_photo": {
+        "text": [
+            "You're on a roll today. Between the fire alarm and now this... You don't have anything smart to say now? Do you? Huh?",
+            "Get the hell away from her! I have proof you hassled Kate Marsh today!",
+            "What? What are you talking about?",
+            "Okay, Chloe. You know everything. And Max, if I find you here again... It will be the last time.",
+            "Thanks for taking the heat. We totally smacked his punk ass down, Max. He's no match for you and me now. That was an epic win. Anyway. Let's sneak out the window..."
+        ],
+        "next": "lighthouse_good_intro"
+    },
+    "david_take_intervene": {
+        "text": [
+            "Missy, you sure do like to pop up and start trouble. Like this afternoon. You don't have anything smart to say now? Do you? Huh?",
+            "Get the hell away from her, man! Stop harassing my friends!",
+            "You don't have any friends.",
+            "Like you know. You're not even a real cop, you're a fucking security guard!",
+            "I was a soldier, Chloe. And Max, if I see you here again... You'll learn all about real trouble.",
+            "Thanks for taking the heat. We totally smacked his punk ass down, Max. That was an epic win. Anyway. Let's sneak out the window..."
+        ],
+        "next": "lighthouse_good_intro"
+    },
+    "david_hidden": {
+        "choices": [
+            {
+                "name": "STAY HIDDEN",
+                "text": [
+                    "Stop treating me and mom like we're your family platoon.",
+                    "Hey, leave Joyce out of this.",
+                    "I wish you'd leave Joyce. Like now.",
+                    "Chloe, I'm sorry. I care about your mother and... You just keep pushing me."
+                ],
+                "next": [
+                    { "name": "took_photo_of_kate", "type": "eq", "value": true, "node": "david_stay_photo" },
+                    { "name": "took_photo_of_kate", "type": "eq", "value": false, "node": "david_stay_intervene" }
+                ]
+            },
+            {
+                "name": "STEP IN",
+                "text": [
+                    "I'm sorry... That was my joint.",
+                    "Well, well. I don't like strangers in my home. Especially dopers. So you're bringing drugs into my home. How about if I call the police? That would screw up your spotless Blackwell record... You do seem to get around...\"Max\". I'm sick of you losers dragging Chloe down."
+                ],
+                "next": [
+                    { "name": "took_photo_of_kate", "type": "eq", "value": true, "node": "david_step_photo" },
+                    { "name": "took_photo_of_kate", "type": "eq", "value": false, "node": "david_step_intervene" }
+                ]
+            }
+        ]
+    },
+    "david_stay_photo": {
+        "text": [
+            "By the way, I have proof you got all up in Kate Marsh's face today. Surveillance proof.",
+            "What? You best stay out of my work.",
+            "Then stay out of my life.",
+            "Chloe... Someday you'll grow up."
+        ],
+        "next": "david_hidden_end"
+    },
+    "david_stay_intervene": {
+        "text": [
+            "Don't touch me again, asshole. That's the last time. Or I'll bring the cops in here so fast...",
+            "You're not that dumb.",
+            "I would be smart to have you busted.",
+            "Chloe... Someday you'll grow up."
+        ],
+        "next": "david_hidden_end"
+    },
+    "david_hidden_end": {
+        "text": [
+            "Hey, you okay?",
+            "Welcome to \"The Real Step-Douches of Arcadia Bay\"...",
+            "I'm sorry...",
+            "For what? He would've been a bigger dick if he caught you in here.",
+            "That's hard to believe.",
+            "Anyway, let's sneak out the window...there is one cool place we can hang in this hickhole."
+        ],
+        "next": "lighthouse_bad_intro"
+    },
+    "david_step_photo": {
+        "text": [
+            "You're on a roll today. Between the fire alarm and now this... You don't have anything smart to say now? Do you? Huh?",
+            "Get the hell away from her! I have proof you hassled Kate Marsh today!",
+            "What? What are you talking about?",
+            "Okay, Chloe. You know everything. And Max, if I find you here again... It will be the last time.",
+            "Thanks for taking the heat. We totally smacked his punk ass down, Max. That was an epic win. Anyway. Let's sneak out the window..."
+        ],
+        "next": "lighthouse_good_intro"
+    },
+    "david_step_intervene": {
+        "text": [
+            "Missy, you sure do like to pop up and start trouble. Like this afternoon. You don't have anything smart to say now? Do you? Huh?",
+            "Get the hell away from her, man! Stop harassing my friends!",
+            "You don't have any friends.",
+            "Like you know. You're not even a real cop, you're a fucking security guard!",
+            "I was a soldier, Chloe. And Max, if I see you here again... You'll learn all about real trouble.",
+            "Thanks for taking the heat. We totally smacked his punk ass down, Max. That was an epic win. Anyway. Let's sneak out the window..."
+        ],
+        "next": "lighthouse_good_intro"
+    },
+    "lighthouse_bad_intro": {
+        "text": "Sit down, if you want.",
+        "next": "lighthouse_bad"
+    },
+    "lighthouse_good_intro": {
+        "text": [
+            "Isn't this awesome sauce? Totally reminds me of when we were kids... Come on, slowpoke!",
+            "Hold on!",
+            "Sure you don't want to be alone?",
+            "Have a seat, Pete."
+        ],
+        "next": "lighthouse_good"
+    },
+    "lighthouse_good": {
+        "choices": [
+            {
+                "name": "You're in a good mood.",
+                "text": [
+                    "You're in a good mood.",
+                    "Seeing my step-dork get played makes me happy."
+                ],
+                "next": "lighthouse_kate"
+            },
+            {
+                "name": "My pleasure.",
+                "text": [
+                    "My pleasure. Feels nice out here after all that drama...",
+                    "You really took one for Team Chloe."
+                ],
+                "next": "lighthouse_kate"
+            }
+        ]
+    },
+    "lighthouse_bad": {
+        "choices": [
+            {
+                "name": "Are you pissed at me?",
+                "text": [
+                    "Are you...pissed at me?",
+                    "I just...wanted some back-up."
+                ],
+                "next": "lighthouse_kate"
+            },
+            {
+                "name": "I'm sorry...",
+                "text": [
+                    "I'm sorry I wussed out.",
+                    "No worries. I know my step-dork can be scary.",
+                    "I'm not as brave as you. And David is indeed a \"step-douche.\"",
+                    "I'm sorry you had to experience it firsthand.",
+                    "You have to live with him. Has he always been this way?",
+                    "Ever since my desperate mom dragged his ass to our home! I never trusted David."
+                ],
+                "next": "lighthouse_kate"
+            }
+        ]
+    },
+    "lighthouse_kate": {
+        "text": "",
+        "next": [
+            { "name": "took_photo_of_kate", "type": "eq", "value": true, "node": "lighthouse_kate_photo" },
+            { "name": "took_photo_of_kate", "type": "eq", "value": false, "node": "lighthouse_kate_intervene" }
+        ]
+    },
+    "lighthouse_kate_photo": {
+        "choices": [
+            {
+                "name": "I'm glad I took his photo.",
+                "text": [
+                    "I'm glad I took his photo with Kate. Just in case...",
+                    "Why was he all up in her shit?",
+                    "He has a total surveillance fetish. I worry there are spy cams in the house.",
+                    "Everybody in this town knows everybody's secrets..."
+                ],
+                "next": "lighthouse_2"
+            },
+            {
+                "name": "I felt weird taking his photo.",
+                "text": [
+                    "I felt weird taking his photo with Kate. But he was such a bully.",
+                    "Yes, he is. But why was he bullying Kate? She's kinda boring.",
+                    "He has a total surveillance fetish. I worry there are spy cams in the house.",
+                    "Everybody in this town knows everybody's secrets..."
+                ],
+                "next": "lighthouse_2"
+            }
+        ]
+    },
+    "lighthouse_kate_intervene": {
+        "choices": [
+            {
+                "name": "He freaked out on Kate.",
+                "text": [
+                    "He freaked out on poor Kate Marsh today.",
+                    "I know her. She's cool. Only that prick would bully her.",
+                    "He has a total surveillance fetish. I worry there are spy cams in the house.",
+                    "Everybody in this town knows everybody's secrets..."
+                ],
+                "next": "lighthouse_2"
+            },
+            {
+                "name": "I should've taken his photo.",
+                "text": [
+                    "I should've taken his photo when he flipped out on Kate today.",
+                    "That would be killer blackmail material. Let's bust his ass.",
+                    "He has some kind of weird agenda.",
+                    "He has a lot of secret files. Rambo still thinks he's gathering enemy intelligence.",
+                    "He has a total surveillance fetish. I worry there are spy cams in the house.",
+                    "Everybody in this town knows everybody's secrets..."
+                ],
+                "next": "lighthouse_2"
+            }
+        ]
+    },
+    "lighthouse_2": {
+        "choices": [
+            {
+                "name": "What's Nathan's secret?",
+                "text": "What's Nathan's secret?",
+                "next": "lighthouse_nathan"
+            },
+            {
+                "name": "Even yours?",
+                "text": [
+                    "Even yours?",
+                    "Not anymore.",
+                    "So what do you have on Nathan?"
+                ],
+                "next": "lighthouse_nathan"
+            }
+        ]
+    },
+    "lighthouse_nathan": {
+        "text": [
+            "He's an elite asshole who sells bad shit cut with laxative...and he dosed me with some drug in his room.",
+            "What?",
+            "I met him in some shithole bar that didn't card me. He was too rich for the place and too wasted. And he kept flashing bills...",
+            "Just tell me what happened, Chloe. Now.",
+            "I was an idiot. I thought he was so blazed it would be an easy score.",
+            "You needed money that bad?",
+            "Actually, yes. I owe big time. And I thought I'd have enough for me and Rachel if she showed up..."
+        ],
+        "next": "lighthouse_3"
+    },
+    "lighthouse_3": {
+        "choices": [
+            {
+                "name": "What about Nathan?",
+                "text": [
+                    "So what about you and Nathan?",
+                    "We went to his room at Blackwell. We drank and I laughed at his rich kid bullshit. He was one step ahead and put something in my beer..."
+                ],
+                "next": "lighthouse_4"
+            },
+            {
+                "name": "How much?",
+                "text": [
+                    "How much do you owe?",
+                    "Three grand plus interest. And before I could get a chunk of that from Nathan...he dosed my drink with some shit..."
+                ],
+                "next": "lighthouse_4"
+            }
+        ]
+    },
+    "lighthouse_4": {
+        "text": [
+            "God, Chloe, I can't believe this... Then what?",
+            "I know I passed out on the floor. I woke up and that perv was smiling, crawling towards me with a camera...",
+            "Go on...",
+            "Everything was a blur... I tried to kick him in the balls and broke a lamp. Nathan freaked, so I managed to bum rush the door and get the hell out. Max, it was insane."
+        ],
+        "next": "lighthouse_5"
+    },
+    "lighthouse_5": {
+        "choices": [
+            {
+                "name": "That is fucked up",
+                "text": [
+                    "Chloe, that is so fucked up. What did you do then?"
+                ],
+                "next": "lighthouse_6"
+            },
+            {
+                "name": "I am so furious",
+                "text": [
+                    "I am so furious I can't even speak... What did you do then?"
+                ],
+                "next": "lighthouse_6"
+            }
+        ]
+    },
+    "lighthouse_6": {
+        "text": [
+            "I figured I would make him pay me to keep quiet. So we met in the bathroom.",
+            "And he brought a gun.",
+            "That was Nathan's last mistake..."
+        ],
+        "next": "lighthouse_7"
+    },
+    "lighthouse_7": {
+        "choices": [
+            {
+                "name": "He's still dangerous.",
+                "text": "He's still dangerous, Chloe. Not just to you.",
+                "next": [
+                    { "name": "reported_nathan", "type": "eq", "value": true, "node": "lighthouse_dangerous_reported" },
+                    { "name": "reported_nathan", "type": "eq", "value": false, "node": "lighthouse_dangerous_hid" }
+                ]
+            },
+            {
+                "name": "Let's call the police.",
+                "text": "What are you going to do? Pop a cap in his ass? Let's call the police...",
+                "next": [
+                    { "name": "reported_nathan", "type": "eq", "value": true, "node": "lighthouse_police_reported" },
+                    { "name": "reported_nathan", "type": "eq", "value": false, "node": "lighthouse_police_hid" }
+                ]
+            }
+        ]
+    },
+    "lighthouse_dangerous_reported": {
+        "text": "Oh, good thing you notified the principal. I feel safer already...",
+        "next": "lighthouse_end"
+    },
+    "lighthouse_dangerous_hid": {
+        "text": "Good thing you didn't tell anyone. Nathan Prescott better watch his back now...",
+        "next": "lighthouse_end"
+    },
+    "lighthouse_police_reported": {
+        "text": "Screw that. You already told the Principal and I'm sure it's useless.",
+        "next": "lighthouse_end"
+    },
+    "lighthouse_police_hid": {
+        "text": "Screw that. Good thing you didn't tell anyone, now I'm bringing the Walter White down on him.",
+        "next": "lighthouse_end"
+    },
+    "lighthouse_end": {
+        "text": [
+            "I won't always be there to save you...",
+            "You were here today, Max. You saved me! I'm still tripping on that... Seeing you after all these years feels like—",
+            "Destiny?"
         ]
     }
 
