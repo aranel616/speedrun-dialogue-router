@@ -15,4 +15,5 @@ text = re.sub(r'&quot;', '"', text)
 text = re.sub(r'\n{3,}', '\n\n', text)
 lines = [l.strip() for l in text.splitlines() if l.strip()]
 output = '\n'.join(lines)
-print(output[:8000])
+idx = output.find("What's my last name")
+print(output[idx:idx+4000])

@@ -215,8 +215,44 @@ export const script:Script = {
         ]
     },
     "juliet_2": {
-        "text": "@todo Fix me",
-        "next": "kate_1"
+        "choices": [
+            {
+                "name": "Juliet Patson.",
+                "text": [
+                    "Juliet Pats...Juliet Patson.",
+                    "That was truly sad. Thanks for your concern, \"Max Caulfield\". By the way, Juliet Watson."
+                ],
+                "next": "juliet_2"
+            },
+            {
+                "name": "Juliet Mason.",
+                "text": [
+                    "Uh. Juliet...Mason.",
+                    "That was truly sad. Thanks for your concern, \"Max Caulfield\". By the way, Juliet Watson."
+                ],
+                "next": "juliet_2"
+            },
+            {
+                "name": "Juliet Olson.",
+                "text": [
+                    "Juliet...Juliet...Olson.",
+                    "That was truly sad. Thanks for your concern, \"Max Caulfield\". By the way, Juliet Watson."
+                ],
+                "next": "juliet_2"
+            },
+            {
+                "name": "Juliet Watson.",
+                "text": [
+                    "Juliet Watson. Duh!",
+                    "I'm flattered. I didn't even think you knew my name at all.",
+                    "Of course I do. Just because I don't talk a lot doesn't mean I don't care. So, how did you find out about them?",
+                    "According to Victoria, Dana would do anything to date a quarterback.",
+                    "According to Victoria? Oh...",
+                    "She saw the sext. And Zachary won't answer his phone. Once Dana admits it, she can go. Straight to hell."
+                ],
+                "next": "kate_1"
+            }
+        ]
     },
     "kate_1": {
         "choices": [
