@@ -5,9 +5,8 @@ import { getNextNode } from "./getNextNode";
 type Result = [number, string[], Context];
 const cache = new Map<string, Result>();
 
-export const traverse = (script:Script, nodeId:string, currentLength:number, context:Context, depth:number):Result => {
+export const traverse = (script:Script, nodeId:string, currentLength:number, context:Context, depth:number, visited:Set<string> = new Set()):Result => {
     const cacheKey = `${nodeId}-${JSON.stringify(context)}`;
-    const spacing = " ".repeat(depth);
     console.log(`${depth} - ${cacheKey}`);
 
     if (cache.has(cacheKey)) {
@@ -18,6 +17,12 @@ export const traverse = (script:Script, nodeId:string, currentLength:number, con
     if (!nodeId) {
         return [currentLength, [], context];
     }
+
+    if (visited.has(nodeId)) {
+        throw new Error(`Cycle detected at node "${nodeId}"`);
+    }
+    const childVisited = new Set(visited);
+    childVisited.add(nodeId);
 
     const currentNode = script[nodeId];
 
@@ -36,7 +41,7 @@ export const traverse = (script:Script, nodeId:string, currentLength:number, con
             return [currentLength + dialogueLength, [nodeId.toString()], context];
         }
 
-        const [pathLength, path, newContext] = traverse(script, nextNodeId, currentLength + dialogueLength, context, depth + 1);
+        const [pathLength, path, newContext] = traverse(script, nextNodeId, currentLength + dialogueLength, context, depth + 1, childVisited);
         return [pathLength, [nodeId.toString(), ...path], newContext];
     }
 
@@ -67,7 +72,7 @@ export const traverse = (script:Script, nodeId:string, currentLength:number, con
             continue;
         }
 
-        const [pathLength, path, newContext] = traverse(script, nextNodeId, currentLength + dialogueLength, choiceContext, depth + 1);
+        const [pathLength, path, newContext] = traverse(script, nextNodeId, currentLength + dialogueLength, choiceContext, depth + 1, childVisited);
 
         if (pathLength < shortestLength) {
             shortestLength = pathLength;

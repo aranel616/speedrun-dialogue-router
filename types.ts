@@ -16,13 +16,15 @@ export interface SetCondition {
 
 export type ConditionalNext = GetCondition[];
 
+export type Choice = {
+    name: string,
+    text: Dialogue,
+    set?: SetCondition | SetCondition[],
+    next?: Next
+}
+
 export interface InteractionWithChoices {
-    choices: {
-        name: string,
-        text: Dialogue,
-        set?: SetCondition | SetCondition[],
-        next?: Next
-    }[]
+    choices: [Choice, ...Choice[]]
 }
 
 export interface InteractionWithoutChoices {

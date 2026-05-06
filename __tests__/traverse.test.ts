@@ -238,3 +238,57 @@ describe('traverse — cache correctness', () => {
         });
     });
 });
+
+describe('traverse — set action on terminal choice', () => {
+    it('applies set action even when choice has no next', () => {
+        const script: Script = {
+            A: { choices: [{ name: 'c', text: 'x', set: { name: 'flag', type: 'set', value: true } }] },
+        };
+        expect(traverse(script, 'A', 0, {}, 0)).toEqual([1, ['c'], { flag: true }]);
+    });
+
+    it('picks shortest terminal choice and applies its set action', () => {
+        const script: Script = {
+            A: {
+                choices: [
+                    { name: 'long',  text: 'abcde', set: { name: 'result', type: 'set', value: 'long' as any } },
+                    { name: 'short', text: 'ab',    set: { name: 'result', type: 'set', value: 'short' as any } },
+                ],
+            },
+        };
+        const [len, path, ctx] = traverse(script, 'A', 0, {}, 0);
+        expect(len).toBe(2);
+        expect(path).toEqual(['short']);
+        expect(ctx).toEqual({ result: 'short' });
+    });
+});
+
+describe('traverse — cycle detection', () => {
+    it('throws on a direct self-cycle (A → A)', () => {
+        const script: Script = { A: { text: 'x', next: 'A' } };
+        expect(() => traverse(script, 'A', 0, {}, 0)).toThrow('Cycle detected at node "A"');
+    });
+
+    it('throws on a two-step cycle (A → B → A)', () => {
+        const script: Script = {
+            A: { text: 'x', next: 'B' },
+            B: { text: 'y', next: 'A' },
+        };
+        expect(() => traverse(script, 'A', 0, {}, 0)).toThrow('Cycle detected at node "A"');
+    });
+
+    it('throws when a choice leads back to an ancestor', () => {
+        const script: Script = {
+            A: { choices: [{ name: 'loop', text: 'x', next: 'A' }] },
+        };
+        expect(() => traverse(script, 'A', 0, {}, 0)).toThrow('Cycle detected at node "A"');
+    });
+
+    it('does not throw for a diamond (two independent paths to the same node)', () => {
+        const script: Script = {
+            A: { choices: [{ name: 'left', text: 'x', next: 'C' }, { name: 'right', text: 'y', next: 'C' }] },
+            C: { text: 'z' },
+        };
+        expect(() => traverse(script, 'A', 0, {}, 0)).not.toThrow();
+    });
+});
