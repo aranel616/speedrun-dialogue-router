@@ -264,31 +264,42 @@ describe('traverse — set action on terminal choice', () => {
 });
 
 describe('traverse — cycle detection', () => {
-    it('throws on a direct self-cycle (A → A)', () => {
+    it('returns Infinity for a direct self-cycle (A → A)', () => {
         const script: Script = { A: { text: 'x', next: 'A' } };
-        expect(() => traverse(script, 'A', 0, {}, 0)).toThrow('Cycle detected at node "A"');
+        const [len] = traverse(script, 'A', 0, {}, 0);
+        expect(len).toBe(Infinity);
     });
 
-    it('throws on a two-step cycle (A → B → A)', () => {
+    it('returns Infinity for a two-step cycle (A → B → A)', () => {
         const script: Script = {
             A: { text: 'x', next: 'B' },
             B: { text: 'y', next: 'A' },
         };
-        expect(() => traverse(script, 'A', 0, {}, 0)).toThrow('Cycle detected at node "A"');
+        const [len] = traverse(script, 'A', 0, {}, 0);
+        expect(len).toBe(Infinity);
     });
 
-    it('throws when a choice leads back to an ancestor', () => {
+    it('a cyclic choice is rejected in favour of a non-cyclic choice', () => {
+        const script: Script = {
+            A: { choices: [{ name: 'loop', text: 'x', next: 'A' }, { name: 'exit', text: 'ab', next: 'B' }] },
+            B: { text: 'c' },
+        };
+        expect(traverse(script, 'A', 0, {}, 0)).toEqual([3, ['exit', 'B'], {}]);
+    });
+
+    it('a self-cycle choice is the only option — router picks it with Infinity cost', () => {
         const script: Script = {
             A: { choices: [{ name: 'loop', text: 'x', next: 'A' }] },
         };
-        expect(() => traverse(script, 'A', 0, {}, 0)).toThrow('Cycle detected at node "A"');
+        const [len] = traverse(script, 'A', 0, {}, 0);
+        expect(len).toBe(Infinity);
     });
 
-    it('does not throw for a diamond (two independent paths to the same node)', () => {
+    it('does not treat a diamond as a cycle', () => {
         const script: Script = {
             A: { choices: [{ name: 'left', text: 'x', next: 'C' }, { name: 'right', text: 'y', next: 'C' }] },
             C: { text: 'z' },
         };
-        expect(() => traverse(script, 'A', 0, {}, 0)).not.toThrow();
+        expect(traverse(script, 'A', 0, {}, 0)).toEqual([2, ['left', 'C'], {}]);
     });
 });

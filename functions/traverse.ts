@@ -19,7 +19,7 @@ export const traverse = (script:Script, nodeId:string, currentLength:number, con
     }
 
     if (visited.has(nodeId)) {
-        throw new Error(`Cycle detected at node "${nodeId}"`);
+        return [Infinity, [], context];
     }
     const childVisited = new Set(visited);
     childVisited.add(nodeId);
