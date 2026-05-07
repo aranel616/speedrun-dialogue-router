@@ -44,8 +44,8 @@ function cleanLabel(id: string): string {
   return id.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
 }
 
-function NodeCard({ node, highlighted, selected, onClick }: {
-  node: GraphNode; highlighted: boolean; selected: boolean; onClick: () => void;
+function NodeCard({ node, highlighted, selected, onClick, cumulative }: {
+  node: GraphNode; highlighted: boolean; selected: boolean; onClick: () => void; cumulative?: number;
 }) {
   if (node.type === "choice") {
     return (
@@ -75,7 +75,10 @@ function NodeCard({ node, highlighted, selected, onClick }: {
             {node.sets.map((s, i) => <span key={i} className="set-badge">{s.name}={String(s.value)}</span>)}
           </div>
         )}
-        <div className="node-char-count">{charCount.toLocaleString()} chars</div>
+        <div className="node-stats-row">
+          <span className="node-char-count">{charCount.toLocaleString()} chars</span>
+          {cumulative !== undefined && <span className="node-cumulative-count">{cumulative.toLocaleString()} total</span>}
+        </div>
       </div>
     );
   }
@@ -91,6 +94,7 @@ function NodeCard({ node, highlighted, selected, onClick }: {
       <div className="node-stats-row">
         <span className="node-id-tag">{node.id}</span>
         <span className="node-char-count">{charCount.toLocaleString()} chars</span>
+        {cumulative !== undefined && <span className="node-cumulative-count">{cumulative.toLocaleString()} total</span>}
       </div>
     </div>
   );
@@ -185,9 +189,10 @@ interface Props {
   visitedNodeIds: Set<string>;
   selectedNodeId: string | null;
   onNodeClick: (id: string) => void;
+  cumulativeCounts: Record<string, number>;
 }
 
-export function GraphCanvas({ graphNodes, graphEdges, visitedNodeIds, selectedNodeId, onNodeClick }: Props) {
+export function GraphCanvas({ graphNodes, graphEdges, visitedNodeIds, selectedNodeId, onNodeClick, cumulativeCounts }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const vpRef = useRef<Viewport>({ x: 0, y: 0, zoom: 1 });
   const [viewport, setVP] = useState<Viewport>({ x: 0, y: 0, zoom: 1 });
@@ -325,6 +330,7 @@ export function GraphCanvas({ graphNodes, graphEdges, visitedNodeIds, selectedNo
               highlighted={visitedNodeIds.has(n.id)}
               selected={selectedNodeId === n.id}
               onClick={() => handleNodeClick(n.id)}
+              cumulative={cumulativeCounts[n.id]}
             />
           </div>
         ))}

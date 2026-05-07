@@ -62,6 +62,11 @@ export default function App() {
     [traversalResult]
   );
 
+  const cumulativeCounts = useMemo(
+    () => traversalResult?.cumulativeCounts ?? {},
+    [traversalResult]
+  );
+
   return (
     <div className="app">
       <ControlBar
@@ -83,6 +88,7 @@ export default function App() {
             visitedNodeIds={visitedNodeIds}
             selectedNodeId={selectedNodeId}
             onNodeClick={setSelectedNodeId}
+            cumulativeCounts={cumulativeCounts}
           />
         )}
 

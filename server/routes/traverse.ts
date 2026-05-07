@@ -2,6 +2,7 @@ import { Router, Request, Response } from "express";
 import { loadScript } from "../lib/scriptLoader";
 import { traverse } from "../../functions/traverse";
 import { getNextNode } from "../../functions/getNextNode";
+import { calculateDialogueLength } from "../../functions/calculateDialogueLength";
 import { Script, Context } from "../../types";
 import { TraverseRequest, TraverseResponse } from "../types";
 
@@ -12,11 +13,13 @@ function computeVisitedNodeIds(
   path: string[],
   startNode: string,
   initialContext: Context
-): string[] {
+): { visitedNodeIds: string[]; cumulativeCounts: Record<string, number> } {
   const visited: string[] = [];
+  const cumulativeCounts: Record<string, number> = {};
   let nodeId: string = startNode;
   let context: Context = { ...initialContext };
   let pathIdx = 0;
+  let runningTotal = 0;
 
   while (nodeId && pathIdx < path.length) {
     const node = script[nodeId];
@@ -25,11 +28,17 @@ function computeVisitedNodeIds(
     visited.push(nodeId);
 
     if ("choices" in node) {
+      cumulativeCounts[nodeId] = runningTotal;
+
       const choiceName = path[pathIdx++];
       const choiceIdx = node.choices.findIndex(c => c.name === choiceName);
       if (choiceIdx === -1) break;
       const choice = node.choices[choiceIdx]!;
-      visited.push(`${nodeId}__ci${choiceIdx}`);
+      const ciId = `${nodeId}__ci${choiceIdx}`;
+      visited.push(ciId);
+
+      runningTotal += calculateDialogueLength(choice.text);
+      cumulativeCounts[ciId] = runningTotal;
 
       if (choice.set) {
         const sets = Array.isArray(choice.set) ? choice.set : [choice.set];
@@ -43,6 +52,9 @@ function computeVisitedNodeIds(
       if (!next) break;
       nodeId = next;
     } else {
+      runningTotal += calculateDialogueLength(node.text);
+      cumulativeCounts[nodeId] = runningTotal;
+
       pathIdx++;
       if (node.next === undefined) break;
       const next = getNextNode(script, node.next, context);
@@ -51,7 +63,7 @@ function computeVisitedNodeIds(
     }
   }
 
-  return visited;
+  return { visitedNodeIds: visited, cumulativeCounts };
 }
 
 router.post("/", (req: Request, res: Response) => {
@@ -60,8 +72,8 @@ router.post("/", (req: Request, res: Response) => {
   try {
     const { script } = loadScript(scriptId);
     const [length, path, context] = traverse(script, startNode, 0, initialContext as Context, 0);
-    const visitedNodeIds = computeVisitedNodeIds(script, path, startNode, initialContext as Context);
-    const response: TraverseResponse = { length, path, context, visitedNodeIds };
+    const { visitedNodeIds, cumulativeCounts } = computeVisitedNodeIds(script, path, startNode, initialContext as Context);
+    const response: TraverseResponse = { length, path, context, visitedNodeIds, cumulativeCounts };
     res.json(response);
   } catch (err: unknown) {
     res.status(500).json({ error: (err as Error).message });

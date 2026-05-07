@@ -44,4 +44,5 @@ export interface TraverseResponse {
   path: string[];
   context: Record<string, boolean | number>;
   visitedNodeIds: string[];
+  cumulativeCounts: Record<string, number>;
 }
