@@ -1,11 +1,11 @@
 import type { Node, Edge } from "@xyflow/react";
 
-const NODE_WIDTH = 200;
-const NODE_HEIGHT = 64;
-const H_GAP = 100;
+const NODE_WIDTH = 420;
+const H_GAP = 80;
 const V_GAP = 80;
+const FALLBACK_HEIGHT = 88;
 
-export function applyDagreLayout(nodes: Node[], edges: Edge[]): Node[] {
+export function applyDagreLayout(nodes: Node[], edges: Edge[], nodeHeights: Map<string, number>): Node[] {
   console.log(`[dagreLayout] start — ${nodes.length} nodes, ${edges.length} edges`);
   if (nodes.length === 0) return nodes;
 
@@ -99,6 +99,17 @@ export function applyDagreLayout(nodes: Node[], edges: Edge[]): Node[] {
     byRank.get(r)!.push(id);
   }
 
+  // Compute cumulative y-positions: each rank's y is the sum of all prior ranks'
+  // max-heights + gaps, so variable-height nodes never overlap the row below.
+  const sortedRanks = [...byRank.keys()].sort((a, b) => a - b);
+  let cumY = 0;
+  const rankY = new Map<number, number>();
+  for (const r of sortedRanks) {
+    rankY.set(r, cumY);
+    const maxH = Math.max(...byRank.get(r)!.map(id => nodeHeights.get(id) ?? FALLBACK_HEIGHT));
+    cumY += maxH + V_GAP;
+  }
+
   // Position: center each rank horizontally
   const pos = new Map<string, { x: number; y: number }>();
   for (const [r, ids] of byRank) {
@@ -107,7 +118,7 @@ export function applyDagreLayout(nodes: Node[], edges: Edge[]): Node[] {
     ids.forEach((id, i) => {
       pos.set(id, {
         x: startX + i * (NODE_WIDTH + H_GAP),
-        y: r * (NODE_HEIGHT + V_GAP),
+        y: rankY.get(r)!,
       });
     });
   }

@@ -3,18 +3,45 @@ import type { Node, Edge } from "@xyflow/react";
 import type { GraphNode, GraphEdge } from "../types";
 import { applyDagreLayout } from "../utils/dagreLayout";
 
-const NODE_H = 64;
 const MIN_ZOOM = 0.05;
 const MAX_ZOOM = 3;
 
+// Approximate characters that fit per visual line given node content widths.
+// Linear nodes are 420px wide (28px padding → 392px content); choiceItem 330px (302px content).
+// At 12px Inter, ~7.2px/char → 392/7.2 ≈ 54 for linear; ~6.8px/char → 302/6.8 ≈ 44 for ci.
+const LINEAR_CHARS_PER_LINE = 54;
+const CI_CHARS_PER_LINE = 44;
+const LINE_H = 18;    // px per visual text line
+const PAD_V = 22;     // top + bottom padding of a node card
+const STATS_ROW_H = 22; // height of the stats row (id tag + char count) at bottom of nodes
+const CI_NAME_H = 20;   // height of ci-name row on choiceItem nodes
+const SETS_H = 24;      // height of the sets-badge row when present
+
+function estimateNodeHeight(node: GraphNode): number {
+  if (node.type === "choice") return PAD_V + LINE_H; // just the label row
+  const textLines = Array.isArray(node.text) ? node.text : node.text ? [node.text] : [];
+  const cpl = node.type === "choiceItem" ? CI_CHARS_PER_LINE : LINEAR_CHARS_PER_LINE;
+  const visualLines = textLines.reduce((sum, l) => sum + Math.max(1, Math.ceil(l.length / cpl)), 0);
+  if (node.type === "linear") {
+    return PAD_V + visualLines * LINE_H + STATS_ROW_H;
+  }
+  // choiceItem
+  const setsH = (node.sets?.length ?? 0) > 0 ? SETS_H : 0;
+  return PAD_V + CI_NAME_H + visualLines * LINE_H + setsH + STATS_ROW_H;
+}
+
 interface Viewport { x: number; y: number; zoom: number; }
-interface PosNode { id: string; x: number; y: number; w: number; node: GraphNode; }
+interface PosNode { id: string; x: number; y: number; w: number; h: number; node: GraphNode; }
 
 function clamp(v: number, lo: number, hi: number) { return Math.max(lo, Math.min(hi, v)); }
 
 function edgePath(sx: number, sy: number, tx: number, ty: number): string {
   const my = (sy + ty) / 2;
   return `M${sx},${sy} C${sx},${my} ${tx},${my} ${tx},${ty}`;
+}
+
+function cleanLabel(id: string): string {
+  return id.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
 }
 
 function NodeCard({ node, highlighted, selected, onClick }: {
@@ -26,36 +53,45 @@ function NodeCard({ node, highlighted, selected, onClick }: {
         onClick={onClick}
         className={`dialogue-node choice-node${selected ? " selected" : ""}${highlighted ? " highlighted" : ""}`}
       >
-        <div className="node-id">{node.id}</div>
+        <div className="choice-node-header">
+          <span className="node-id">{cleanLabel(node.id)}</span>
+          <span className="node-branch-badge">branch</span>
+        </div>
       </div>
     );
   }
   if (node.type === "choiceItem") {
-    const preview = Array.isArray(node.text) ? node.text[0] : node.text;
+    const lines = Array.isArray(node.text) ? node.text : node.text ? [node.text] : [];
+    const charCount = lines.reduce((n, l) => n + l.length, 0);
     return (
       <div
         onClick={onClick}
         className={`choice-item-node${selected ? " selected" : ""}${highlighted ? " highlighted" : ""}${node.isTerminal ? " terminal" : ""}`}
       >
         <div className="ci-name">{node.choiceName}</div>
-        {preview && <div className="ci-preview">{preview.length > 44 ? preview.slice(0, 41) + "…" : preview}</div>}
+        {lines.map((line, i) => <div key={i} className="node-dialogue-line">{line}</div>)}
         {node.sets && node.sets.length > 0 && (
           <div className="ci-sets">
             {node.sets.map((s, i) => <span key={i} className="set-badge">{s.name}={String(s.value)}</span>)}
           </div>
         )}
+        <div className="node-char-count">{charCount.toLocaleString()} chars</div>
       </div>
     );
   }
-  // linear
-  const preview = Array.isArray(node.text) ? node.text[0] : node.text;
+  // linear — show every dialogue line in full, no truncation
+  const lines = Array.isArray(node.text) ? node.text : node.text ? [node.text] : [];
+  const charCount = lines.reduce((n, l) => n + l.length, 0);
   return (
     <div
       onClick={onClick}
       className={`dialogue-node linear-node${selected ? " selected" : ""}${highlighted ? " highlighted" : ""}${node.isTerminal ? " terminal" : ""}`}
     >
-      <div className="node-id">{node.id}</div>
-      {preview && <div className="node-preview">{preview.length > 50 ? preview.slice(0, 47) + "…" : preview}</div>}
+      {lines.map((line, i) => <div key={i} className="node-dialogue-line">{line}</div>)}
+      <div className="node-stats-row">
+        <span className="node-id-tag">{node.id}</span>
+        <span className="node-char-count">{charCount.toLocaleString()} chars</span>
+      </div>
     </div>
   );
 }
@@ -82,21 +118,23 @@ export function GraphCanvas({ graphNodes, graphEdges, visitedNodeIds, selectedNo
   // Layout — only recomputes when graph changes
   const posNodes = useMemo<PosNode[]>(() => {
     console.log(`[GraphCanvas] computing layout for ${graphNodes.length} nodes, ${graphEdges.length} edges`);
+    const heights = new Map(graphNodes.map(n => [n.id, estimateNodeHeight(n)]));
     const rfNodes: Node[] = graphNodes.map(n => ({
       id: n.id,
       type: n.type,
       position: { x: 0, y: 0 },
-      style: { width: n.type === "choiceItem" ? 160 : 200 },
+      style: { width: n.type === "choiceItem" ? 330 : 420 },
       data: n as unknown as Record<string, unknown>,
     }));
     const rfEdges: Edge[] = graphEdges.map(e => ({ id: e.id, source: e.source, target: e.target }));
-    const laid = applyDagreLayout(rfNodes, rfEdges);
+    const laid = applyDagreLayout(rfNodes, rfEdges, heights);
     console.log(`[GraphCanvas] layout returned ${laid.length} positioned nodes`);
     return laid.map(n => ({
       id: n.id,
       x: n.position.x,
       y: n.position.y,
       w: (n.style as { width: number }).width,
+      h: heights.get(n.id) ?? 88,
       node: n.data as unknown as GraphNode,
     }));
   }, [graphNodes, graphEdges]);
@@ -108,7 +146,7 @@ export function GraphCanvas({ graphNodes, graphEdges, visitedNodeIds, selectedNo
     const start = posNodes.find(n => n.id === "start") ?? posNodes[0]!;
     const zoom = 1.2;
     const x = el.offsetWidth / 2 - (start.x + start.w / 2) * zoom;
-    const y = el.offsetHeight / 3 - (start.y + NODE_H / 2) * zoom;
+    const y = el.offsetHeight / 3 - (start.y + start.h / 2) * zoom;
     syncVP({ x, y, zoom });
   }, [posNodes, syncVP]);
 
@@ -167,7 +205,7 @@ export function GraphCanvas({ graphNodes, graphEdges, visitedNodeIds, selectedNo
         : "#475569";
       return {
         id: e.id,
-        d: edgePath(src.x + src.w / 2, src.y + NODE_H, tgt.x + tgt.w / 2, tgt.y),
+        d: edgePath(src.x + src.w / 2, src.y + src.h, tgt.x + tgt.w / 2, tgt.y),
         stroke,
         strokeWidth: hl ? 2.5 : 1.5,
         animated: hl,
