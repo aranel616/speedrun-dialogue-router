@@ -98,6 +98,87 @@ function NodeCard({ node, highlighted, selected, onClick }: {
 
 const MemoCard = memo(NodeCard);
 
+const MM_W = 280;
+const MM_H = 360;
+const MM_PAD = 8;
+
+function Minimap({ posNodes, visitedNodeIds, viewport, containerW, containerH, onNavigate }: {
+  posNodes: PosNode[];
+  visitedNodeIds: Set<string>;
+  viewport: Viewport;
+  containerW: number;
+  containerH: number;
+  onNavigate: (v: Viewport) => void;
+}) {
+  const dragging = useRef(false);
+  if (posNodes.length === 0) return null;
+
+  const gx0 = Math.min(...posNodes.map(n => n.x));
+  const gy0 = Math.min(...posNodes.map(n => n.y));
+  const gx1 = Math.max(...posNodes.map(n => n.x + n.w));
+  const gy1 = Math.max(...posNodes.map(n => n.y + n.h));
+  const gW = gx1 - gx0;
+  const gH = gy1 - gy0;
+
+  const innerW = MM_W - MM_PAD * 2;
+  const innerH = MM_H - MM_PAD * 2;
+
+  // Uniform scale preserves aspect ratios so the viewport rect looks proportionally
+  // correct — the same shape as the actual screen viewport.
+  const scale = Math.min(innerW / gW, innerH / gH);
+
+  // Center the graph content within the minimap's inner area.
+  const cx = MM_PAD + (innerW - gW * scale) / 2;
+  const cy = MM_PAD + (innerH - gH * scale) / 2;
+
+  function toMM(gx: number, gy: number) {
+    return { mx: cx + (gx - gx0) * scale, my: cy + (gy - gy0) * scale };
+  }
+
+  const { x: vx, y: vy, zoom: vz } = viewport;
+  const { mx: vpMX, my: vpMY } = toMM(-vx / vz, -vy / vz);
+  const vpMW = (containerW / vz) * scale;
+  const vpMH = (containerH / vz) * scale;
+
+  function navigate(e: React.MouseEvent<SVGSVGElement>) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const gx = (e.clientX - rect.left - cx) / scale + gx0;
+    const gy = (e.clientY - rect.top  - cy) / scale + gy0;
+    onNavigate({ x: containerW / 2 - gx * vz, y: containerH / 2 - gy * vz, zoom: vz });
+  }
+
+  function nodeColor(n: PosNode): string {
+    if (visitedNodeIds.has(n.id)) return "#22c55e";
+    if (n.node.type === "choice") return "#6366f1";
+    if (n.node.type === "choiceItem") return "#818cf8";
+    return "#0ea5e9";
+  }
+
+  return (
+    <svg
+      className="minimap"
+      width={MM_W}
+      height={MM_H}
+      onMouseDown={e => { dragging.current = true; navigate(e); e.stopPropagation(); }}
+      onMouseMove={e => { if (dragging.current) navigate(e); }}
+      onMouseUp={() => { dragging.current = false; }}
+      onMouseLeave={() => { dragging.current = false; }}
+    >
+      {posNodes.map(n => {
+        const { mx, my } = toMM(n.x, n.y);
+        return (
+          <rect key={n.id} x={mx} y={my}
+            width={Math.max(3, n.w * scale)} height={Math.max(2, n.h * scale)}
+            fill={nodeColor(n)} opacity={0.75} rx={1} />
+        );
+      })}
+      <rect x={vpMX} y={vpMY}
+        width={Math.max(6, vpMW)} height={Math.max(6, vpMH)}
+        fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.5)" strokeWidth={1.5} rx={2} />
+    </svg>
+  );
+}
+
 interface Props {
   graphNodes: GraphNode[];
   graphEdges: GraphEdge[];
@@ -248,6 +329,14 @@ export function GraphCanvas({ graphNodes, graphEdges, visitedNodeIds, selectedNo
           </div>
         ))}
       </div>
+      <Minimap
+        posNodes={posNodes}
+        visitedNodeIds={visitedNodeIds}
+        viewport={viewport}
+        containerW={containerRef.current?.offsetWidth ?? 800}
+        containerH={containerRef.current?.offsetHeight ?? 600}
+        onNavigate={syncVP}
+      />
     </div>
   );
 }

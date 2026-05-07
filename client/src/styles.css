@@ -79,7 +79,22 @@ html, body, #root { height: 100%; font-family: "Inter", system-ui, sans-serif; b
 .traverse-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
 /* ── Graph Canvas ── */
-.graph-canvas { flex: 1; height: 100%; }
+.graph-canvas { flex: 1; height: 100%; position: relative; }
+
+.minimap {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  width: 280px;
+  height: 360px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(4px);
+  cursor: crosshair;
+  z-index: 20;
+  display: block;
+}
 
 .canvas-empty {
   flex: 1;
