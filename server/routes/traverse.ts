@@ -2,7 +2,9 @@ import { Router, Request, Response } from "express";
 import { loadScript } from "../lib/scriptLoader";
 import { traverse } from "../../functions/traverse";
 import { getNextNode } from "../../functions/getNextNode";
+import { evaluateCondition } from "../../functions/evaluateCondition";
 import { calculateDialogueLength } from "../../functions/calculateDialogueLength";
+import { isSingleVariableFork } from "../lib/graphBuilder";
 import { Script, Context } from "../../types";
 import { TraverseRequest, TraverseResponse } from "../types";
 
@@ -50,6 +52,10 @@ function computeVisitedNodeIds(
       if (choice.next === undefined) break;
       const next = getNextNode(script, choice.next, context);
       if (!next) break;
+      if (Array.isArray(choice.next)) {
+        const j = choice.next.findIndex(c => evaluateCondition(c, context));
+        if (j >= 0) visited.push(isSingleVariableFork(choice.next) ? `${ciId}__cond` : `${ciId}__cond${j}`);
+      }
       nodeId = next;
     } else {
       runningTotal += calculateDialogueLength(node.text);
@@ -59,6 +65,10 @@ function computeVisitedNodeIds(
       if (node.next === undefined) break;
       const next = getNextNode(script, node.next, context);
       if (!next) break;
+      if (Array.isArray(node.next)) {
+        const j = node.next.findIndex(c => evaluateCondition(c, context));
+        if (j >= 0) visited.push(isSingleVariableFork(node.next) ? `${nodeId}__cond` : `${nodeId}__cond${j}`);
+      }
       nodeId = next;
     }
   }

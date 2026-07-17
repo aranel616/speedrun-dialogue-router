@@ -27,6 +27,7 @@ const SETS_H = 24;      // height of the sets-badge row when present
 
 function estimateNodeHeight(node: GraphNode): number {
   if (node.type === "choice") return PAD_V + LINE_H; // just the label row
+  if (node.type === "conditionItem") return PAD_V + CI_NAME_H; // single condition row
   const textLines = Array.isArray(node.text) ? node.text : node.text ? [node.text] : [];
   const cpl = node.type === "choiceItem" ? CI_CHARS_PER_LINE : LINEAR_CHARS_PER_LINE;
   const visualLines = textLines.reduce((sum, l) => sum + Math.max(1, Math.ceil(l.length / cpl)), 0);
@@ -65,6 +66,17 @@ function NodeCard({ node, highlighted, selected, onClick, cumulative }: {
           <span className="node-id">{cleanLabel(node.id)}</span>
           <span className="node-branch-badge">branch</span>
         </div>
+      </div>
+    );
+  }
+  if (node.type === "conditionItem") {
+    return (
+      <div
+        onClick={onClick}
+        className={`condition-item-node${selected ? " selected" : ""}${highlighted ? " highlighted" : ""}`}
+      >
+        <span className="condition-if">IF</span>
+        <span className="condition-label">{node.condition}</span>
       </div>
     );
   }
@@ -218,7 +230,7 @@ export function GraphCanvas({ graphNodes, graphEdges, visitedNodeIds, selectedNo
       id: n.id,
       type: n.type,
       position: { x: 0, y: 0 },
-      style: { width: n.type === "choiceItem" ? 330 : 420 },
+      style: { width: n.type === "choiceItem" ? 330 : n.type === "conditionItem" ? 260 : 420 },
       data: n as unknown as Record<string, unknown>,
     }));
     const rfEdges: Edge[] = graphEdges.map(e => ({ id: e.id, source: e.source, target: e.target }));
@@ -251,13 +263,19 @@ export function GraphCanvas({ graphNodes, graphEdges, visitedNodeIds, selectedNo
     if (!el) return;
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
-      const factor = e.deltaY < 0 ? 1.1 : 0.9;
-      const rect = el.getBoundingClientRect();
-      const mx = e.clientX - rect.left;
-      const my = e.clientY - rect.top;
       const v = vpRef.current;
-      const z = clamp(v.zoom * factor, MIN_ZOOM, MAX_ZOOM);
-      syncVP({ x: mx - (mx - v.x) * (z / v.zoom), y: my - (my - v.y) * (z / v.zoom), zoom: z });
+      // Ctrl/Cmd + wheel (and trackpad pinch, which sends ctrlKey) → zoom toward cursor.
+      if (e.ctrlKey || e.metaKey) {
+        const factor = e.deltaY < 0 ? 1.1 : 0.9;
+        const rect = el.getBoundingClientRect();
+        const mx = e.clientX - rect.left;
+        const my = e.clientY - rect.top;
+        const z = clamp(v.zoom * factor, MIN_ZOOM, MAX_ZOOM);
+        syncVP({ x: mx - (mx - v.x) * (z / v.zoom), y: my - (my - v.y) * (z / v.zoom), zoom: z });
+        return;
+      }
+      // Plain wheel/trackpad → pan (natural direction).
+      syncVP({ ...v, x: v.x - e.deltaX, y: v.y - e.deltaY });
     };
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => el.removeEventListener("wheel", onWheel);
@@ -328,12 +346,18 @@ export function GraphCanvas({ graphNodes, graphEdges, visitedNodeIds, selectedNo
         : e.edgeType === "conditional" ? "#f59e0b"
         : e.edgeType === "choice" ? "#818cf8"
         : "#475569";
+      const sx = src.x + src.w / 2, sy = src.y + src.h;
+      const tx = tgt.x + tgt.w / 2, ty = tgt.y;
       return {
         id: e.id,
-        d: edgePath(src.x + src.w / 2, src.y + src.h, tgt.x + tgt.w / 2, tgt.y),
+        d: edgePath(sx, sy, tx, ty),
         stroke,
         strokeWidth: hl ? 2.5 : 1.5,
         animated: hl,
+        label: e.label,
+        lx: (sx + tx) / 2,
+        ly: (sy + ty) / 2,
+        hl,
       };
     });
   }, [posNodes, graphEdges, visitedNodeIds]);
@@ -359,6 +383,27 @@ export function GraphCanvas({ graphNodes, graphEdges, visitedNodeIds, selectedNo
         <svg style={{ position: "absolute", inset: 0, width: 0, height: 0, overflow: "visible", pointerEvents: "none" }}>
           {edgePaths.map(e => e && (
             <path key={e.id} d={e.d} fill="none" stroke={e.stroke} strokeWidth={e.strokeWidth} />
+          ))}
+          {edgePaths.map(e => e && e.label && (
+            <text
+              key={e.id + "-lbl"}
+              x={e.lx}
+              y={e.ly}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              style={{
+                fontSize: 13,
+                fontWeight: 700,
+                fontFamily: "ui-monospace, monospace",
+                fill: e.hl ? "#22c55e" : "#f59e0b",
+                stroke: "#020617",
+                strokeWidth: 4,
+                paintOrder: "stroke",
+                strokeLinejoin: "round",
+              }}
+            >
+              {e.label}
+            </text>
           ))}
         </svg>
         {/* HTML node layer */}

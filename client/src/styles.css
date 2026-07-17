@@ -157,6 +157,41 @@ html, body, #root { height: 100%; font-family: "Inter", system-ui, sans-serif; b
 
 .ci-sets { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 5px; }
 
+/* Condition (flag branch) node — a labelled hop between a source and its
+   conditional targets so it's clear which flag value leads where. */
+.condition-item-node {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent-cond);
+  background: var(--surface);
+  width: 260px;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.condition-item-node:hover { border-color: var(--text-dim); }
+.condition-item-node.selected { border-color: var(--accent-cond); box-shadow: 0 0 0 2px rgba(245,158,11,0.3); }
+.condition-item-node.highlighted { border-color: var(--accent-path); box-shadow: 0 0 0 2px rgba(34,197,94,0.25); }
+.condition-if {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: var(--accent-cond);
+  background: rgba(245,158,11,0.12);
+  padding: 1px 5px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.condition-label {
+  font-size: 12px;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color: var(--text);
+  word-break: break-word;
+}
+
 .choice-list {
   list-style: none;
   margin-top: 6px;

@@ -11,12 +11,14 @@ export interface ScriptListResponse {
 
 export interface GraphNode {
   id: string;
-  type: "choice" | "linear" | "choiceItem";
+  type: "choice" | "linear" | "choiceItem" | "conditionItem";
   text?: string | string[];
   isTerminal: boolean;
   // choiceItem-only fields
   choiceName?: string;
   sets?: Array<{ name: string; type: string; value: boolean | number }>;
+  // conditionItem-only field: human-readable branch condition (e.g. "took_photo_of_kate = true")
+  condition?: string;
 }
 
 export interface GraphEdge {
