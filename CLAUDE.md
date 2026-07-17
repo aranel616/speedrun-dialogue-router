@@ -34,7 +34,7 @@ traverse(script, nodeId, currentLength, context, depth) → [totalLength, path[]
 
 - **Choice nodes** (`InteractionWithChoices`): tries all branches, returns the shortest. Each choice may carry `set` mutations that fork the `context` immutably before recursing.
 - **Linear nodes** (`InteractionWithoutChoices`): follows `next`, which is either a node ID string or a `ConditionalNext` array evaluated by `getNextNode`.
-- **Memoization**: cache is keyed on `${nodeId}-${JSON.stringify(context)}`. Cache writes are active but cache reads are currently disabled (the `return cacheHit` line is commented out in `traverse.ts:18`). Re-enable to speed up repeated traversals with shared context states.
+- **Memoization**: cache is keyed on `${nodeId}-${JSON.stringify(context)}` and held in a `WeakMap<Script, Map>` so each script gets its own cache — different scripts sharing node ids (e.g. `start`) never contaminate each other in a long-lived server process. Both cache reads and writes are active; results are stored as marginal cost (`shortestLength - currentLength`) and re-based on read.
 
 ### Type System (`types.ts`)
 

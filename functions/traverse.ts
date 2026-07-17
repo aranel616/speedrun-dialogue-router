@@ -3,9 +3,15 @@ import { calculateDialogueLength } from "./calculateDialogueLength";
 import { getNextNode } from "./getNextNode";
 
 type Result = [number, string[], Context];
-const cache = new Map<string, Result>();
+// Keyed per Script object so caches never leak between different scripts sharing
+// node ids (e.g. "start") in a long-lived server process. Same script object
+// (require-cached module) reuses its cache across traversals.
+const caches = new WeakMap<Script, Map<string, Result>>();
 
 export const traverse = (script:Script, nodeId:string, currentLength:number, context:Context, depth:number, visited:Set<string> = new Set()):Result => {
+    let cache = caches.get(script);
+    if (!cache) { cache = new Map<string, Result>(); caches.set(script, cache); }
+
     const cacheKey = `${nodeId}-${JSON.stringify(context)}`;
     console.log(`${depth} - ${cacheKey}`);
 
