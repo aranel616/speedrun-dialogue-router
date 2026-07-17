@@ -6,6 +6,13 @@ import { applyDagreLayout } from "../utils/dagreLayout";
 const MIN_ZOOM = 0.05;
 const MAX_ZOOM = 3;
 
+const zoomBtnStyle: React.CSSProperties = {
+  width: 32, height: 32, borderRadius: 6, border: "1px solid #475569",
+  background: "#1e293b", color: "#e2e8f0", fontSize: 20, lineHeight: 1,
+  cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+  padding: 0, boxShadow: "0 1px 3px rgba(0,0,0,0.4)",
+};
+
 // Approximate characters that fit per visual line given node content widths.
 // Linear nodes are 420px wide (28px padding → 392px content); choiceItem 330px (302px content).
 // At 12px Inter, ~7.2px/char → 392/7.2 ≈ 54 for linear; ~6.8px/char → 302/6.8 ≈ 44 for ci.
@@ -272,6 +279,30 @@ export function GraphCanvas({ graphNodes, graphEdges, visitedNodeIds, selectedNo
 
   const onMouseUp = useCallback(() => { dragRef.current = null; }, []);
 
+  // Zoom around the canvas centre (used by the +/- buttons)
+  const zoomBy = useCallback((factor: number) => {
+    const el = containerRef.current;
+    if (!el) return;
+    const cx = el.offsetWidth / 2;
+    const cy = el.offsetHeight / 2;
+    const v = vpRef.current;
+    const z = clamp(v.zoom * factor, MIN_ZOOM, MAX_ZOOM);
+    syncVP({ x: cx - (cx - v.x) * (z / v.zoom), y: cy - (cy - v.y) * (z / v.zoom), zoom: z });
+  }, [syncVP]);
+
+  // Reset to the initial view (centre the "start" node at 1.2x)
+  const resetView = useCallback(() => {
+    const el = containerRef.current;
+    if (!el || posNodes.length === 0) return;
+    const start = posNodes.find(n => n.id === "start") ?? posNodes[0]!;
+    const zoom = 1.2;
+    syncVP({
+      x: el.offsetWidth / 2 - (start.x + start.w / 2) * zoom,
+      y: el.offsetHeight / 3 - (start.y + start.h / 2) * zoom,
+      zoom,
+    });
+  }, [posNodes, syncVP]);
+
   const handleNodeClick = useCallback((id: string) => {
     if (!movedRef.current) onNodeClick(id);
   }, [onNodeClick]);
@@ -334,6 +365,18 @@ export function GraphCanvas({ graphNodes, graphEdges, visitedNodeIds, selectedNo
             />
           </div>
         ))}
+      </div>
+      <div
+        className="zoom-controls"
+        onMouseDown={e => e.stopPropagation()}
+        style={{
+          position: "absolute", left: 12, bottom: 12, display: "flex", flexDirection: "column",
+          gap: 4, zIndex: 10,
+        }}
+      >
+        <button type="button" title="Zoom in" aria-label="Zoom in" onClick={() => zoomBy(1.2)} style={zoomBtnStyle}>+</button>
+        <button type="button" title="Zoom out" aria-label="Zoom out" onClick={() => zoomBy(1 / 1.2)} style={zoomBtnStyle}>−</button>
+        <button type="button" title="Reset view" aria-label="Reset view" onClick={resetView} style={{ ...zoomBtnStyle, fontSize: 16 }}>⌂</button>
       </div>
       <Minimap
         posNodes={posNodes}

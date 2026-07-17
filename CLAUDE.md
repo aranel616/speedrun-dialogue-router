@@ -60,7 +60,8 @@ This section documents how to convert game dialogue into the script data format,
 ### Source Material
 
 - Use a wiki script page (e.g. Fandom) as the authoritative reference. Save the full HTML locally.
-- Run `scripts/audit_<game>_<episode>.py` to strip the HTML to plain mandatory dialogue. The audit script outputs only mandatory (non-optional) sections — anything under a heading starting with "Optional" is excluded.
+- Run `scripts/audit_<episode>.py` (e.g. `scripts/audit_episode1.py`) to strip the HTML to plain mandatory dialogue. The audit script outputs only mandatory (non-optional) sections — anything under a heading starting with "Optional" is excluded.
+- The wiki HTML path is hardcoded in the audit script as the `WIKI` constant near the top — update it to point at your saved HTML file before running.
 - Always write audit/verification logic as a **Python script** in `scripts/`, not as ad-hoc bash commands. This keeps the logic inspectable and rerunnable.
 
 ### Two Node Types
@@ -147,7 +148,7 @@ Flags propagate forward through the graph — the context is forked (spread-copi
 
 1. Run the audit script to get plain mandatory text:
    ```bash
-   python3 scripts/audit_<game>_<episode>.py > /tmp/audit_output.txt
+   python3 scripts/audit_episode1.py > /tmp/audit_output.txt
    ```
 2. Read the audit output section by section. Each `=== Section Header ===` marks a new scene.
 3. For each scene: identify choice points (lines that appear as two short alternatives, or lines labeled with choice names). Every choice point needs a `choices` node.
