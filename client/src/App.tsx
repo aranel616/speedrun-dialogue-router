@@ -83,6 +83,7 @@ export default function App() {
           <div className="canvas-empty"><p>Loading graph…</p></div>
         ) : (
           <GraphCanvas
+            scriptId={selectedId}
             graphNodes={graphData?.nodes ?? []}
             graphEdges={graphData?.edges ?? []}
             visitedNodeIds={visitedNodeIds}

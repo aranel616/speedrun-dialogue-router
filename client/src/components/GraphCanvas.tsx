@@ -2,6 +2,7 @@ import { useState, useCallback, useMemo, useEffect, useRef, memo } from "react";
 import type { Node, Edge } from "@xyflow/react";
 import type { GraphNode, GraphEdge } from "../types";
 import { applyDagreLayout } from "../utils/dagreLayout";
+import { TOC } from "../toc";
 
 const MIN_ZOOM = 0.05;
 const MAX_ZOOM = 3;
@@ -205,6 +206,7 @@ function Minimap({ posNodes, visitedNodeIds, viewport, containerW, containerH, o
 }
 
 interface Props {
+  scriptId?: string;
   graphNodes: GraphNode[];
   graphEdges: GraphEdge[];
   visitedNodeIds: Set<string>;
@@ -213,7 +215,7 @@ interface Props {
   cumulativeCounts: Record<string, number>;
 }
 
-export function GraphCanvas({ graphNodes, graphEdges, visitedNodeIds, selectedNodeId, onNodeClick, cumulativeCounts }: Props) {
+export function GraphCanvas({ scriptId, graphNodes, graphEdges, visitedNodeIds, selectedNodeId, onNodeClick, cumulativeCounts }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const vpRef = useRef<Viewport>({ x: 0, y: 0, zoom: 1 });
   const [viewport, setVP] = useState<Viewport>({ x: 0, y: 0, zoom: 1 });
@@ -333,6 +335,36 @@ export function GraphCanvas({ graphNodes, graphEdges, visitedNodeIds, selectedNo
     if (!movedRef.current) onNodeClick(id);
   }, [onNodeClick]);
 
+  // Align a node near the top of the view, horizontally centred (keeps zoom).
+  const focusNode = useCallback((nodeId: string) => {
+    const el = containerRef.current;
+    const n = posNodes.find(p => p.id === nodeId);
+    if (!el || !n) return;
+    const zoom = vpRef.current.zoom;
+    const TOP_PAD = 24;
+    syncVP({
+      x: el.offsetWidth / 2 - (n.x + n.w / 2) * zoom,
+      y: TOP_PAD - n.y * zoom,
+      zoom,
+    });
+  }, [posNodes, syncVP]);
+
+  // Table of contents: curated outline entries that exist in this graph.
+  const present = useMemo(() => new Set(posNodes.map(n => n.id)), [posNodes]);
+  const toc = useMemo(
+    () => (TOC[scriptId ?? ""] ?? []).filter(e => present.has(e.nodeId)),
+    [scriptId, present]
+  );
+  const [tocIdx, setTocIdx] = useState(0);
+  useEffect(() => { setTocIdx(0); }, [scriptId]);
+
+  const goToToc = useCallback((idx: number) => {
+    if (toc.length === 0) return;
+    const i = clamp(idx, 0, toc.length - 1);
+    setTocIdx(i);
+    focusNode(toc[i]!.nodeId);
+  }, [toc, focusNode]);
+
   // Edge rendering
   const edgePaths = useMemo(() => {
     const byId = new Map(posNodes.map(n => [n.id, n]));
@@ -419,6 +451,29 @@ export function GraphCanvas({ graphNodes, graphEdges, visitedNodeIds, selectedNo
           </div>
         ))}
       </div>
+      {toc.length > 0 && (
+        <div className="toc-panel" onMouseDown={e => e.stopPropagation()}>
+          <div className="toc-header">Contents</div>
+          <div className="toc-list">
+            {toc.map((e, i) => (
+              <button
+                key={e.nodeId}
+                type="button"
+                title={e.nodeId}
+                className={`toc-item toc-${e.kind}${i === tocIdx ? " active" : ""}`}
+                onClick={() => goToToc(i)}
+              >
+                {e.kind === "decision" && <span className="toc-diamond">◆</span>}
+                <span className="toc-title">{e.title}</span>
+              </button>
+            ))}
+          </div>
+          <div className="toc-nav">
+            <button type="button" onClick={() => goToToc(tocIdx - 1)} disabled={tocIdx <= 0}>◀ Prev</button>
+            <button type="button" onClick={() => goToToc(tocIdx + 1)} disabled={tocIdx >= toc.length - 1}>Next ▶</button>
+          </div>
+        </div>
+      )}
       <div
         className="canvas-controls"
         onMouseDown={e => e.stopPropagation()}
