@@ -5,6 +5,7 @@ import { applyDagreLayout } from "../utils/dagreLayout";
 
 const MIN_ZOOM = 0.05;
 const MAX_ZOOM = 3;
+const PAN_STEP = 140; // px the pan buttons move the view per click
 
 const zoomBtnStyle: React.CSSProperties = {
   width: 32, height: 32, borderRadius: 6, border: "1px solid #475569",
@@ -109,8 +110,8 @@ function NodeCard({ node, highlighted, selected, onClick, cumulative }: {
 
 const MemoCard = memo(NodeCard);
 
-const MM_W = 280;
-const MM_H = 360;
+const MM_W = 140;
+const MM_H = 720;
 const MM_PAD = 8;
 
 function Minimap({ posNodes, visitedNodeIds, viewport, containerW, containerH, onNavigate }: {
@@ -134,28 +135,29 @@ function Minimap({ posNodes, visitedNodeIds, viewport, containerW, containerH, o
   const innerW = MM_W - MM_PAD * 2;
   const innerH = MM_H - MM_PAD * 2;
 
-  // Uniform scale preserves aspect ratios so the viewport rect looks proportionally
-  // correct — the same shape as the actual screen viewport.
-  const scale = Math.min(innerW / gW, innerH / gH);
-
-  // Center the graph content within the minimap's inner area.
-  const cx = MM_PAD + (innerW - gW * scale) / 2;
-  const cy = MM_PAD + (innerH - gH * scale) / 2;
+  // Scale width and height independently so the ENTIRE graph fills the panel:
+  // full width, full height, nothing scrolls. The graph shape is schematically
+  // stretched, which is fine for an overview.
+  const scaleX = innerW / gW;
+  const scaleY = innerH / gH;
 
   function toMM(gx: number, gy: number) {
-    return { mx: cx + (gx - gx0) * scale, my: cy + (gy - gy0) * scale };
+    return { mx: MM_PAD + (gx - gx0) * scaleX, my: MM_PAD + (gy - gy0) * scaleY };
   }
 
-  const { x: vx, y: vy, zoom: vz } = viewport;
-  const { mx: vpMX, my: vpMY } = toMM(-vx / vz, -vy / vz);
-  const vpMW = (containerW / vz) * scale;
-  const vpMH = (containerH / vz) * scale;
+  const { y: vy, zoom: vz } = viewport;
+  const vpTopGraphY = -vy / vz;
 
+  // Viewport indicator: a full-width band that only moves vertically.
+  const vpMY = MM_PAD + (vpTopGraphY - gy0) * scaleY;
+  const vpMH = (containerH / vz) * scaleY;
+
+  // Navigation is vertical-only; the graph stays horizontally centred.
   function navigate(e: React.MouseEvent<SVGSVGElement>) {
     const rect = e.currentTarget.getBoundingClientRect();
-    const gx = (e.clientX - rect.left - cx) / scale + gx0;
-    const gy = (e.clientY - rect.top  - cy) / scale + gy0;
-    onNavigate({ x: containerW / 2 - gx * vz, y: containerH / 2 - gy * vz, zoom: vz });
+    const gy = (e.clientY - rect.top - MM_PAD) / scaleY + gy0;
+    const gxc = gx0 + gW / 2;
+    onNavigate({ x: containerW / 2 - gxc * vz, y: containerH / 2 - gy * vz, zoom: vz });
   }
 
   function nodeColor(n: PosNode): string {
@@ -179,12 +181,12 @@ function Minimap({ posNodes, visitedNodeIds, viewport, containerW, containerH, o
         const { mx, my } = toMM(n.x, n.y);
         return (
           <rect key={n.id} x={mx} y={my}
-            width={Math.max(3, n.w * scale)} height={Math.max(2, n.h * scale)}
+            width={Math.max(3, n.w * scaleX)} height={Math.max(2, n.h * scaleY)}
             fill={nodeColor(n)} opacity={0.75} rx={1} />
         );
       })}
-      <rect x={vpMX} y={vpMY}
-        width={Math.max(6, vpMW)} height={Math.max(6, vpMH)}
+      <rect x={MM_PAD} y={vpMY}
+        width={innerW} height={Math.max(6, vpMH)}
         fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.5)" strokeWidth={1.5} rx={2} />
     </svg>
   );
@@ -290,6 +292,12 @@ export function GraphCanvas({ graphNodes, graphEdges, visitedNodeIds, selectedNo
     syncVP({ x: cx - (cx - v.x) * (z / v.zoom), y: cy - (cy - v.y) * (z / v.zoom), zoom: z });
   }, [syncVP]);
 
+  // Pan the viewport by a fixed screen-space step
+  const panBy = useCallback((dx: number, dy: number) => {
+    const v = vpRef.current;
+    syncVP({ ...v, x: v.x + dx, y: v.y + dy });
+  }, [syncVP]);
+
   // Reset to the initial view (centre the "start" node at 1.2x)
   const resetView = useCallback(() => {
     const el = containerRef.current;
@@ -367,16 +375,30 @@ export function GraphCanvas({ graphNodes, graphEdges, visitedNodeIds, selectedNo
         ))}
       </div>
       <div
-        className="zoom-controls"
+        className="canvas-controls"
         onMouseDown={e => e.stopPropagation()}
         style={{
           position: "absolute", left: 12, bottom: 12, display: "flex", flexDirection: "column",
-          gap: 4, zIndex: 10,
+          gap: 8, zIndex: 10,
         }}
       >
-        <button type="button" title="Zoom in" aria-label="Zoom in" onClick={() => zoomBy(1.2)} style={zoomBtnStyle}>+</button>
-        <button type="button" title="Zoom out" aria-label="Zoom out" onClick={() => zoomBy(1 / 1.2)} style={zoomBtnStyle}>−</button>
-        <button type="button" title="Reset view" aria-label="Reset view" onClick={resetView} style={{ ...zoomBtnStyle, fontSize: 16 }}>⌂</button>
+        {/* Directional pan pad */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 32px)", gridTemplateRows: "repeat(3, 32px)", gap: 4 }}>
+          <span />
+          <button type="button" title="Pan up" aria-label="Pan up" onClick={() => panBy(0, PAN_STEP)} style={zoomBtnStyle}>▲</button>
+          <span />
+          <button type="button" title="Pan left" aria-label="Pan left" onClick={() => panBy(PAN_STEP, 0)} style={zoomBtnStyle}>◀</button>
+          <button type="button" title="Reset view" aria-label="Reset view" onClick={resetView} style={{ ...zoomBtnStyle, fontSize: 15 }}>⌂</button>
+          <button type="button" title="Pan right" aria-label="Pan right" onClick={() => panBy(-PAN_STEP, 0)} style={zoomBtnStyle}>▶</button>
+          <span />
+          <button type="button" title="Pan down" aria-label="Pan down" onClick={() => panBy(0, -PAN_STEP)} style={zoomBtnStyle}>▼</button>
+          <span />
+        </div>
+        {/* Zoom */}
+        <div style={{ display: "flex", gap: 4 }}>
+          <button type="button" title="Zoom in" aria-label="Zoom in" onClick={() => zoomBy(1.2)} style={zoomBtnStyle}>+</button>
+          <button type="button" title="Zoom out" aria-label="Zoom out" onClick={() => zoomBy(1 / 1.2)} style={zoomBtnStyle}>−</button>
+        </div>
       </div>
       <Minimap
         posNodes={posNodes}
