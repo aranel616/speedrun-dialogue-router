@@ -2,7 +2,7 @@ import type { Node, Edge } from "@xyflow/react";
 
 const NODE_WIDTH = 420;
 const H_GAP = 80;
-const V_GAP = 80;
+const V_GAP = 60;
 const FALLBACK_HEIGHT = 88;
 
 export function applyDagreLayout(nodes: Node[], edges: Edge[], nodeHeights: Map<string, number>): Node[] {
