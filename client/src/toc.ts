@@ -62,7 +62,7 @@ export const TOC: Record<string, TocEntry[]> = {
     { title: "Epilogue", nodeId: "epilogue", kind: "scene" },
   ],
   "lifeisstrange/episode4": [
-    { title: "Alternate Timeline: Beach", nodeId: "start", kind: "scene" },
+    { title: "Alternate Timeline: Beach", nodeId: "alt_beach_intro", kind: "scene" },
     { title: "Alternate Chloe's Room", nodeId: "alt_room_1", kind: "scene" },
     { title: "Euthanize Chloe?", nodeId: "alt_euthanasia", kind: "decision" },
     { title: "2008 (undo it)", nodeId: "alt_2008", kind: "scene" },

@@ -1,8 +1,72 @@
 import { Script } from "../../types";
 
 export const script: Script = {
-    // ===================== Alternative Beach =====================
+    // ============ Inherited decisions (set once at episode start) ============
+    // Carry in from Episodes 1-3; constant for the whole path. In a full-game run
+    // these get driven by the prior episode instead of being free.
     "start": {
+        "choices": [
+            { "name": "(Saved Kate)", "text": "", "set": { "name": "saved_kate", "type": "set", "value": true }, "next": "setup4_answered" },
+            { "name": "(Didn't save Kate)", "text": "", "set": { "name": "saved_kate", "type": "set", "value": false }, "next": "setup4_answered" }
+        ]
+    },
+    "setup4_answered": {
+        "choices": [
+            { "name": "(Answered Kate's call)", "text": "", "set": { "name": "answered_kate_call", "type": "set", "value": true }, "next": "setup4_warren" },
+            { "name": "(Didn't answer Kate's call)", "text": "", "set": { "name": "answered_kate_call", "type": "set", "value": false }, "next": "setup4_warren" }
+        ]
+    },
+    "setup4_warren": {
+        "choices": [
+            { "name": "(Accepted Warren's invitation)", "text": "", "set": { "name": "accepted_warren_invite", "type": "set", "value": true }, "next": "setup4_victoria" },
+            { "name": "(Declined Warren's invitation)", "text": "", "set": { "name": "accepted_warren_invite", "type": "set", "value": false }, "next": "setup4_victoria" }
+        ]
+    },
+    "setup4_victoria": {
+        "choices": [
+            { "name": "(Made fun of Victoria)", "text": "", "set": { "name": "made_fun_of_victoria", "type": "set", "value": true }, "next": "setup4_maxsusp" },
+            { "name": "(Comforted Victoria)", "text": "", "set": { "name": "made_fun_of_victoria", "type": "set", "value": false }, "next": "setup4_maxsusp" }
+        ]
+    },
+    "setup4_maxsusp": {
+        "choices": [
+            { "name": "(Max suspended)", "text": "", "set": { "name": "max_suspended", "type": "set", "value": true }, "next": "setup4_nathansusp" },
+            { "name": "(Max not suspended)", "text": "", "set": { "name": "max_suspended", "type": "set", "value": false }, "next": "setup4_nathansusp" }
+        ]
+    },
+    "setup4_nathansusp": {
+        "choices": [
+            { "name": "(Nathan suspended)", "text": "", "set": { "name": "nathan_suspended", "type": "set", "value": true }, "next": "setup4_blamejeff" },
+            { "name": "(Nathan not suspended)", "text": "", "set": { "name": "nathan_suspended", "type": "set", "value": false }, "next": "setup4_blamejeff" }
+        ]
+    },
+    "setup4_blamejeff": {
+        "choices": [
+            { "name": "(Blamed Jefferson)", "text": "", "set": { "name": "blamed_jefferson", "type": "set", "value": true }, "next": "setup4_gun" },
+            { "name": "(Didn't blame Jefferson)", "text": "", "set": { "name": "blamed_jefferson", "type": "set", "value": false }, "next": "setup4_gun" }
+        ]
+    },
+    "setup4_gun": {
+        "choices": [
+            { "name": "(Chloe has a gun)", "text": "", "set": { "name": "chloe_has_gun", "type": "set", "value": true }, "next": "setup4_money" },
+            { "name": "(Chloe doesn't have a gun)", "text": "", "set": { "name": "chloe_has_gun", "type": "set", "value": false }, "next": "setup4_money" }
+        ]
+    },
+    "setup4_money": {
+        "choices": [
+            { "name": "(Stole the money)", "text": "", "set": { "name": "stole_money", "type": "set", "value": true }, "next": "setup4_sided" },
+            { "name": "(Left the money)", "text": "", "set": { "name": "stole_money", "type": "set", "value": false }, "next": "setup4_sided" }
+        ]
+    },
+    "setup4_sided": {
+        "choices": [
+            { "name": "(Sided with Chloe)", "text": "", "set": { "name": "sided_with_chloe", "type": "set", "value": true }, "next": "alt_beach_intro" },
+            { "name": "(Sided with David)", "text": "", "set": { "name": "sided_with_chloe", "type": "set", "value": false }, "next": "alt_beach_intro" }
+        ]
+    },
+
+    // ===================== Alternative Beach =====================
+    "alt_beach_intro": {
         "text": [
             "It's weird hanging out with you again.",
             "I know... I'm glad we are, though.",
@@ -462,31 +526,32 @@ export const script: Script = {
         "next": "garage_open"
     },
     "garage_open": {
-        "choices": [
-            {
-                "name": "(Sided with David)",
-                "text": [
-                    "For once, I don't have time to search for the code... I need to find a key.",
-                    "Excuse me, Max! Do not touch one goddamn thing!",
-                    "Come on, Max, find a way to get David out of his cave...",
-                    "I can't let David see me while I snag his keys. Enter the ninja...",
-                    "Son of a bitch, I just fixed that fuse box!",
-                    "Shit. Somebody fix the fuse!",
-                    "Gotcha!",
-                    "I am the Keymaster!"
-                ],
-                "next": "garage_locker"
-            },
-            {
-                "name": "(Sided with Chloe)",
-                "text": [
-                    "For once, I don't have time to search for the code... I need to find a way to break this padlock.",
-                    "Okay, I can use that crowbar to pry open the locker.",
-                    "Sorry, David, but I bet you would do the same thing as me."
-                ],
-                "next": "garage_locker"
-            }
+        "text": "",
+        "next": [
+            { "name": "sided_with_chloe", "type": "eq", "value": false, "node": "garage_open_david" },
+            { "name": "sided_with_chloe", "type": "eq", "value": true, "node": "garage_open_chloe" }
         ]
+    },
+    "garage_open_david": {
+        "text": [
+            "For once, I don't have time to search for the code... I need to find a key.",
+            "Excuse me, Max! Do not touch one goddamn thing!",
+            "Come on, Max, find a way to get David out of his cave...",
+            "I can't let David see me while I snag his keys. Enter the ninja...",
+            "Son of a bitch, I just fixed that fuse box!",
+            "Shit. Somebody fix the fuse!",
+            "Gotcha!",
+            "I am the Keymaster!"
+        ],
+        "next": "garage_locker"
+    },
+    "garage_open_chloe": {
+        "text": [
+            "For once, I don't have time to search for the code... I need to find a way to break this padlock.",
+            "Okay, I can use that crowbar to pry open the locker.",
+            "Sorry, David, but I bet you would do the same thing as me."
+        ],
+        "next": "garage_locker"
     },
     "garage_locker": {
         "text": [
@@ -499,22 +564,23 @@ export const script: Script = {
         "next": "garage_next"
     },
     "garage_next": {
-        "choices": [
-            {
-                "name": "(Saved Kate)",
-                "text": "But I absolutely have to go see Kate in the hospital right now. I want to find out how she's doing.",
-                "next": "hospital"
-            },
-            {
-                "name": "(Couldn't save Kate)",
-                "text": [
-                    "Now let's go find out what Nathan is hiding in his room.",
-                    "We have to be extra careful.",
-                    "Max, now it's time for Nathan Prescott to be afraid of us."
-                ],
-                "next": "dorm_intro"
-            }
+        "text": "",
+        "next": [
+            { "name": "saved_kate", "type": "eq", "value": true, "node": "garage_next_saved" },
+            { "name": "saved_kate", "type": "eq", "value": false, "node": "garage_next_not" }
         ]
+    },
+    "garage_next_saved": {
+        "text": "But I absolutely have to go see Kate in the hospital right now. I want to find out how she's doing.",
+        "next": "hospital"
+    },
+    "garage_next_not": {
+        "text": [
+            "Now let's go find out what Nathan is hiding in his room.",
+            "We have to be extra careful.",
+            "Max, now it's time for Nathan Prescott to be afraid of us."
+        ],
+        "next": "dorm_intro"
     },
 
     // ===================== Hospital (only if Kate was saved) =====================
@@ -530,18 +596,19 @@ export const script: Script = {
         "next": "hospital_call"
     },
     "hospital_call": {
-        "choices": [
-            {
-                "name": "(Answered Kate's call)",
-                "text": "I was a total dick for blowing a fuse when you answered Kate's call the other day. Good thing you ignored me. I had no idea what shit she was going through. And you saved her... like me.",
-                "next": "hospital_kate_intro"
-            },
-            {
-                "name": "(Didn't answer Kate's call)",
-                "text": "I was a... I was a total dick for blowing a fuse when Kate called the other day. I had no idea what shit she was going through. I stopped you from being her friend. But you saved her... like me.",
-                "next": "hospital_kate_intro"
-            }
+        "text": "",
+        "next": [
+            { "name": "answered_kate_call", "type": "eq", "value": true, "node": "hospital_call_ans" },
+            { "name": "answered_kate_call", "type": "eq", "value": false, "node": "hospital_call_no" }
         ]
+    },
+    "hospital_call_ans": {
+        "text": "I was a total dick for blowing a fuse when you answered Kate's call the other day. Good thing you ignored me. I had no idea what shit she was going through. And you saved her... like me.",
+        "next": "hospital_kate_intro"
+    },
+    "hospital_call_no": {
+        "text": "I was a... I was a total dick for blowing a fuse when Kate called the other day. I had no idea what shit she was going through. I stopped you from being her friend. But you saved her... like me.",
+        "next": "hospital_kate_intro"
     },
     "hospital_kate_intro": {
         "text": [
@@ -628,24 +695,25 @@ export const script: Script = {
         ]
     },
     "hospital_kate_warren2": {
-        "choices": [
-            {
-                "name": "(Accepted Warren's invitation)",
-                "text": [
-                    "I'm going to the drive-in with him, so we'll see... With everything that's going on, a date seems weird...",
-                    "No, you deserve that."
-                ],
-                "next": "hospital_kate_warren3"
-            },
-            {
-                "name": "(Didn't accept Warren's invitation)",
-                "text": [
-                    "So I've heard. He asked me to go to the drive-in, but I turned him down.",
-                    "Awww, really? You guys would be a perfect couple..."
-                ],
-                "next": "hospital_kate_warren3"
-            }
+        "text": "",
+        "next": [
+            { "name": "accepted_warren_invite", "type": "eq", "value": true, "node": "hospital_kate_warren2_acc" },
+            { "name": "accepted_warren_invite", "type": "eq", "value": false, "node": "hospital_kate_warren2_dec" }
         ]
+    },
+    "hospital_kate_warren2_acc": {
+        "text": [
+            "I'm going to the drive-in with him, so we'll see... With everything that's going on, a date seems weird...",
+            "No, you deserve that."
+        ],
+        "next": "hospital_kate_warren3"
+    },
+    "hospital_kate_warren2_dec": {
+        "text": [
+            "So I've heard. He asked me to go to the drive-in, but I turned him down.",
+            "Awww, really? You guys would be a perfect couple..."
+        ],
+        "next": "hospital_kate_warren3"
     },
     "hospital_kate_warren3": {
         "text": [
@@ -655,18 +723,19 @@ export const script: Script = {
         "next": "hospital_exit"
     },
     "hospital_kate_vic": {
-        "choices": [
-            {
-                "name": "(Made fun of Victoria)",
-                "text": "I wasn't so nice to her this week either when I took a picture of her covered in paint. Not a proud moment.",
-                "next": "hospital_kate_vic2"
-            },
-            {
-                "name": "(Comforted Victoria)",
-                "text": "Me too. I could've taken a picture of her covered in paint, but I didn't and we had a genuine moment.",
-                "next": "hospital_kate_vic2"
-            }
+        "text": "",
+        "next": [
+            { "name": "made_fun_of_victoria", "type": "eq", "value": true, "node": "hospital_kate_vic_made" },
+            { "name": "made_fun_of_victoria", "type": "eq", "value": false, "node": "hospital_kate_vic_comf" }
         ]
+    },
+    "hospital_kate_vic_made": {
+        "text": "I wasn't so nice to her this week either when I took a picture of her covered in paint. Not a proud moment.",
+        "next": "hospital_kate_vic2"
+    },
+    "hospital_kate_vic_comf": {
+        "text": "Me too. I could've taken a picture of her covered in paint, but I didn't and we had a genuine moment.",
+        "next": "hospital_kate_vic2"
     },
     "hospital_kate_vic2": {
         "text": "We all have our moments. Why do you think she acts so mean?",
@@ -700,24 +769,25 @@ export const script: Script = {
         "next": "hospital_exit"
     },
     "hospital_kate_nathan": {
-        "choices": [
-            {
-                "name": "(Nathan is suspended)",
-                "text": [
-                    "Well, I did get his ass suspended, so that might be a start...",
-                    "You did? Oh, right on, Max! I love how fearless you are."
-                ],
-                "next": "hospital_kate_nathan2"
-            },
-            {
-                "name": "(Nathan isn't suspended)",
-                "text": [
-                    "I wish I could've gotten his ass kicked out of Blackwell.",
-                    "Me too. But his dad would never let that happen. I thought I had a tough family..."
-                ],
-                "next": "hospital_kate_nathan2"
-            }
+        "text": "",
+        "next": [
+            { "name": "nathan_suspended", "type": "eq", "value": true, "node": "hospital_kate_nathan_susp" },
+            { "name": "nathan_suspended", "type": "eq", "value": false, "node": "hospital_kate_nathan_not" }
         ]
+    },
+    "hospital_kate_nathan_susp": {
+        "text": [
+            "Well, I did get his ass suspended, so that might be a start...",
+            "You did? Oh, right on, Max! I love how fearless you are."
+        ],
+        "next": "hospital_kate_nathan2"
+    },
+    "hospital_kate_nathan_not": {
+        "text": [
+            "I wish I could've gotten his ass kicked out of Blackwell.",
+            "Me too. But his dad would never let that happen. I thought I had a tough family..."
+        ],
+        "next": "hospital_kate_nathan2"
     },
     "hospital_kate_nathan2": {
         "text": "So what is going on with him now?",
@@ -778,37 +848,41 @@ export const script: Script = {
         "next": "dorm_jeff1"
     },
     "dorm_jeff1": {
-        "choices": [
-            {
-                "name": "(Max isn't suspended)",
-                "text": [
-                    "It's weird just being on campus, like everything's normal.",
-                    "I know. Lame as it sounds, life has to go on.",
-                    "I think there's too much going on in my life."
-                ],
-                "next": "dorm_jeff_bridge"
-            },
-            {
-                "name": "(Max is suspended)",
-                "text": [
-                    "It's weird being suspended and just walking around campus.",
-                    "Well, you are an adult now. This isn't prison, is it?",
-                    "Not until we get orange jumpsuits."
-                ],
-                "next": "dorm_jeff_bridge"
-            }
+        "text": "",
+        "next": [
+            { "name": "max_suspended", "type": "eq", "value": false, "node": "dorm_jeff1_not" },
+            { "name": "max_suspended", "type": "eq", "value": true, "node": "dorm_jeff1_susp" }
         ]
+    },
+    "dorm_jeff1_not": {
+        "text": [
+            "It's weird just being on campus, like everything's normal.",
+            "I know. Lame as it sounds, life has to go on.",
+            "I think there's too much going on in my life."
+        ],
+        "next": "dorm_jeff_bridge"
+    },
+    "dorm_jeff1_susp": {
+        "text": [
+            "It's weird being suspended and just walking around campus.",
+            "Well, you are an adult now. This isn't prison, is it?",
+            "Not until we get orange jumpsuits."
+        ],
+        "next": "dorm_jeff_bridge"
     },
     "dorm_jeff_bridge": {
         "text": "On that note, Blackwell duty calls. Remember, I'm going to announce the winner of the \"Everyday Heroes\" contest tonight at the party, so I hope you'll be there to celebrate. Even though I'm sorry you didn't enter a photo, I understand your reasons. You can't force an artist to work.",
         "next": "dorm_jeff2"
     },
     "dorm_jeff2": {
-        "choices": [
-            { "name": "(Didn't blame Jefferson)", "text": "I feel like a total loser, but it's been a hard week to focus. No pun intended.", "next": "dorm_jeff3" },
-            { "name": "(Blamed Jefferson)", "text": "So, you don't hate me for what I said to the Principal?", "next": "dorm_jeff3" }
+        "text": "",
+        "next": [
+            { "name": "blamed_jefferson", "type": "eq", "value": false, "node": "dorm_jeff2_didnt" },
+            { "name": "blamed_jefferson", "type": "eq", "value": true, "node": "dorm_jeff2_blamed" }
         ]
     },
+    "dorm_jeff2_didnt": { "text": "I feel like a total loser, but it's been a hard week to focus. No pun intended.", "next": "dorm_jeff3" },
+    "dorm_jeff2_blamed": { "text": "So, you don't hate me for what I said to the Principal?", "next": "dorm_jeff3" },
     "dorm_jeff3": {
         "text": [
             "I'm proud of you for caring so much about a troubled friend. And I take hope in the fact that you have plenty of time to find your way. Just...get in the habit of putting your work out there.",
@@ -974,28 +1048,29 @@ export const script: Script = {
         "next": "beach_gun"
     },
     "beach_gun": {
-        "choices": [
-            {
-                "name": "(Chloe has a gun)",
-                "text": [
-                    "Or what? You'll actually shoot him? Chloe, do not count on my rewind... seriously.",
-                    "Obviously I'm not counting on you. That's why I have a gun. And I might even save you someday.",
-                    "About time.",
-                    "I am so going to hit you."
-                ],
-                "next": "beach_2"
-            },
-            {
-                "name": "(Chloe doesn't have a gun)",
-                "text": [
-                    "You know what would be great? If I still had a gun.",
-                    "Yes, the chance for gunplay would just about even the odds here.",
-                    "Frank would scare better. He's a pussy. Besides, if I take him out, you can just rewind...",
-                    "Chloe, do not count on my rewind... seriously. After Kate, I feel like every time I do it might be the last..."
-                ],
-                "next": "beach_2"
-            }
+        "text": "",
+        "next": [
+            { "name": "chloe_has_gun", "type": "eq", "value": true, "node": "beach_gun_has" },
+            { "name": "chloe_has_gun", "type": "eq", "value": false, "node": "beach_gun_no" }
         ]
+    },
+    "beach_gun_has": {
+        "text": [
+            "Or what? You'll actually shoot him? Chloe, do not count on my rewind... seriously.",
+            "Obviously I'm not counting on you. That's why I have a gun. And I might even save you someday.",
+            "About time.",
+            "I am so going to hit you."
+        ],
+        "next": "beach_2"
+    },
+    "beach_gun_no": {
+        "text": [
+            "You know what would be great? If I still had a gun.",
+            "Yes, the chance for gunplay would just about even the odds here.",
+            "Frank would scare better. He's a pussy. Besides, if I take him out, you can just rewind...",
+            "Chloe, do not count on my rewind... seriously. After Kate, I feel like every time I do it might be the last..."
+        ],
+        "next": "beach_2"
     },
     "beach_2": {
         "text": [
@@ -1007,11 +1082,14 @@ export const script: Script = {
         "next": "beach_money"
     },
     "beach_money": {
-        "choices": [
-            { "name": "(Left the money)", "text": "Just talk to Frank so we can get that code for the book from him. That's all.", "next": "beach_3" },
-            { "name": "(Stole the money)", "text": "Just pay Frank his money and then we can get that code for the book from him. That's all.", "next": "beach_3" }
+        "text": "",
+        "next": [
+            { "name": "stole_money", "type": "eq", "value": false, "node": "beach_money_left" },
+            { "name": "stole_money", "type": "eq", "value": true, "node": "beach_money_stole" }
         ]
     },
+    "beach_money_left": { "text": "Just talk to Frank so we can get that code for the book from him. That's all.", "next": "beach_3" },
+    "beach_money_stole": { "text": "Just pay Frank his money and then we can get that code for the book from him. That's all.", "next": "beach_3" },
     "beach_3": {
         "text": [
             "Got it. No dicking around.",
@@ -1070,27 +1148,28 @@ export const script: Script = {
         "next": "beach_money2"
     },
     "beach_money2": {
-        "choices": [
-            {
-                "name": "(Give the money to Frank)",
-                "text": [
-                    "Oh, why, thank you. That wasn't so hard, now was it? And let's not do any more business again. Now if you'll excuse me...",
-                    "Frank... could we ask you a couple of quick questions?"
-                ],
-                "next": "beach_negotiate2"
-            },
-            {
-                "name": "(Keep / Left the money)",
-                "text": [
-                    "I—I don't have the money... yet.",
-                    "Oh, really... then why did you text me that you did?",
-                    "Because I wanted to tell you in person.",
-                    "Oh, I'm truly touched, Chloe. Now why are you losers really here?",
-                    "We just want to ask you some questions."
-                ],
-                "next": "beach_negotiate2"
-            }
+        "text": "",
+        "next": [
+            { "name": "stole_money", "type": "eq", "value": true, "node": "beach_money2_give" },
+            { "name": "stole_money", "type": "eq", "value": false, "node": "beach_money2_keep" }
         ]
+    },
+    "beach_money2_give": {
+        "text": [
+            "Oh, why, thank you. That wasn't so hard, now was it? And let's not do any more business again. Now if you'll excuse me...",
+            "Frank... could we ask you a couple of quick questions?"
+        ],
+        "next": "beach_negotiate2"
+    },
+    "beach_money2_keep": {
+        "text": [
+            "I—I don't have the money... yet.",
+            "Oh, really... then why did you text me that you did?",
+            "Because I wanted to tell you in person.",
+            "Oh, I'm truly touched, Chloe. Now why are you losers really here?",
+            "We just want to ask you some questions."
+        ],
+        "next": "beach_negotiate2"
     },
     "beach_negotiate2": {
         "text": [
@@ -1533,21 +1612,27 @@ export const script: Script = {
         "next": "party_vic_apology"
     },
     "party_vic_apology": {
-        "choices": [
-            { "name": "(Max comforted Victoria)", "text": "Real cute, Max. And after I apologized to you the other day...", "next": "party_vic_kate" },
-            { "name": "(Max made fun of Victoria)", "text": "Real cute, Max. You still pissed about me taking your picture?", "next": "party_vic_kate" }
+        "text": "",
+        "next": [
+            { "name": "made_fun_of_victoria", "type": "eq", "value": false, "node": "party_vic_apology_comf" },
+            { "name": "made_fun_of_victoria", "type": "eq", "value": true, "node": "party_vic_apology_made" }
         ]
     },
+    "party_vic_apology_comf": { "text": "Real cute, Max. And after I apologized to you the other day...", "next": "party_vic_kate" },
+    "party_vic_apology_made": { "text": "Real cute, Max. You still pissed about me taking your picture?", "next": "party_vic_kate" },
     "party_vic_kate": {
         "text": "Do you even have a clue what's going on at Blackwell?",
         "next": "party_vic_kate_choice"
     },
     "party_vic_kate_choice": {
-        "choices": [
-            { "name": "(Kate died)", "text": "Kate Marsh killed herself in front of you and me... everybody here!", "next": "party_vic_blame" },
-            { "name": "(Kate lived)", "text": "Kate Marsh tried to kill herself in front of you and me... everybody here!", "next": "party_vic_blame" }
+        "text": "",
+        "next": [
+            { "name": "saved_kate", "type": "eq", "value": false, "node": "party_vic_kate_died" },
+            { "name": "saved_kate", "type": "eq", "value": true, "node": "party_vic_kate_lived" }
         ]
     },
+    "party_vic_kate_died": { "text": "Kate Marsh killed herself in front of you and me... everybody here!", "next": "party_vic_blame" },
+    "party_vic_kate_lived": { "text": "Kate Marsh tried to kill herself in front of you and me... everybody here!", "next": "party_vic_blame" },
     "party_vic_blame": {
         "text": "That's not my fault, Max. Don't you even try to blame me!",
         "next": "party_vic_argue"
@@ -1698,11 +1783,14 @@ export const script: Script = {
         "next": "contest_dedicate"
     },
     "contest_dedicate": {
-        "choices": [
-            { "name": "(Kate died)", "text": "And I'd like to dedicate this prize to the memory of Kate Marsh... She was the real \"everyday hero\" of Blackwell...", "next": "contest_end" },
-            { "name": "(Kate lived)", "text": "And I'd like to dedicate this prize to Kate Marsh... She is the real \"everyday hero\" of Blackwell. And I can't wait for her to come back.", "next": "contest_end" }
+        "text": "",
+        "next": [
+            { "name": "saved_kate", "type": "eq", "value": false, "node": "contest_dedicate_died" },
+            { "name": "saved_kate", "type": "eq", "value": true, "node": "contest_dedicate_lived" }
         ]
     },
+    "contest_dedicate_died": { "text": "And I'd like to dedicate this prize to the memory of Kate Marsh... She was the real \"everyday hero\" of Blackwell...", "next": "contest_end" },
+    "contest_dedicate_lived": { "text": "And I'd like to dedicate this prize to Kate Marsh... She is the real \"everyday hero\" of Blackwell. And I can't wait for her to come back.", "next": "contest_end" },
     "contest_end": {
         "text": [
             "Thank you.",
