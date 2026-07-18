@@ -105,13 +105,18 @@ export function applyDagreLayout(nodes: Node[], edges: Edge[], nodeHeights: Map<
   const sortedRanks = [...byRank.keys()].sort((a, b) => a - b);
   let cumY = 0;
   const rankY = new Map<number, number>();
-  for (const r of sortedRanks) {
+  for (let i = 0; i < sortedRanks.length; i++) {
+    const r = sortedRanks[i]!;
     rankY.set(r, cumY);
     const maxH = Math.max(...byRank.get(r)!.map(id => nodeHeights.get(id) ?? FALLBACK_HEIGHT));
-    // Wider gap below ranks that fan out (a node with >1 child) to give diverging
-    // edges room; tight gap for straight linear chains.
-    const branches = byRank.get(r)!.some(id => (childrenOf.get(id)?.length ?? 0) > 1);
-    cumY += maxH + (branches ? V_GAP_BRANCH : V_GAP_STRAIGHT);
+    // Wider gap across a boundary that fans out (a node here has >1 child) or fans
+    // in (a node in the next rank has >1 parent), to give diverging/merging edges
+    // room; tight gap for straight linear chains.
+    const fanOut = byRank.get(r)!.some(id => (childrenOf.get(id)?.length ?? 0) > 1);
+    const nextRank = sortedRanks[i + 1];
+    const fanIn = nextRank !== undefined &&
+      byRank.get(nextRank)!.some(id => (parentsOf.get(id)?.length ?? 0) > 1);
+    cumY += maxH + (fanOut || fanIn ? V_GAP_BRANCH : V_GAP_STRAIGHT);
   }
 
   // Position: center each rank horizontally
