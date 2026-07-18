@@ -21,6 +21,7 @@ const zoomBtnStyle: React.CSSProperties = {
 const LINEAR_CHARS_PER_LINE = 54;
 const CI_CHARS_PER_LINE = 44;
 const LINE_H = 18;    // px per visual text line
+const LINE_GAP = 10;  // padding-bottom + margin-bottom between consecutive dialogue lines
 const PAD_V = 22;     // top + bottom padding of a node card
 const STATS_ROW_H = 22; // height of the stats row (id tag + char count) at bottom of nodes
 const CI_NAME_H = 20;   // height of ci-name row on choiceItem nodes
@@ -32,12 +33,14 @@ function estimateNodeHeight(node: GraphNode): number {
   const textLines = Array.isArray(node.text) ? node.text : node.text ? [node.text] : [];
   const cpl = node.type === "choiceItem" ? CI_CHARS_PER_LINE : LINEAR_CHARS_PER_LINE;
   const visualLines = textLines.reduce((sum, l) => sum + Math.max(1, Math.ceil(l.length / cpl)), 0);
+  // Each dialogue-line div adds 10px of padding+margin below it (except the last).
+  const lineGaps = Math.max(0, textLines.length - 1) * LINE_GAP;
   if (node.type === "linear") {
-    return PAD_V + visualLines * LINE_H + STATS_ROW_H;
+    return PAD_V + visualLines * LINE_H + lineGaps + STATS_ROW_H;
   }
   // choiceItem
   const setsH = (node.sets?.length ?? 0) > 0 ? SETS_H : 0;
-  return PAD_V + CI_NAME_H + visualLines * LINE_H + setsH + STATS_ROW_H;
+  return PAD_V + CI_NAME_H + visualLines * LINE_H + lineGaps + setsH + STATS_ROW_H;
 }
 
 interface Viewport { x: number; y: number; zoom: number; }
