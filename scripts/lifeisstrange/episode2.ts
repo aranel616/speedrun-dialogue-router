@@ -1,8 +1,52 @@
 import { Script } from "../../types";
 
 export const script: Script = {
-    // ===================== Girls' Dormitories =====================
+    // ============ Inherited decisions (set once at episode start) ============
+    // These variables carry in from Episode 1 and stay constant for the whole
+    // path, so every occurrence downstream routes on them consistently.
     "start": {
+        "choices": [
+            {
+                "name": "(Photographed Kate)",
+                "text": "",
+                "set": { "name": "took_photo_of_kate", "type": "set", "value": true },
+                "next": "setup_report"
+            },
+            {
+                "name": "(Intervened for Kate)",
+                "text": "",
+                "set": { "name": "took_photo_of_kate", "type": "set", "value": false },
+                "next": "setup_report"
+            }
+        ]
+    },
+    "setup_report": {
+        "choices": [
+            { "name": "(Reported Nathan)", "text": "", "set": { "name": "reported_nathan", "type": "set", "value": true }, "next": "setup_victoria" },
+            { "name": "(Hid the truth)", "text": "", "set": { "name": "reported_nathan", "type": "set", "value": false }, "next": "setup_victoria" }
+        ]
+    },
+    "setup_victoria": {
+        "choices": [
+            { "name": "(Made fun of Victoria)", "text": "", "set": { "name": "made_fun_of_victoria", "type": "set", "value": true }, "next": "setup_chloe" },
+            { "name": "(Comforted Victoria)", "text": "", "set": { "name": "made_fun_of_victoria", "type": "set", "value": false }, "next": "setup_chloe" }
+        ]
+    },
+    "setup_chloe": {
+        "choices": [
+            { "name": "(Took the blame for Chloe)", "text": "", "set": { "name": "intervened_for_chloe", "type": "set", "value": true }, "next": "setup_call" },
+            { "name": "(Stayed hidden / blamed Chloe)", "text": "", "set": { "name": "intervened_for_chloe", "type": "set", "value": false }, "next": "setup_call" }
+        ]
+    },
+    "setup_call": {
+        "choices": [
+            { "name": "(Answered Kate's call)", "text": "", "set": { "name": "answered_kate_call", "type": "set", "value": true }, "next": "maxroom_intro" },
+            { "name": "(Didn't answer Kate's call)", "text": "", "set": { "name": "answered_kate_call", "type": "set", "value": false }, "next": "maxroom_intro" }
+        ]
+    },
+
+    // ===================== Girls' Dormitories =====================
+    "maxroom_intro": {
         "text": [
             "Being a superhero is dirty work. I need a shower.",
             "Okay, Max, let's hit the showers now!"
@@ -24,30 +68,31 @@ export const script: Script = {
 
     // ===================== Showers =====================
     "showers_1": {
-        "choices": [
-            {
-                "name": "Took photo",
-                "text": [
-                    "Max!",
-                    "Oh! Uh... Hey, Kate. Sorry about yesterday.",
-                    "Yeah, I'm sorry you didn't do anything to help. But you're just like everybody else here...",
-                    "That's not true, I wanted to help, but, but--",
-                    "Whatever, it's done..."
-                ],
-                "next": "showers_1_bridge"
-            },
-            {
-                "name": "Intervened",
-                "text": [
-                    "Hey Max!",
-                    "Hey, Kate. How are you doing?",
-                    "I'm here. Thanks again for standing up for me yesterday. I needed that.",
-                    "Anytime. That guy has issues.",
-                    "Doesn't everybody here?"
-                ],
-                "next": "showers_1_bridge"
-            }
+        "text": "",
+        "next": [
+            { "name": "took_photo_of_kate", "type": "eq", "value": true, "node": "showers_1_took" },
+            { "name": "took_photo_of_kate", "type": "eq", "value": false, "node": "showers_1_interv" }
         ]
+    },
+    "showers_1_took": {
+        "text": [
+            "Max!",
+            "Oh! Uh... Hey, Kate. Sorry about yesterday.",
+            "Yeah, I'm sorry you didn't do anything to help. But you're just like everybody else here...",
+            "That's not true, I wanted to help, but, but--",
+            "Whatever, it's done..."
+        ],
+        "next": "showers_1_bridge"
+    },
+    "showers_1_interv": {
+        "text": [
+            "Hey Max!",
+            "Hey, Kate. How are you doing?",
+            "I'm here. Thanks again for standing up for me yesterday. I needed that.",
+            "Anytime. That guy has issues.",
+            "Doesn't everybody here?"
+        ],
+        "next": "showers_1_bridge"
     },
     "showers_1_bridge": {
         "text": [
@@ -72,26 +117,27 @@ export const script: Script = {
         "next": "showers_2"
     },
     "showers_2": {
-        "choices": [
-            {
-                "name": "Made fun of Victoria",
-                "text": [
-                    "\"Max Selfie\" thought she was a badass taking that picture. I shoulda beat her down.",
-                    "That was so uncool.",
-                    "She's jealous because Mark--Mr. Jefferson knows I'm going to win the \"Everyday Heroes\" contest. He thinks Max is a joke."
-                ],
-                "next": "showers_2_bridge"
-            },
-            {
-                "name": "Comforted Victoria",
-                "text": [
-                    "Good thing my faithful minions took their sweet time bringing me a towel...",
-                    "We ran all the way--",
-                    "Give it a rest, Taylor. Now I know if I'm in an accident I won't rely on you or Courtney for help. You can hang out with Kate...or Max."
-                ],
-                "next": "showers_2_bridge"
-            }
+        "text": "",
+        "next": [
+            { "name": "made_fun_of_victoria", "type": "eq", "value": true, "node": "showers_2_madefun" },
+            { "name": "made_fun_of_victoria", "type": "eq", "value": false, "node": "showers_2_comforted" }
         ]
+    },
+    "showers_2_madefun": {
+        "text": [
+            "\"Max Selfie\" thought she was a badass taking that picture. I shoulda beat her down.",
+            "That was so uncool.",
+            "She's jealous because Mark--Mr. Jefferson knows I'm going to win the \"Everyday Heroes\" contest. He thinks Max is a joke."
+        ],
+        "next": "showers_2_bridge"
+    },
+    "showers_2_comforted": {
+        "text": [
+            "Good thing my faithful minions took their sweet time bringing me a towel...",
+            "We ran all the way--",
+            "Give it a rest, Taylor. Now I know if I'm in an accident I won't rely on you or Courtney for help. You can hang out with Kate...or Max."
+        ],
+        "next": "showers_2_bridge"
     },
     "showers_2_bridge": {
         "text": [
@@ -108,21 +154,19 @@ export const script: Script = {
 
     // ===================== Max's Room (return) =====================
     "maxroom_return": {
-        "choices": [
-            {
-                "name": "Reported Nathan and/or made fun of Victoria",
-                "text": [
-                    "No fucking way! This is not why I came to Blackwell. And I still have to clean all this crap up? After I find Kate's book...",
-                    "Ta da! I do love a clean room. Very zen. Except for that bullshit graffiti."
-                ],
-                "next": "maxroom_return_bridge"
-            },
-            {
-                "name": "Didn't report Nathan or make fun of Victoria",
-                "text": "",
-                "next": "maxroom_return_bridge"
-            }
+        "text": "",
+        "next": [
+            { "name": "reported_nathan", "type": "eq", "value": true, "node": "maxroom_return_vandal" },
+            { "name": "made_fun_of_victoria", "type": "eq", "value": true, "node": "maxroom_return_vandal" },
+            { "name": "reported_nathan", "type": "eq", "value": false, "node": "maxroom_return_bridge" }
         ]
+    },
+    "maxroom_return_vandal": {
+        "text": [
+            "No fucking way! This is not why I came to Blackwell. And I still have to clean all this crap up? After I find Kate's book...",
+            "Ta da! I do love a clean room. Very zen. Except for that bullshit graffiti."
+        ],
+        "next": "maxroom_return_bridge"
     },
     "maxroom_return_bridge": {
         "text": [
@@ -141,24 +185,25 @@ export const script: Script = {
 
     // ===================== Kate's Room =====================
     "kateroom_1": {
-        "choices": [
-            {
-                "name": "Took photo",
-                "text": [
-                    "Uh, hey, Kate, I brought your book...",
-                    "Max, why didn't you do anything when David harassed me yesterday?"
-                ],
-                "next": "kateroom_1a"
-            },
-            {
-                "name": "Intervened",
-                "text": [
-                    "Uh, hey, Kate, I brought your book...",
-                    "Max, why did you step in between David and me yesterday?"
-                ],
-                "next": "kateroom_1b"
-            }
+        "text": "",
+        "next": [
+            { "name": "took_photo_of_kate", "type": "eq", "value": true, "node": "kateroom_1_took" },
+            { "name": "took_photo_of_kate", "type": "eq", "value": false, "node": "kateroom_1_interv" }
         ]
+    },
+    "kateroom_1_took": {
+        "text": [
+            "Uh, hey, Kate, I brought your book...",
+            "Max, why didn't you do anything when David harassed me yesterday?"
+        ],
+        "next": "kateroom_1a"
+    },
+    "kateroom_1_interv": {
+        "text": [
+            "Uh, hey, Kate, I brought your book...",
+            "Max, why did you step in between David and me yesterday?"
+        ],
+        "next": "kateroom_1b"
     },
     "kateroom_1a": {
         "choices": [
@@ -493,18 +538,19 @@ export const script: Script = {
         ]
     },
     "dorm_warren_4a": {
-        "choices": [
-            {
-                "name": "Reported Nathan",
-                "text": "I'll give you the story later. Principal Wells is taking care of it now, I hope.",
-                "next": "dorm_warren_5"
-            },
-            {
-                "name": "Hid the truth",
-                "text": "I was too scared to tell Principal Wells. Please don't say anything. I'll give you more info later.",
-                "next": "dorm_warren_5"
-            }
+        "text": "",
+        "next": [
+            { "name": "reported_nathan", "type": "eq", "value": true, "node": "dorm_warren_4a_rep" },
+            { "name": "reported_nathan", "type": "eq", "value": false, "node": "dorm_warren_4a_hid" }
         ]
+    },
+    "dorm_warren_4a_rep": {
+        "text": "I'll give you the story later. Principal Wells is taking care of it now, I hope.",
+        "next": "dorm_warren_5"
+    },
+    "dorm_warren_4a_hid": {
+        "text": "I was too scared to tell Principal Wells. Please don't say anything. I'll give you more info later.",
+        "next": "dorm_warren_5"
     },
     "dorm_warren_5": {
         "text": "Weird fucking week. Like that bizarro snowfall yesterday. Speaking of dystopia, that drive-in is having a 70's \"Planet of the Apes\" marathon. Let's \"Go Ape\"!",
@@ -547,28 +593,29 @@ export const script: Script = {
 
     // ===================== American Rust Junkyard =====================
     "junkyard_1": {
-        "choices": [
-            {
-                "name": "Answered Kate's call",
-                "text": [
-                    "Is this a race?",
-                    "Keep up.",
-                    "How many times are you going to get pissed at me this week?",
-                    "That depends on you. And how well you do in this phase of the test..."
-                ],
-                "next": "junkyard_1_bridge"
-            },
-            {
-                "name": "Didn't answer Kate's call",
-                "text": [
-                    "Wait up, Speedy!",
-                    "Dude, this is going to be so cool!",
-                    "Slow down, wait for me to get your present.",
-                    "You can just back time up...We'll have to test you now to make sure!"
-                ],
-                "next": "junkyard_1_bridge"
-            }
+        "text": "",
+        "next": [
+            { "name": "answered_kate_call", "type": "eq", "value": true, "node": "junkyard_1_answered" },
+            { "name": "answered_kate_call", "type": "eq", "value": false, "node": "junkyard_1_didnt" }
         ]
+    },
+    "junkyard_1_answered": {
+        "text": [
+            "Is this a race?",
+            "Keep up.",
+            "How many times are you going to get pissed at me this week?",
+            "That depends on you. And how well you do in this phase of the test..."
+        ],
+        "next": "junkyard_1_bridge"
+    },
+    "junkyard_1_didnt": {
+        "text": [
+            "Wait up, Speedy!",
+            "Dude, this is going to be so cool!",
+            "Slow down, wait for me to get your present.",
+            "You can just back time up...We'll have to test you now to make sure!"
+        ],
+        "next": "junkyard_1_bridge"
     },
     "junkyard_1_bridge": {
         "text": [
@@ -692,18 +739,19 @@ export const script: Script = {
         "next": "railroad_4"
     },
     "railroad_4": {
-        "choices": [
-            {
-                "name": "Stayed hidden",
-                "text": "Frank Bowers. Obviously don't get my pot from you, remember? Anyway, Frank and I kind of hung out.",
-                "next": "railroad_5"
-            },
-            {
-                "name": "Took the blame",
-                "text": "Frank Bowers. He's just a dealer. Where I get my weed. The one in your joint, remember? Anyway, Frank and I kind of hung out.",
-                "next": "railroad_5"
-            }
+        "text": "",
+        "next": [
+            { "name": "intervened_for_chloe", "type": "eq", "value": true, "node": "railroad_4_blame" },
+            { "name": "intervened_for_chloe", "type": "eq", "value": false, "node": "railroad_4_hidden" }
         ]
+    },
+    "railroad_4_hidden": {
+        "text": "Frank Bowers. Obviously don't get my pot from you, remember? Anyway, Frank and I kind of hung out.",
+        "next": "railroad_5"
+    },
+    "railroad_4_blame": {
+        "text": "Frank Bowers. He's just a dealer. Where I get my weed. The one in your joint, remember? Anyway, Frank and I kind of hung out.",
+        "next": "railroad_5"
     },
     "railroad_5": {
         "choices": [
@@ -949,18 +997,19 @@ export const script: Script = {
         ]
     },
     "david_2": {
-        "choices": [
-            {
-                "name": "Stayed hidden/Blamed Chloe",
-                "text": "Do you mind if we talk about what happened yesterday with Chloe?",
-                "next": "david_2a"
-            },
-            {
-                "name": "Took the blame for Chloe/came out of hiding to intervene",
-                "text": "I know things got a little heated yesterday in Chloe's room... Was that really your reefer?",
-                "next": "david_2b"
-            }
+        "text": "",
+        "next": [
+            { "name": "intervened_for_chloe", "type": "eq", "value": true, "node": "david_2b_intro" },
+            { "name": "intervened_for_chloe", "type": "eq", "value": false, "node": "david_2a_intro" }
         ]
+    },
+    "david_2a_intro": {
+        "text": "Do you mind if we talk about what happened yesterday with Chloe?",
+        "next": "david_2a"
+    },
+    "david_2b_intro": {
+        "text": "I know things got a little heated yesterday in Chloe's room... Was that really your reefer?",
+        "next": "david_2b"
     },
     "david_2a": {
         "choices": [
@@ -1019,17 +1068,10 @@ export const script: Script = {
         "next": "david_4"
     },
     "david_4": {
-        "choices": [
-            {
-                "name": "Took a photo",
-                "text": "",
-                "next": "david_4a_sub"
-            },
-            {
-                "name": "Intervened",
-                "text": "",
-                "next": "david_4b_sub"
-            }
+        "text": "",
+        "next": [
+            { "name": "took_photo_of_kate", "type": "eq", "value": true, "node": "david_4a_sub" },
+            { "name": "took_photo_of_kate", "type": "eq", "value": false, "node": "david_4b_sub" }
         ]
     },
     "david_4a_sub": {
@@ -1149,18 +1191,19 @@ export const script: Script = {
         "next": "jeff_4"
     },
     "jeff_4": {
-        "choices": [
-            {
-                "name": "Took photo",
-                "text": "You're not the only one. Do you have something you want to tell me?",
-                "next": "jeff_4a"
-            },
-            {
-                "name": "Intervened",
-                "text": "That's no secret. Word on the street is that you and Kate had a little confrontation with our security chief yesterday.",
-                "next": "jeff_4b"
-            }
+        "text": "",
+        "next": [
+            { "name": "took_photo_of_kate", "type": "eq", "value": true, "node": "jeff_4_took" },
+            { "name": "took_photo_of_kate", "type": "eq", "value": false, "node": "jeff_4_interv" }
         ]
+    },
+    "jeff_4_took": {
+        "text": "You're not the only one. Do you have something you want to tell me?",
+        "next": "jeff_4a"
+    },
+    "jeff_4_interv": {
+        "text": "That's no secret. Word on the street is that you and Kate had a little confrontation with our security chief yesterday.",
+        "next": "jeff_4b"
     },
     "jeff_4a": {
         "choices": [
@@ -1229,28 +1272,19 @@ export const script: Script = {
         "next": "jeff_7"
     },
     "jeff_7": {
-        "choices": [
-            {
-                "name": "Yes. (answered Kate's call)",
-                "text": "Yes, I talked to her on the phone today. She needs friends and support now.",
-                "next": "jeff_8"
-            },
-            {
-                "name": "Yes. (ignored Kate's call)",
-                "text": "Yes, I talked to her this morning. She needs friends and support now.",
-                "next": "jeff_8"
-            },
-            {
-                "name": "Missed call.",
-                "text": "I will. She's mad I missed her call today.",
-                "next": "jeff_8"
-            },
-            {
-                "name": "No.",
-                "text": "No...",
-                "next": "jeff_8"
-            }
+        "text": "",
+        "next": [
+            { "name": "answered_kate_call", "type": "eq", "value": true, "node": "jeff_7_answered" },
+            { "name": "answered_kate_call", "type": "eq", "value": false, "node": "jeff_7_ignored" }
         ]
+    },
+    "jeff_7_answered": {
+        "text": "Yes, I talked to her on the phone today. She needs friends and support now.",
+        "next": "jeff_8"
+    },
+    "jeff_7_ignored": {
+        "text": "Yes, I talked to her this morning. She needs friends and support now.",
+        "next": "jeff_8"
     },
     "jeff_8": {
         "text": [
@@ -1261,18 +1295,19 @@ export const script: Script = {
         "next": "jeff_9"
     },
     "jeff_9": {
-        "choices": [
-            {
-                "name": "Reported Nathan",
-                "text": "I miss Rachel, too. But think about yourself, Max. Principal Wells told me about what you said happened in the bathroom...",
-                "next": "jeff_9a"
-            },
-            {
-                "name": "Hid the truth",
-                "text": "Rachel was nothing like Kate. Principal Wells said you had something on your mind you wouldn't tell him. You care to share?",
-                "next": "jeff_9b"
-            }
+        "text": "",
+        "next": [
+            { "name": "reported_nathan", "type": "eq", "value": true, "node": "jeff_9_rep" },
+            { "name": "reported_nathan", "type": "eq", "value": false, "node": "jeff_9_hid" }
         ]
+    },
+    "jeff_9_rep": {
+        "text": "I miss Rachel, too. But think about yourself, Max. Principal Wells told me about what you said happened in the bathroom...",
+        "next": "jeff_9a"
+    },
+    "jeff_9_hid": {
+        "text": "Rachel was nothing like Kate. Principal Wells said you had something on your mind you wouldn't tell him. You care to share?",
+        "next": "jeff_9b"
     },
     "jeff_9a": {
         "choices": [
@@ -1318,18 +1353,19 @@ export const script: Script = {
         ]
     },
     "jeff_9_trust": {
-        "choices": [
-            {
-                "name": "Stayed hidden/blamed Chloe",
-                "text": "I'd like to believe that, Max. It just seems like there's a lot of drama around you this week.",
-                "next": "jeff_10"
-            },
-            {
-                "name": "Took the blame/came out of hiding to intervene",
-                "text": "I hope so, Max. But it's easy to point fingers. If Mr. Madsen claims you might be a pot dealer as he did, should I believe him?",
-                "next": "jeff_10"
-            }
+        "text": "",
+        "next": [
+            { "name": "intervened_for_chloe", "type": "eq", "value": false, "node": "jeff_9_trust_hid" },
+            { "name": "intervened_for_chloe", "type": "eq", "value": true, "node": "jeff_9_trust_blame" }
         ]
+    },
+    "jeff_9_trust_hid": {
+        "text": "I'd like to believe that, Max. It just seems like there's a lot of drama around you this week.",
+        "next": "jeff_10"
+    },
+    "jeff_9_trust_blame": {
+        "text": "I hope so, Max. But it's easy to point fingers. If Mr. Madsen claims you might be a pot dealer as he did, should I believe him?",
+        "next": "jeff_10"
     },
     "jeff_10": {
         "text": [
@@ -1369,73 +1405,76 @@ export const script: Script = {
         "next": "jeff_12"
     },
     "jeff_12": {
-        "choices": [
-            {
-                "name": "Reported Nathan",
-                "text": "Better be quiet, Victoria. We have a master snitch and liar here.",
-                "next": "jeff_12a"
-            },
-            {
-                "name": "Hid the truth",
-                "text": "Here comes the mysterious Max. Disguised as a pixie hipster.",
-                "next": "jeff_12b"
-            }
+        "text": "",
+        "next": [
+            { "name": "reported_nathan", "type": "eq", "value": true, "node": "jeff_12_rep" },
+            { "name": "reported_nathan", "type": "eq", "value": false, "node": "jeff_12_hid" }
         ]
+    },
+    "jeff_12_rep": {
+        "text": "Better be quiet, Victoria. We have a master snitch and liar here.",
+        "next": "jeff_12a"
+    },
+    "jeff_12_hid": {
+        "text": "Here comes the mysterious Max. Disguised as a pixie hipster.",
+        "next": "jeff_12b"
     },
     "jeff_12a": {
-        "choices": [
-            {
-                "name": "Made fun of Victoria",
-                "text": [
-                    "And paparazzi. I want that photo, whore. Or I get nasty.",
-                    "Too late.",
-                    "Oh, burn! Max is so fearless when she has backup.",
-                    "Right. Can I sit at my table now?",
-                    "Don't get cocky. This isn't over.",
-                    "In fact, shit's just starting, Max."
-                ],
-                "next": "jeff_13"
-            },
-            {
-                "name": "Comforted Victoria",
-                "text": [
-                    "Did you think we were best friends forever or something?",
-                    "Not at all, Victoria.",
-                    "Max is such an attention-whore.",
-                    "You would know. Can I sit down now?",
-                    "Oh, please do. Take a selfie of this moment.",
-                    "Yeah, Max. So I won't forget you."
-                ],
-                "next": "jeff_13"
-            }
+        "text": "",
+        "next": [
+            { "name": "made_fun_of_victoria", "type": "eq", "value": true, "node": "jeff_12a_madefun" },
+            { "name": "made_fun_of_victoria", "type": "eq", "value": false, "node": "jeff_12a_comforted" }
         ]
     },
+    "jeff_12a_madefun": {
+        "text": [
+            "And paparazzi. I want that photo, whore. Or I get nasty.",
+            "Too late.",
+            "Oh, burn! Max is so fearless when she has backup.",
+            "Right. Can I sit at my table now?",
+            "Don't get cocky. This isn't over.",
+            "In fact, shit's just starting, Max."
+        ],
+        "next": "jeff_13"
+    },
+    "jeff_12a_comforted": {
+        "text": [
+            "Did you think we were best friends forever or something?",
+            "Not at all, Victoria.",
+            "Max is such an attention-whore.",
+            "You would know. Can I sit down now?",
+            "Oh, please do. Take a selfie of this moment.",
+            "Yeah, Max. So I won't forget you."
+        ],
+        "next": "jeff_13"
+    },
     "jeff_12b": {
-        "choices": [
-            {
-                "name": "Made fun of Victoria",
-                "text": [
-                    "Or paparazzi. I want that photo, whore. Or I get nasty.",
-                    "Too late.",
-                    "Meow! Bring out the claws. I love seeing chicks fight.",
-                    "Can I sit down, please?",
-                    "I don't know...can you?",
-                    "Let her have the desk. That's all she's got..."
-                ],
-                "next": "jeff_13"
-            },
-            {
-                "name": "Comforted Victoria",
-                "text": [
-                    "Like all the other precious twee artists here.",
-                    "You really nailed me.",
-                    "Meow! Bring out the claws. I love seeing chicks fight.",
-                    "Right. Can I sit at my table now?",
-                    "Max thought we were going to be buds. Fucking haha."
-                ],
-                "next": "jeff_13"
-            }
+        "text": "",
+        "next": [
+            { "name": "made_fun_of_victoria", "type": "eq", "value": true, "node": "jeff_12b_madefun" },
+            { "name": "made_fun_of_victoria", "type": "eq", "value": false, "node": "jeff_12b_comforted" }
         ]
+    },
+    "jeff_12b_madefun": {
+        "text": [
+            "Or paparazzi. I want that photo, whore. Or I get nasty.",
+            "Too late.",
+            "Meow! Bring out the claws. I love seeing chicks fight.",
+            "Can I sit down, please?",
+            "I don't know...can you?",
+            "Let her have the desk. That's all she's got..."
+        ],
+        "next": "jeff_13"
+    },
+    "jeff_12b_comforted": {
+        "text": [
+            "Like all the other precious twee artists here.",
+            "You really nailed me.",
+            "Meow! Bring out the claws. I love seeing chicks fight.",
+            "Right. Can I sit at my table now?",
+            "Max thought we were going to be buds. Fucking haha."
+        ],
+        "next": "jeff_13"
     },
     "jeff_13": {
         "text": [
@@ -1674,117 +1713,119 @@ export const script: Script = {
 
     // --- Branch A: Nathan dosed her ---
     "principal_A_nested": {
-        "choices": [
-            {
-                "name": "Reported Nathan",
-                "text": [
-                    "Careful, Mr. Prescott. I have been told of this alleged gun incident. And I have to admit that the video in question was sent to me by multiple sources.",
-                    "Including me.",
-                    "And since Mr Prescott does appear prominently in the video and was responsible for the party, I have no choice but to suspend him until further notice.",
-                    "Whatever. See you in court."
-                ],
-                "next": "principal_break"
-            },
-            {
-                "name": "Hid the truth",
-                "text": "Wait, Max. You told me that nothing happened yesterday. Are you just making things up? How can I trust you?",
-                "next": "principal_A_hid"
-            }
+        "text": "",
+        "next": [
+            { "name": "reported_nathan", "type": "eq", "value": true, "node": "principal_A_rep" },
+            { "name": "reported_nathan", "type": "eq", "value": false, "node": "principal_A_hidtext" }
         ]
     },
+    "principal_A_rep": {
+        "text": [
+            "Careful, Mr. Prescott. I have been told of this alleged gun incident. And I have to admit that the video in question was sent to me by multiple sources.",
+            "Including me.",
+            "And since Mr Prescott does appear prominently in the video and was responsible for the party, I have no choice but to suspend him until further notice.",
+            "Whatever. See you in court."
+        ],
+        "next": "principal_break"
+    },
+    "principal_A_hidtext": {
+        "text": "Wait, Max. You told me that nothing happened yesterday. Are you just making things up? How can I trust you?",
+        "next": "principal_A_hid"
+    },
     "principal_A_hid": {
-        "choices": [
-            {
-                "name": "Blamed Chloe/Stayed hidden",
-                "text": [
-                    "I was afraid yesterday, but I have to tell the truth.",
-                    "I do understand that. And since Mr Prescott does appear prominently in the video and was responsible for the party, I have no choice but to suspend him until further notice."
-                ],
-                "next": "principal_break"
-            },
-            {
-                "name": "Took the blame/Came out to intervene",
-                "text": [
-                    "You can't. She's smoking and selling dope, not saving lives!",
-                    "No, I'm not and that has nothing to do with Kate Marsh!",
-                    "I'll have to investigate to see if this accusation is true. Therefore Max, I'm obliged to contact your parents and suspend you for a few days."
-                ],
-                "next": "principal_break"
-            }
+        "text": "",
+        "next": [
+            { "name": "intervened_for_chloe", "type": "eq", "value": false, "node": "principal_A_hid_stayed" },
+            { "name": "intervened_for_chloe", "type": "eq", "value": true, "node": "principal_A_hid_blame" }
         ]
+    },
+    "principal_A_hid_stayed": {
+        "text": [
+            "I was afraid yesterday, but I have to tell the truth.",
+            "I do understand that. And since Mr Prescott does appear prominently in the video and was responsible for the party, I have no choice but to suspend him until further notice."
+        ],
+        "next": "principal_break"
+    },
+    "principal_A_hid_blame": {
+        "text": [
+            "You can't. She's smoking and selling dope, not saving lives!",
+            "No, I'm not and that has nothing to do with Kate Marsh!",
+            "I'll have to investigate to see if this accusation is true. Therefore Max, I'm obliged to contact your parents and suspend you for a few days."
+        ],
+        "next": "principal_break"
     },
 
     // --- Branch B: David bullied her ---
     "principal_B_nested": {
-        "choices": [
-            {
-                "name": "Blamed Chloe/Stayed hidden",
-                "text": "Are you going to take this troublemaker's word over your security officer?",
-                "next": "principal_B_a"
-            },
-            {
-                "name": "Took the blame/Came out to intervene",
-                "text": [
-                    "Are you going to take this junkie's word over your security officer? I know she smokes and deals... marijuana.",
-                    "What? That has nothing to do with Kate!"
-                ],
-                "next": "principal_B_b"
-            }
+        "text": "",
+        "next": [
+            { "name": "intervened_for_chloe", "type": "eq", "value": false, "node": "principal_B_nested_stayed" },
+            { "name": "intervened_for_chloe", "type": "eq", "value": true, "node": "principal_B_nested_blame" }
         ]
+    },
+    "principal_B_nested_stayed": {
+        "text": "Are you going to take this troublemaker's word over your security officer?",
+        "next": "principal_B_a"
+    },
+    "principal_B_nested_blame": {
+        "text": [
+            "Are you going to take this junkie's word over your security officer? I know she smokes and deals... marijuana.",
+            "What? That has nothing to do with Kate!"
+        ],
+        "next": "principal_B_b"
     },
     "principal_B_a": {
-        "choices": [
-            {
-                "name": "Took photo",
-                "text": [
-                    "Except I have proof.",
-                    "Here's a photo I took of David and Kate yesterday.",
-                    "That's not—not proof.",
-                    "Hold on, this isn't a courtroom. But I feel it would be in the best interest of Blackwell and this situation to put you on temporary leave... We will continue this conversation later."
-                ],
-                "next": "principal_photo_wells"
-            },
-            {
-                "name": "Intervened",
-                "text": [
-                    "And he should take the word of somebody who harasses students?",
-                    "Max, I'm afraid this won't be solved here without proof and a thorough investigation. Now, if you have anything else to say..."
-                ],
-                "next": "principal_break"
-            }
+        "text": "",
+        "next": [
+            { "name": "took_photo_of_kate", "type": "eq", "value": true, "node": "principal_B_a_took" },
+            { "name": "took_photo_of_kate", "type": "eq", "value": false, "node": "principal_B_a_interv" }
         ]
+    },
+    "principal_B_a_took": {
+        "text": [
+            "Except I have proof.",
+            "Here's a photo I took of David and Kate yesterday.",
+            "That's not—not proof.",
+            "Hold on, this isn't a courtroom. But I feel it would be in the best interest of Blackwell and this situation to put you on temporary leave... We will continue this conversation later."
+        ],
+        "next": "principal_photo_wells"
+    },
+    "principal_B_a_interv": {
+        "text": [
+            "And he should take the word of somebody who harasses students?",
+            "Max, I'm afraid this won't be solved here without proof and a thorough investigation. Now, if you have anything else to say..."
+        ],
+        "next": "principal_break"
     },
     "principal_B_b": {
-        "choices": [
-            {
-                "name": "Took photo",
-                "text": [
-                    "Here's a photo I took of David and Kate yesterday.",
-                    "That's not—not proof.",
-                    "Hold on, this isn't a courtroom. But I feel it would be in the best interest of Blackwell and this situation to put you on temporary leave... We will continue this conversation later."
-                ],
-                "next": "principal_photo_wells"
-            },
-            {
-                "name": "Intervened",
-                "text": "",
-                "next": "principal_B_b_intervened"
-            }
+        "text": "",
+        "next": [
+            { "name": "took_photo_of_kate", "type": "eq", "value": true, "node": "principal_B_b_took" },
+            { "name": "took_photo_of_kate", "type": "eq", "value": false, "node": "principal_B_b_intervened" }
         ]
     },
+    "principal_B_b_took": {
+        "text": [
+            "Here's a photo I took of David and Kate yesterday.",
+            "That's not—not proof.",
+            "Hold on, this isn't a courtroom. But I feel it would be in the best interest of Blackwell and this situation to put you on temporary leave... We will continue this conversation later."
+        ],
+        "next": "principal_photo_wells"
+    },
     "principal_B_b_intervened": {
-        "choices": [
-            {
-                "name": "Reported Nathan",
-                "text": "Max, falsely accusing other people seems to be a habit with you... I trust my security officer. I'll have to investigate to see if this accusation is true. Therefore Max, I'm obliged to contact your parents and suspend you for a few days.",
-                "next": "principal_break"
-            },
-            {
-                "name": "Hid the truth",
-                "text": "Max, I'm afraid this won't be solved here without proof and a thorough investigation. Now, if you have anything else to say...",
-                "next": "principal_break"
-            }
+        "text": "",
+        "next": [
+            { "name": "reported_nathan", "type": "eq", "value": true, "node": "principal_B_b_interv_rep" },
+            { "name": "reported_nathan", "type": "eq", "value": false, "node": "principal_B_b_interv_hid" }
         ]
+    },
+    "principal_B_b_interv_rep": {
+        "text": "Max, falsely accusing other people seems to be a habit with you... I trust my security officer. I'll have to investigate to see if this accusation is true. Therefore Max, I'm obliged to contact your parents and suspend you for a few days.",
+        "next": "principal_break"
+    },
+    "principal_B_b_interv_hid": {
+        "text": "Max, I'm afraid this won't be solved here without proof and a thorough investigation. Now, if you have anything else to say...",
+        "next": "principal_break"
     },
     "principal_photo_wells": {
         "text": "",
@@ -1812,18 +1853,19 @@ export const script: Script = {
 
     // --- Branch C: Jefferson made her cry ---
     "principal_C_nested": {
-        "choices": [
-            {
-                "name": "Answered Kate's phone call",
-                "text": "She told me Max was the only one who believed her, would take her calls and actually listen to her.",
-                "next": "principal_C_2"
-            },
-            {
-                "name": "Ignored Kate's phone call",
-                "text": "She was upset Miss Caulfield didn't return her calls. She felt rejected by the school...",
-                "next": "principal_C_2"
-            }
+        "text": "",
+        "next": [
+            { "name": "answered_kate_call", "type": "eq", "value": true, "node": "principal_C_answered" },
+            { "name": "answered_kate_call", "type": "eq", "value": false, "node": "principal_C_ignored" }
         ]
+    },
+    "principal_C_answered": {
+        "text": "She told me Max was the only one who believed her, would take her calls and actually listen to her.",
+        "next": "principal_C_2"
+    },
+    "principal_C_ignored": {
+        "text": "She was upset Miss Caulfield didn't return her calls. She felt rejected by the school...",
+        "next": "principal_C_2"
     },
     "principal_C_2": {
         "text": [

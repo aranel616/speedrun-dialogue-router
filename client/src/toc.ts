@@ -25,7 +25,7 @@ export const TOC: Record<string, TocEntry[]> = {
     { title: "Lighthouse (ending)", nodeId: "lighthouse_2", kind: "scene" },
   ],
   "lifeisstrange/episode2": [
-    { title: "Girls' Dormitories", nodeId: "start", kind: "scene" },
+    { title: "Girls' Dormitories", nodeId: "maxroom_intro", kind: "scene" },
     { title: "Showers", nodeId: "showers_1", kind: "scene" },
     { title: "Kate's Room", nodeId: "kateroom_1", kind: "scene" },
     { title: "Police or find proof?", nodeId: "kateroom_13", kind: "decision" },

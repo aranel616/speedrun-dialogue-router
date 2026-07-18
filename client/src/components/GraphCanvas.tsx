@@ -231,19 +231,60 @@ export function GraphCanvas({ scriptId, graphNodes, graphEdges, visitedNodeIds, 
     return () => { cancelled = true; };
   }, [graphNodes]);
 
+  // Inherited-decision forks: the chain of flag-setting choices at the very top
+  // (start -> setup_* -> ... -> first real node). We pull them out of the tree and
+  // show them as a detached list above it. Presentation only — the data still
+  // drives routing, so the pathfinder keeps each variable consistent.
+  const inherited = useMemo(() => {
+    const byId = new Map<string, GraphNode>(graphNodes.map(n => [n.id, n] as [string, GraphNode]));
+    const children = new Map<string, string[]>();
+    for (const e of graphEdges) {
+      const arr = children.get(e.source);
+      if (arr) arr.push(e.target); else children.set(e.source, [e.target]);
+    }
+    const forks: { id: string; variable: string; options: { label: string; value: boolean | number; ciId: string }[] }[] = [];
+    const hidden = new Set<string>();
+    let cur: string | undefined = "start";
+    let contentRoot = "start";
+    while (cur) {
+      const node = byId.get(cur);
+      if (!node || node.type !== "choice") { contentRoot = cur; break; }
+      const items: GraphNode[] = (children.get(cur) ?? [])
+        .map(id => byId.get(id))
+        .filter((n): n is GraphNode => !!n && n.type === "choiceItem");
+      const targets: (string | undefined)[] = items.map(it => (children.get(it.id) ?? [])[0]);
+      const isFork = items.length >= 2
+        && items.every(it => it.sets && it.sets.length === 1 && !it.text)
+        && targets.every(t => t && t === targets[0]);
+      if (!isFork) { contentRoot = cur; break; }
+      forks.push({
+        id: cur,
+        variable: items[0]!.sets![0]!.name,
+        options: items.map(it => ({ label: it.choiceName ?? "", value: it.sets![0]!.value, ciId: it.id })),
+      });
+      hidden.add(cur);
+      items.forEach(it => hidden.add(it.id));
+      cur = targets[0];
+    }
+    return { forks, hidden, contentRoot };
+  }, [graphNodes, graphEdges]);
+
   // Layout — waits until every current node has a measured height, then lays out.
   const posNodes = useMemo<PosNode[]>(() => {
     if (graphNodes.length === 0) return [];
-    if (graphNodes.some(n => !heights.has(n.id))) return []; // heights not measured yet
-    console.log(`[GraphCanvas] computing layout for ${graphNodes.length} nodes, ${graphEdges.length} edges`);
-    const rfNodes: Node[] = graphNodes.map(n => ({
+    const visNodes = graphNodes.filter(n => !inherited.hidden.has(n.id));
+    if (visNodes.some(n => !heights.has(n.id))) return []; // heights not measured yet
+    console.log(`[GraphCanvas] computing layout for ${visNodes.length} nodes, ${graphEdges.length} edges`);
+    const rfNodes: Node[] = visNodes.map(n => ({
       id: n.id,
       type: n.type,
       position: { x: 0, y: 0 },
       style: { width: nodeWidth(n.type) },
       data: n as unknown as Record<string, unknown>,
     }));
-    const rfEdges: Edge[] = graphEdges.map(e => ({ id: e.id, source: e.source, target: e.target }));
+    const rfEdges: Edge[] = graphEdges
+      .filter(e => !inherited.hidden.has(e.source) && !inherited.hidden.has(e.target))
+      .map(e => ({ id: e.id, source: e.source, target: e.target }));
     const laid = applyDagreLayout(rfNodes, rfEdges, heights);
     console.log(`[GraphCanvas] layout returned ${laid.length} positioned nodes`);
     return laid.map(n => ({
@@ -254,18 +295,18 @@ export function GraphCanvas({ scriptId, graphNodes, graphEdges, visitedNodeIds, 
       h: heights.get(n.id)!,
       node: n.data as unknown as GraphNode,
     }));
-  }, [graphNodes, graphEdges, heights]);
+  }, [graphNodes, graphEdges, heights, inherited]);
 
-  // Initial viewport: centre "start" node
+  // Initial viewport: centre the first real node (start may be a hidden fork)
   useEffect(() => {
     const el = containerRef.current;
     if (!el || posNodes.length === 0) return;
-    const start = posNodes.find(n => n.id === "start") ?? posNodes[0]!;
+    const root = posNodes.find(n => n.id === inherited.contentRoot) ?? posNodes[0]!;
     const zoom = 1.2;
-    const x = el.offsetWidth / 2 - (start.x + start.w / 2) * zoom;
-    const y = el.offsetHeight / 3 - (start.y + start.h / 2) * zoom;
+    const x = el.offsetWidth / 2 - (root.x + root.w / 2) * zoom;
+    const y = el.offsetHeight / 3 - (root.y + root.h / 2) * zoom;
     syncVP({ x, y, zoom });
-  }, [posNodes, syncVP]);
+  }, [posNodes, syncVP, inherited.contentRoot]);
 
   // Wheel zoom (needs non-passive listener)
   useEffect(() => {
@@ -330,14 +371,14 @@ export function GraphCanvas({ scriptId, graphNodes, graphEdges, visitedNodeIds, 
   const resetView = useCallback(() => {
     const el = containerRef.current;
     if (!el || posNodes.length === 0) return;
-    const start = posNodes.find(n => n.id === "start") ?? posNodes[0]!;
+    const root = posNodes.find(n => n.id === inherited.contentRoot) ?? posNodes[0]!;
     const zoom = 1.2;
     syncVP({
-      x: el.offsetWidth / 2 - (start.x + start.w / 2) * zoom,
-      y: el.offsetHeight / 3 - (start.y + start.h / 2) * zoom,
+      x: el.offsetWidth / 2 - (root.x + root.w / 2) * zoom,
+      y: el.offsetHeight / 3 - (root.y + root.h / 2) * zoom,
       zoom,
     });
-  }, [posNodes, syncVP]);
+  }, [posNodes, syncVP, inherited.contentRoot]);
 
   const handleNodeClick = useCallback((id: string) => {
     if (!movedRef.current) onNodeClick(id);
@@ -408,6 +449,24 @@ export function GraphCanvas({ scriptId, graphNodes, graphEdges, visitedNodeIds, 
 
   const { x, y, zoom } = viewport;
 
+  // Detached list of inherited decisions, stacked above the graph's top node.
+  const INH_W = 320, INH_H = 62, INH_GAP = 8;
+  const inheritedCards = (() => {
+    if (inherited.forks.length === 0 || posNodes.length === 0) return [];
+    const topY = Math.min(...posNodes.map(n => n.y));
+    const root = posNodes.find(n => n.id === inherited.contentRoot) ?? posNodes[0]!;
+    const cx = root.x + root.w / 2;
+    const totalH = inherited.forks.length * (INH_H + INH_GAP) - INH_GAP;
+    const listTop = topY - 72 - totalH;
+    return inherited.forks.map((f, i) => ({
+      id: f.id,
+      variable: f.variable,
+      options: f.options.map(o => ({ label: o.label, onPath: visitedNodeIds.has(o.ciId) })),
+      left: cx - INH_W / 2,
+      top: listTop + i * (INH_H + INH_GAP),
+    }));
+  })();
+
   return (
     <div
       ref={containerRef}
@@ -468,6 +527,21 @@ export function GraphCanvas({ scriptId, graphNodes, graphEdges, visitedNodeIds, 
               onClick={() => handleNodeClick(n.id)}
               cumulative={cumulativeCounts[n.id]}
             />
+          </div>
+        ))}
+        {/* Detached list of inherited decisions (presentation only, not connected) */}
+        {inheritedCards.map(c => (
+          <div
+            key={c.id}
+            className="inherited-card"
+            style={{ position: "absolute", left: c.left, top: c.top, width: INH_W }}
+          >
+            <span className="inherited-var">{c.variable}</span>
+            <div className="inherited-opts">
+              {c.options.map((o, i) => (
+                <span key={i} className={`inherited-opt${o.onPath ? " on-path" : ""}`}>{o.label}</span>
+              ))}
+            </div>
           </div>
         ))}
       </div>

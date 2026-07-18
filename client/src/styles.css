@@ -157,6 +157,34 @@ html, body, #root { height: 100%; font-family: "Inter", system-ui, sans-serif; b
 
 .ci-sets { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 5px; }
 
+/* Inherited-decision list — detached cards above the tree (from previous episodes). */
+.inherited-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+.inherited-var {
+  font-size: 10px;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color: var(--text-muted);
+}
+.inherited-opts { display: flex; flex-direction: column; gap: 2px; }
+.inherited-opt {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  opacity: 0.55;
+}
+.inherited-opt.on-path {
+  color: var(--accent-path);
+  font-weight: 700;
+  opacity: 1;
+}
+
 /* Table of contents — jump to major scenes/decisions, top-left of the canvas. */
 .toc-panel {
   position: absolute;
