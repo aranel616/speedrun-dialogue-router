@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect, useRef, memo } from "react";
+import { useState, useCallback, useMemo, useEffect, useLayoutEffect, useRef, memo } from "react";
 import type { Node, Edge } from "@xyflow/react";
 import type { GraphNode, GraphEdge } from "../types";
 import { applyDagreLayout } from "../utils/dagreLayout";
@@ -15,33 +15,13 @@ const zoomBtnStyle: React.CSSProperties = {
   padding: 0, boxShadow: "0 1px 3px rgba(0,0,0,0.4)",
 };
 
-// Approximate characters that fit per visual line given node content widths.
-// Linear nodes are 420px wide (28px padding → 392px content); choiceItem 330px (302px content).
-// At 12px Inter, ~7.2px/char → 392/7.2 ≈ 54 for linear; ~6.8px/char → 302/6.8 ≈ 44 for ci.
-const LINEAR_CHARS_PER_LINE = 54;
-const CI_CHARS_PER_LINE = 44;
-const LINE_H = 18;    // px per visual text line
-const LINE_GAP = 10;  // padding-bottom + margin-bottom between consecutive dialogue lines
-const PAD_V = 22;     // top + bottom padding of a node card
-const STATS_ROW_H = 22; // height of the stats row (id tag + char count) at bottom of nodes
-const CI_NAME_H = 20;   // height of ci-name row on choiceItem nodes
-const SETS_H = 24;      // height of the sets-badge row when present
-
-function estimateNodeHeight(node: GraphNode): number {
-  if (node.type === "choice") return PAD_V + LINE_H; // just the label row
-  if (node.type === "conditionItem") return PAD_V + CI_NAME_H; // single condition row
-  const textLines = Array.isArray(node.text) ? node.text : node.text ? [node.text] : [];
-  const cpl = node.type === "choiceItem" ? CI_CHARS_PER_LINE : LINEAR_CHARS_PER_LINE;
-  const visualLines = textLines.reduce((sum, l) => sum + Math.max(1, Math.ceil(l.length / cpl)), 0);
-  // Each dialogue-line div adds 10px of padding+margin below it (except the last).
-  const lineGaps = Math.max(0, textLines.length - 1) * LINE_GAP;
-  if (node.type === "linear") {
-    return PAD_V + visualLines * LINE_H + lineGaps + STATS_ROW_H;
-  }
-  // choiceItem
-  const setsH = (node.sets?.length ?? 0) > 0 ? SETS_H : 0;
-  return PAD_V + CI_NAME_H + visualLines * LINE_H + lineGaps + setsH + STATS_ROW_H;
+// Fixed render width per node type (matches the card CSS). Height is measured
+// from the real DOM rather than estimated — see the hidden measurement layer.
+function nodeWidth(type: GraphNode["type"]): number {
+  return type === "choiceItem" ? 330 : type === "conditionItem" ? 260 : 420;
 }
+
+const NOOP = () => {};
 
 interface Viewport { x: number; y: number; zoom: number; }
 interface PosNode { id: string; x: number; y: number; w: number; h: number; node: GraphNode; }
@@ -224,18 +204,43 @@ export function GraphCanvas({ scriptId, graphNodes, graphEdges, visitedNodeIds, 
   const [viewport, setVP] = useState<Viewport>({ x: 0, y: 0, zoom: 1 });
   const dragRef = useRef<{ sx: number; sy: number; ox: number; oy: number } | null>(null);
   const movedRef = useRef(false);
+  // Real DOM heights of each node card, measured from a hidden layer (no estimates).
+  const measureRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  const [heights, setHeights] = useState<Map<string, number>>(new Map());
 
   const syncVP = useCallback((v: Viewport) => { vpRef.current = v; setVP(v); }, []);
 
-  // Layout — only recomputes when graph changes
+  // Measure the hidden layer's real card heights whenever the graph changes.
+  // Runs before paint, so the positioned layout below uses true measurements.
+  useLayoutEffect(() => {
+    const measure = () => {
+      const next = new Map<string, number>();
+      for (const n of graphNodes) {
+        const el = measureRefs.current.get(n.id);
+        if (el) next.set(n.id, el.offsetHeight);
+      }
+      setHeights(prev => {
+        if (prev.size === next.size && [...next].every(([k, v]) => prev.get(k) === v)) return prev;
+        return next;
+      });
+    };
+    measure();
+    // Re-measure once the web font is ready — text wrapping (and height) depends on it.
+    let cancelled = false;
+    document.fonts?.ready.then(() => { if (!cancelled) measure(); });
+    return () => { cancelled = true; };
+  }, [graphNodes]);
+
+  // Layout — waits until every current node has a measured height, then lays out.
   const posNodes = useMemo<PosNode[]>(() => {
+    if (graphNodes.length === 0) return [];
+    if (graphNodes.some(n => !heights.has(n.id))) return []; // heights not measured yet
     console.log(`[GraphCanvas] computing layout for ${graphNodes.length} nodes, ${graphEdges.length} edges`);
-    const heights = new Map(graphNodes.map(n => [n.id, estimateNodeHeight(n)]));
     const rfNodes: Node[] = graphNodes.map(n => ({
       id: n.id,
       type: n.type,
       position: { x: 0, y: 0 },
-      style: { width: n.type === "choiceItem" ? 330 : n.type === "conditionItem" ? 260 : 420 },
+      style: { width: nodeWidth(n.type) },
       data: n as unknown as Record<string, unknown>,
     }));
     const rfEdges: Edge[] = graphEdges.map(e => ({ id: e.id, source: e.source, target: e.target }));
@@ -246,10 +251,10 @@ export function GraphCanvas({ scriptId, graphNodes, graphEdges, visitedNodeIds, 
       x: n.position.x,
       y: n.position.y,
       w: (n.style as { width: number }).width,
-      h: heights.get(n.id) ?? 88,
+      h: heights.get(n.id)!,
       node: n.data as unknown as GraphNode,
     }));
-  }, [graphNodes, graphEdges]);
+  }, [graphNodes, graphEdges, heights]);
 
   // Initial viewport: centre "start" node
   useEffect(() => {
@@ -413,6 +418,18 @@ export function GraphCanvas({ scriptId, graphNodes, graphEdges, visitedNodeIds, 
       onMouseUp={onMouseUp}
       onMouseLeave={onMouseUp}
     >
+      {/* Hidden measurement layer: real card heights feed the dagre layout. */}
+      <div aria-hidden style={{ position: "absolute", top: 0, left: 0, visibility: "hidden", pointerEvents: "none", zIndex: -1 }}>
+        {graphNodes.map(n => (
+          <div
+            key={n.id}
+            ref={el => { if (el) measureRefs.current.set(n.id, el); else measureRefs.current.delete(n.id); }}
+            style={{ width: nodeWidth(n.type) }}
+          >
+            <MemoCard node={n} highlighted={false} selected={false} onClick={NOOP} />
+          </div>
+        ))}
+      </div>
       <div style={{ position: "absolute", transform: `translate(${x}px,${y}px) scale(${zoom})`, transformOrigin: "0 0" }}>
         {/* SVG edge layer */}
         <svg style={{ position: "absolute", inset: 0, width: 0, height: 0, overflow: "visible", pointerEvents: "none" }}>
