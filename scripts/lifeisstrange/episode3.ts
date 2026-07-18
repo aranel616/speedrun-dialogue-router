@@ -1,8 +1,61 @@
 import { Script } from "../../types";
 
 export const script: Script = {
-    // ===================== Girls' Dormitories (night) =====================
+    // ============ Inherited decisions (set once at episode start) ============
+    // Carry in from Episodes 1-2; constant for the whole path so occurrences
+    // route consistently. In a full-game run these get driven by the prior
+    // episode instead of being free.
     "start": {
+        "choices": [
+            { "name": "(Saved Kate)", "text": "", "set": { "name": "saved_kate", "type": "set", "value": true }, "next": "setup_nathan_susp" },
+            { "name": "(Didn't save Kate)", "text": "", "set": { "name": "saved_kate", "type": "set", "value": false }, "next": "setup_nathan_susp" }
+        ]
+    },
+    "setup_nathan_susp": {
+        "choices": [
+            { "name": "(Nathan suspended)", "text": "", "set": { "name": "nathan_suspended", "type": "set", "value": true }, "next": "setup_david_susp" },
+            { "name": "(Nathan not suspended)", "text": "", "set": { "name": "nathan_suspended", "type": "set", "value": false }, "next": "setup_david_susp" }
+        ]
+    },
+    "setup_david_susp": {
+        "choices": [
+            { "name": "(David on leave)", "text": "", "set": { "name": "david_suspended", "type": "set", "value": true }, "next": "setup_jeff_susp" },
+            { "name": "(David not on leave)", "text": "", "set": { "name": "david_suspended", "type": "set", "value": false }, "next": "setup_jeff_susp" }
+        ]
+    },
+    "setup_jeff_susp": {
+        "choices": [
+            { "name": "(Jefferson out of contest)", "text": "", "set": { "name": "jefferson_suspended", "type": "set", "value": true }, "next": "setup_max_susp" },
+            { "name": "(Jefferson in contest)", "text": "", "set": { "name": "jefferson_suspended", "type": "set", "value": false }, "next": "setup_max_susp" }
+        ]
+    },
+    "setup_max_susp": {
+        "choices": [
+            { "name": "(Max suspended)", "text": "", "set": { "name": "max_suspended", "type": "set", "value": true }, "next": "setup_chloe3" },
+            { "name": "(Max not suspended)", "text": "", "set": { "name": "max_suspended", "type": "set", "value": false }, "next": "setup_chloe3" }
+        ]
+    },
+    "setup_chloe3": {
+        "choices": [
+            { "name": "(Took the blame for Chloe)", "text": "", "set": { "name": "intervened_for_chloe", "type": "set", "value": true }, "next": "setup_frank3" },
+            { "name": "(Stayed hidden / blamed Chloe)", "text": "", "set": { "name": "intervened_for_chloe", "type": "set", "value": false }, "next": "setup_frank3" }
+        ]
+    },
+    "setup_frank3": {
+        "choices": [
+            { "name": "(Shot at Frank)", "text": "", "set": { "name": "shot_at_frank", "type": "set", "value": true }, "next": "setup_warren3" },
+            { "name": "(Didn't shoot at Frank)", "text": "", "set": { "name": "shot_at_frank", "type": "set", "value": false }, "next": "setup_warren3" }
+        ]
+    },
+    "setup_warren3": {
+        "choices": [
+            { "name": "(Accepted Warren's invitation)", "text": "", "set": { "name": "accepted_warren_invite", "type": "set", "value": true }, "next": "dorm_maxroom" },
+            { "name": "(Declined Warren's invitation)", "text": "", "set": { "name": "accepted_warren_invite", "type": "set", "value": false }, "next": "dorm_maxroom" }
+        ]
+    },
+
+    // ===================== Girls' Dormitories (night) =====================
+    "dorm_maxroom": {
         "text": [
             "Kate!",
             "I have something to show you",
@@ -56,30 +109,31 @@ export const script: Script = {
         "next": "campus_2"
     },
     "campus_2": {
-        "choices": [
-            {
-                "name": "(Saved Kate)",
-                "text": [
-                    "More like a scary punk asshole. Hey, Chloe, I didn't exactly have the greatest day trying to keep my friend from jumping off the roof. I don't think I need you to prank me tonight, 'kay?",
-                    "Sorry, but you absolutely, balls-to-the-walls did save your friend!",
-                    "Kate saved herself. I couldn't even use my power...my head felt like it was being crushed...then I had NO clue what to say to her on that roof...",
-                    "Don't be so modest, rock star. Kate is alive because of YOU. You obviously said the right thing. And your badass power is gonna save us all! We just...need to connect the players.",
-                    "And find out who almost killed Kate."
-                ],
-                "next": "campus_3"
-            },
-            {
-                "name": "(Didn't save Kate)",
-                "text": [
-                    "More like a scary insensitive asshole. Chloe, I watched my friend jump off a roof today. I don't think you need to prank me tonight. You always trip out on me for not being there for YOU, but is this how you're there for me?",
-                    "I'm...I'm sorry, Max. I--I wasn't even thinking. I suck.",
-                    "I'm not trying to be a bitch, but...I'll NEVER get the image out of my head of Kate jumping off that roof... All because my power didn't work... It didn't mean shit.",
-                    "I know seeing Kate fall was horrible. I don't even know how to deal with that, so I just...act like an idiot. But it's YOUR badass power that's gonna bring all this to a close. We just need to connect the players.",
-                    "And find out who really killed Kate."
-                ],
-                "next": "campus_3"
-            }
+        "text": "",
+        "next": [
+            { "name": "saved_kate", "type": "eq", "value": true, "node": "campus_2_saved" },
+            { "name": "saved_kate", "type": "eq", "value": false, "node": "campus_2_notsaved" }
         ]
+    },
+    "campus_2_saved": {
+        "text": [
+            "More like a scary punk asshole. Hey, Chloe, I didn't exactly have the greatest day trying to keep my friend from jumping off the roof. I don't think I need you to prank me tonight, 'kay?",
+            "Sorry, but you absolutely, balls-to-the-walls did save your friend!",
+            "Kate saved herself. I couldn't even use my power...my head felt like it was being crushed...then I had NO clue what to say to her on that roof...",
+            "Don't be so modest, rock star. Kate is alive because of YOU. You obviously said the right thing. And your badass power is gonna save us all! We just...need to connect the players.",
+            "And find out who almost killed Kate."
+        ],
+        "next": "campus_3"
+    },
+    "campus_2_notsaved": {
+        "text": [
+            "More like a scary insensitive asshole. Chloe, I watched my friend jump off a roof today. I don't think you need to prank me tonight. You always trip out on me for not being there for YOU, but is this how you're there for me?",
+            "I'm...I'm sorry, Max. I--I wasn't even thinking. I suck.",
+            "I'm not trying to be a bitch, but...I'll NEVER get the image out of my head of Kate jumping off that roof... All because my power didn't work... It didn't mean shit.",
+            "I know seeing Kate fall was horrible. I don't even know how to deal with that, so I just...act like an idiot. But it's YOUR badass power that's gonna bring all this to a close. We just need to connect the players.",
+            "And find out who really killed Kate."
+        ],
+        "next": "campus_3"
     },
     "campus_3": {
         "text": [
@@ -121,14 +175,20 @@ export const script: Script = {
         "next": "campus_6"
     },
     "campus_6": {
-        "choices": [
-            { "name": "(Nathan is suspended)", "text": "Especially after I just got Nathan expelled...", "next": "campus_7" },
-            { "name": "(David is suspended)", "text": "Especially after I just got your step-bully suspended...", "next": "campus_7" },
-            { "name": "(Jefferson is suspended from contest)", "text": "Especially after I just got Mr. Jefferson in trouble...", "next": "campus_7" },
-            { "name": "(Max is suspended)", "text": "I mean, I even got my own dumb ass suspended...", "next": "campus_7" },
-            { "name": "(No one was suspended)", "text": "Especially after I see the results... and then it's too late to rewind.", "next": "campus_7" }
+        "text": "",
+        "next": [
+            { "name": "nathan_suspended", "type": "eq", "value": true, "node": "campus_6_nathan" },
+            { "name": "david_suspended", "type": "eq", "value": true, "node": "campus_6_david" },
+            { "name": "jefferson_suspended", "type": "eq", "value": true, "node": "campus_6_jefferson" },
+            { "name": "max_suspended", "type": "eq", "value": true, "node": "campus_6_max" },
+            { "name": "nathan_suspended", "type": "eq", "value": false, "node": "campus_6_none" }
         ]
     },
+    "campus_6_nathan": { "text": "Especially after I just got Nathan expelled...", "next": "campus_7" },
+    "campus_6_david": { "text": "Especially after I just got your step-bully suspended...", "next": "campus_7" },
+    "campus_6_jefferson": { "text": "Especially after I just got Mr. Jefferson in trouble...", "next": "campus_7" },
+    "campus_6_max": { "text": "I mean, I even got my own dumb ass suspended...", "next": "campus_7" },
+    "campus_6_none": { "text": "Especially after I see the results... and then it's too late to rewind.", "next": "campus_7" },
     "campus_7": {
         "text": "Dude, do not even torture yourself like that. Let's focus on looking for clues, okay?",
         "next": "campus_8"
@@ -174,18 +234,19 @@ export const script: Script = {
         ]
     },
     "campus_8a2": {
-        "choices": [
-            {
-                "name": "(Took the blame / Came out to intervene)",
-                "text": "At least David doesn't try to beat down women like Nathan...",
-                "next": "campus_9"
-            },
-            {
-                "name": "(Blamed Chloe / Stayed hidden)",
-                "text": "The Blackwell security officer even hits his own stepdaughter...",
-                "next": "campus_9"
-            }
+        "text": "",
+        "next": [
+            { "name": "intervened_for_chloe", "type": "eq", "value": true, "node": "campus_8a2_blame" },
+            { "name": "intervened_for_chloe", "type": "eq", "value": false, "node": "campus_8a2_hidden" }
         ]
+    },
+    "campus_8a2_blame": {
+        "text": "At least David doesn't try to beat down women like Nathan...",
+        "next": "campus_9"
+    },
+    "campus_8a2_hidden": {
+        "text": "The Blackwell security officer even hits his own stepdaughter...",
+        "next": "campus_9"
     },
     "campus_9": {
         "text": [
@@ -232,18 +293,19 @@ export const script: Script = {
         "next": "campus_12"
     },
     "campus_12": {
-        "choices": [
-            {
-                "name": "(Max is suspended)",
-                "text": "Look at all the trouble dropping in Arcadia Bay. At this point, who gives a fuck anymore? You're suspended anyway, Max. Lead the way.",
-                "next": "campus_13"
-            },
-            {
-                "name": "(Max is not suspended)",
-                "text": "Look at all the trouble dropping in Arcadia Bay. At this point, who gives a fuck anymore? We're in it to win it, Max. Lead the way...",
-                "next": "campus_13"
-            }
+        "text": "",
+        "next": [
+            { "name": "max_suspended", "type": "eq", "value": true, "node": "campus_12_susp" },
+            { "name": "max_suspended", "type": "eq", "value": false, "node": "campus_12_not" }
         ]
+    },
+    "campus_12_susp": {
+        "text": "Look at all the trouble dropping in Arcadia Bay. At this point, who gives a fuck anymore? You're suspended anyway, Max. Lead the way.",
+        "next": "campus_13"
+    },
+    "campus_12_not": {
+        "text": "Look at all the trouble dropping in Arcadia Bay. At this point, who gives a fuck anymore? We're in it to win it, Max. Lead the way...",
+        "next": "campus_13"
     },
     "campus_13": {
         "text": [
@@ -258,24 +320,25 @@ export const script: Script = {
         "next": "campus_14"
     },
     "campus_14": {
-        "choices": [
-            {
-                "name": "(Saved Kate)",
-                "text": [
-                    "I'm glad it had a relatively happy ending.",
-                    "I don't know what I would've done if Katie jumped..."
-                ],
-                "next": "campus_15"
-            },
-            {
-                "name": "(Didn't save Kate)",
-                "text": [
-                    "I imagine...you're pretty upset over Kate as well...",
-                    "I'm, like, still in shock. I've never seen anybody die. I really cared about Katie."
-                ],
-                "next": "campus_15"
-            }
+        "text": "",
+        "next": [
+            { "name": "saved_kate", "type": "eq", "value": true, "node": "campus_14_saved" },
+            { "name": "saved_kate", "type": "eq", "value": false, "node": "campus_14_notsaved" }
         ]
+    },
+    "campus_14_saved": {
+        "text": [
+            "I'm glad it had a relatively happy ending.",
+            "I don't know what I would've done if Katie jumped..."
+        ],
+        "next": "campus_15"
+    },
+    "campus_14_notsaved": {
+        "text": [
+            "I imagine...you're pretty upset over Kate as well...",
+            "I'm, like, still in shock. I've never seen anybody die. I really cared about Katie."
+        ],
+        "next": "campus_15"
     },
     "campus_15": {
         "text": [
@@ -285,36 +348,38 @@ export const script: Script = {
         "next": "campus_16"
     },
     "campus_16": {
-        "choices": [
-            {
-                "name": "(Jefferson is suspended from contest)",
-                "text": "The contest will go on, I just won't be representing Blackwell at the event this year thanks to Max, who claims I enabled Kate Marsh's trouble by merely listening to her.",
-                "next": "campus_17"
-            },
-            {
-                "name": "(Jefferson isn't suspended from contest)",
-                "text": "It doesn't. The contest is still a-go and I still have to pick the winner to best represent Blackwell. I've got all the photos except one from...Max.",
-                "next": "campus_17"
-            }
+        "text": "",
+        "next": [
+            { "name": "jefferson_suspended", "type": "eq", "value": true, "node": "campus_16_out" },
+            { "name": "jefferson_suspended", "type": "eq", "value": false, "node": "campus_16_in" }
         ]
+    },
+    "campus_16_out": {
+        "text": "The contest will go on, I just won't be representing Blackwell at the event this year thanks to Max, who claims I enabled Kate Marsh's trouble by merely listening to her.",
+        "next": "campus_17"
+    },
+    "campus_16_in": {
+        "text": "It doesn't. The contest is still a-go and I still have to pick the winner to best represent Blackwell. I've got all the photos except one from...Max.",
+        "next": "campus_17"
     },
     "campus_17": {
         "text": "I'll give you a one-word sneak preview of Max's photo: selfie. Listen...you've seen my entry, you know it's better than that. Wouldn't that be SO cool to hang out together in San Francisco, Mark?",
         "next": "campus_18"
     },
     "campus_18": {
-        "choices": [
-            {
-                "name": "(Jefferson is suspended from contest)",
-                "text": "Stick to Mr. Jefferson, Victoria. I won't be going to San Francisco, remember?",
-                "next": "campus_19"
-            },
-            {
-                "name": "(Jefferson isn't suspended from contest)",
-                "text": "Stick to Mr. Jefferson, Victoria, please? And, uh...I haven't picked a winner yet.",
-                "next": "campus_19"
-            }
+        "text": "",
+        "next": [
+            { "name": "jefferson_suspended", "type": "eq", "value": true, "node": "campus_18_out" },
+            { "name": "jefferson_suspended", "type": "eq", "value": false, "node": "campus_18_in" }
         ]
+    },
+    "campus_18_out": {
+        "text": "Stick to Mr. Jefferson, Victoria. I won't be going to San Francisco, remember?",
+        "next": "campus_19"
+    },
+    "campus_18_in": {
+        "text": "Stick to Mr. Jefferson, Victoria, please? And, uh...I haven't picked a winner yet.",
+        "next": "campus_19"
     },
     "campus_19": {
         "text": [
@@ -343,18 +408,19 @@ export const script: Script = {
         "next": "hallway2_2"
     },
     "hallway2_2": {
-        "choices": [
-            {
-                "name": "(Took the blame / Came out to intervene)",
-                "text": "Not to mention the weed you brought into my room. Joking.",
-                "next": "hallway2_3"
-            },
-            {
-                "name": "(Blamed Chloe / Stayed hidden)",
-                "text": "You can always let me get busted like you did with the weed.",
-                "next": "hallway2_3"
-            }
+        "text": "",
+        "next": [
+            { "name": "intervened_for_chloe", "type": "eq", "value": true, "node": "hallway2_2_blame" },
+            { "name": "intervened_for_chloe", "type": "eq", "value": false, "node": "hallway2_2_hidden" }
         ]
+    },
+    "hallway2_2_blame": {
+        "text": "Not to mention the weed you brought into my room. Joking.",
+        "next": "hallway2_3"
+    },
+    "hallway2_2_hidden": {
+        "text": "You can always let me get busted like you did with the weed.",
+        "next": "hallway2_3"
     },
     "hallway2_3": {
         "text": [
@@ -365,36 +431,38 @@ export const script: Script = {
         "next": "hallway2_4"
     },
     "hallway2_4": {
-        "choices": [
-            {
-                "name": "(David is on leave)",
-                "text": "Not when Blackwell's ex-head of security is at home crying in his basement bunker...",
-                "next": "hallway2_5"
-            },
-            {
-                "name": "(David isn't on leave)",
-                "text": "Not if I'm related to the head of Blackwell security. Step-shit will not want me in the hands of the local police...",
-                "next": "hallway2_5"
-            }
+        "text": "",
+        "next": [
+            { "name": "david_suspended", "type": "eq", "value": true, "node": "hallway2_4_leave" },
+            { "name": "david_suspended", "type": "eq", "value": false, "node": "hallway2_4_not" }
         ]
+    },
+    "hallway2_4_leave": {
+        "text": "Not when Blackwell's ex-head of security is at home crying in his basement bunker...",
+        "next": "hallway2_5"
+    },
+    "hallway2_4_not": {
+        "text": "Not if I'm related to the head of Blackwell security. Step-shit will not want me in the hands of the local police...",
+        "next": "hallway2_5"
     },
     "hallway2_5": {
         "text": "So we better find out what's in the principal's office first. You can rewind if we get caught, right? You have mad powers, Max.",
         "next": "hallway2_6"
     },
     "hallway2_6": {
-        "choices": [
-            {
-                "name": "(Saved Kate)",
-                "text": "But my powers didn't save Kate... Maybe I did on my own...",
-                "next": "hallway2_7"
-            },
-            {
-                "name": "(Didn't save Kate)",
-                "text": "Tell that to Kate...",
-                "next": "hallway2_7"
-            }
+        "text": "",
+        "next": [
+            { "name": "saved_kate", "type": "eq", "value": true, "node": "hallway2_6_saved" },
+            { "name": "saved_kate", "type": "eq", "value": false, "node": "hallway2_6_not" }
         ]
+    },
+    "hallway2_6_saved": {
+        "text": "But my powers didn't save Kate... Maybe I did on my own...",
+        "next": "hallway2_7"
+    },
+    "hallway2_6_not": {
+        "text": "Tell that to Kate...",
+        "next": "hallway2_7"
     },
     "hallway2_7": {
         "text": [
@@ -413,18 +481,19 @@ export const script: Script = {
         "next": "hallway2_8"
     },
     "hallway2_8": {
-        "choices": [
-            {
-                "name": "(Max accepted Warren's invitation)",
-                "text": "Yes, I'm still ALL-IN to \"Go Ape\" with you at the drive-in... Thanks for the help.",
-                "next": "hallway2_9"
-            },
-            {
-                "name": "(Max declined Warren's invitation)",
-                "text": "I'm sorry, I'm just not sure about a movie night right now. Don't hate me... And thanks for the help.",
-                "next": "hallway2_9"
-            }
+        "text": "",
+        "next": [
+            { "name": "accepted_warren_invite", "type": "eq", "value": true, "node": "hallway2_8_acc" },
+            { "name": "accepted_warren_invite", "type": "eq", "value": false, "node": "hallway2_8_dec" }
         ]
+    },
+    "hallway2_8_acc": {
+        "text": "Yes, I'm still ALL-IN to \"Go Ape\" with you at the drive-in... Thanks for the help.",
+        "next": "hallway2_9"
+    },
+    "hallway2_8_dec": {
+        "text": "I'm sorry, I'm just not sure about a movie night right now. Don't hate me... And thanks for the help.",
+        "next": "hallway2_9"
     },
     "hallway2_9": {
         "text": [
@@ -490,11 +559,14 @@ export const script: Script = {
         "next": "pool_2"
     },
     "pool_2": {
-        "choices": [
-            { "name": "(Max was suspended)", "text": "We still have to play it cool, okay? Even if I'm suspended.", "next": "pool_3" },
-            { "name": "(Max wasn't suspended)", "text": "We still have to play it cool, okay? I still go to school here.", "next": "pool_3" }
+        "text": "",
+        "next": [
+            { "name": "max_suspended", "type": "eq", "value": true, "node": "pool_2_susp" },
+            { "name": "max_suspended", "type": "eq", "value": false, "node": "pool_2_not" }
         ]
     },
+    "pool_2_susp": { "text": "We still have to play it cool, okay? Even if I'm suspended.", "next": "pool_3" },
+    "pool_2_not": { "text": "We still have to play it cool, okay? I still go to school here.", "next": "pool_3" },
     "pool_3": {
         "text": [
             "You can own this hellhole once you figure out your rewind power...",
@@ -530,11 +602,14 @@ export const script: Script = {
         "next": "pool_6"
     },
     "pool_6": {
-        "choices": [
-            { "name": "(David is on leave)", "text": "You want me to crash where the Blackwell security officer I just busted lives, so I'll be safe? Okay!", "next": "pool_7" },
-            { "name": "(David isn't on leave)", "text": "You want me to crash where the Blackwell security officer lives so I'll be safe? Okay!", "next": "pool_7" }
+        "text": "",
+        "next": [
+            { "name": "david_suspended", "type": "eq", "value": true, "node": "pool_6_leave" },
+            { "name": "david_suspended", "type": "eq", "value": false, "node": "pool_6_not" }
         ]
     },
+    "pool_6_leave": { "text": "You want me to crash where the Blackwell security officer I just busted lives, so I'll be safe? Okay!", "next": "pool_7" },
+    "pool_6_not": { "text": "You want me to crash where the Blackwell security officer lives so I'll be safe? Okay!", "next": "pool_7" },
     "pool_7": {
         "text": [
             "Into the car!",
@@ -561,24 +636,25 @@ export const script: Script = {
         "next": "upstairs_choice"
     },
     "upstairs_choice": {
-        "choices": [
-            {
-                "name": "(Max is suspended)",
-                "text": [
-                    "No, you don't. You're suspended, criminal.",
-                    "Nobody suspended my homework. If I don't turn it in, the school will contact my folks again. And Max gets in more trouble."
-                ],
-                "next": "downstairs_1"
-            },
-            {
-                "name": "(Max is not suspended)",
-                "text": [
-                    "Oh, does the schoolgirl have a test today?",
-                    "I'm starting to feel like going to Blackwell every day is a test. I just need to get on my regular school schedule again."
-                ],
-                "next": "downstairs_1"
-            }
+        "text": "",
+        "next": [
+            { "name": "max_suspended", "type": "eq", "value": true, "node": "upstairs_choice_susp" },
+            { "name": "max_suspended", "type": "eq", "value": false, "node": "upstairs_choice_not" }
         ]
+    },
+    "upstairs_choice_susp": {
+        "text": [
+            "No, you don't. You're suspended, criminal.",
+            "Nobody suspended my homework. If I don't turn it in, the school will contact my folks again. And Max gets in more trouble."
+        ],
+        "next": "downstairs_1"
+    },
+    "upstairs_choice_not": {
+        "text": [
+            "Oh, does the schoolgirl have a test today?",
+            "I'm starting to feel like going to Blackwell every day is a test. I just need to get on my regular school schedule again."
+        ],
+        "next": "downstairs_1"
     },
 
     // ===================== Downstairs (Joyce & David) =====================
@@ -687,24 +763,25 @@ export const script: Script = {
         ]
     },
     "downstairs_noway": {
-        "choices": [
-            {
-                "name": "(Blamed Chloe / Stayed hidden)",
-                "text": [
-                    "I just wish you could have stopped Chloe from getting busted by David for that joint.",
-                    "I know..."
-                ],
-                "next": "downstairs_noway2"
-            },
-            {
-                "name": "(Took the blame / Came out to intervene)",
-                "text": [
-                    "And when you took the rap for that joint, you proved it.",
-                    "Thanks..."
-                ],
-                "next": "downstairs_noway2"
-            }
+        "text": "",
+        "next": [
+            { "name": "intervened_for_chloe", "type": "eq", "value": true, "node": "downstairs_noway_blame" },
+            { "name": "intervened_for_chloe", "type": "eq", "value": false, "node": "downstairs_noway_hidden" }
         ]
+    },
+    "downstairs_noway_hidden": {
+        "text": [
+            "I just wish you could have stopped Chloe from getting busted by David for that joint.",
+            "I know..."
+        ],
+        "next": "downstairs_noway2"
+    },
+    "downstairs_noway_blame": {
+        "text": [
+            "And when you took the rap for that joint, you proved it.",
+            "Thanks..."
+        ],
+        "next": "downstairs_noway2"
     },
     "downstairs_noway2": {
         "text": "But it seems like Chloe and me were pirates a thousand years ago...",
@@ -750,30 +827,31 @@ export const script: Script = {
         "next": "downstairs_david"
     },
     "downstairs_david": {
-        "choices": [
-            {
-                "name": "(David is on leave)",
-                "text": [
-                    "That's what happens when you lose your job as head of Blackwell security.",
-                    "What happened?",
-                    "What you would expect to happen in this P.C. college bullshit age—the Principal takes the words of lying stoned students over a veteran and law professional.",
-                    "Ugh, again? This isn't the first time you've gotten in trouble there...",
-                    "Well, now it's the last time. I'll get a lawyer to sue their ass."
-                ],
-                "next": "downstairs_6"
-            },
-            {
-                "name": "(David isn't on leave)",
-                "text": [
-                    "I have to take a nap after writing up vandalism reports last night.",
-                    "What happened?",
-                    "Some little shitass punks broke in to the swimming pool. This is what happens at these P.C. bullshit colleges. Entitled students taking over the campus!",
-                    "Do you know for sure it was Blackwell students?",
-                    "Who else would do it? And I'm going to bust them."
-                ],
-                "next": "downstairs_6"
-            }
+        "text": "",
+        "next": [
+            { "name": "david_suspended", "type": "eq", "value": true, "node": "downstairs_david_leave" },
+            { "name": "david_suspended", "type": "eq", "value": false, "node": "downstairs_david_not" }
         ]
+    },
+    "downstairs_david_leave": {
+        "text": [
+            "That's what happens when you lose your job as head of Blackwell security.",
+            "What happened?",
+            "What you would expect to happen in this P.C. college bullshit age—the Principal takes the words of lying stoned students over a veteran and law professional.",
+            "Ugh, again? This isn't the first time you've gotten in trouble there...",
+            "Well, now it's the last time. I'll get a lawyer to sue their ass."
+        ],
+        "next": "downstairs_6"
+    },
+    "downstairs_david_not": {
+        "text": [
+            "I have to take a nap after writing up vandalism reports last night.",
+            "What happened?",
+            "Some little shitass punks broke in to the swimming pool. This is what happens at these P.C. bullshit colleges. Entitled students taking over the campus!",
+            "Do you know for sure it was Blackwell students?",
+            "Who else would do it? And I'm going to bust them."
+        ],
+        "next": "downstairs_6"
     },
     "downstairs_6": {
         "text": [
@@ -783,17 +861,23 @@ export const script: Script = {
         "next": "downstairs_david2"
     },
     "downstairs_david2": {
-        "choices": [
-            { "name": "(Max is suspended)", "text": "Must be nice to be suspended and have some free time off Blackwell.", "next": "downstairs_david3" },
-            { "name": "(Max isn't suspended)", "text": "No, you and Chloe think you know more than anybody. Like all teenagers.", "next": "downstairs_david3" }
+        "text": "",
+        "next": [
+            { "name": "max_suspended", "type": "eq", "value": true, "node": "downstairs_david2_susp" },
+            { "name": "max_suspended", "type": "eq", "value": false, "node": "downstairs_david2_not" }
         ]
     },
+    "downstairs_david2_susp": { "text": "Must be nice to be suspended and have some free time off Blackwell.", "next": "downstairs_david3" },
+    "downstairs_david2_not": { "text": "No, you and Chloe think you know more than anybody. Like all teenagers.", "next": "downstairs_david3" },
     "downstairs_david3": {
-        "choices": [
-            { "name": "(David is on leave)", "text": "Leave Max alone, David. I can't believe you got fired—no, of course I can believe you got fired. Did you threaten some poor student with the stockade?", "next": "downstairs_7" },
-            { "name": "(David isn't on leave)", "text": "Leave Max alone, David. Stop threatening students.", "next": "downstairs_7" }
+        "text": "",
+        "next": [
+            { "name": "david_suspended", "type": "eq", "value": true, "node": "downstairs_david3_leave" },
+            { "name": "david_suspended", "type": "eq", "value": false, "node": "downstairs_david3_not" }
         ]
     },
+    "downstairs_david3_leave": { "text": "Leave Max alone, David. I can't believe you got fired—no, of course I can believe you got fired. Did you threaten some poor student with the stockade?", "next": "downstairs_7" },
+    "downstairs_david3_not": { "text": "Leave Max alone, David. Stop threatening students.", "next": "downstairs_7" },
     "downstairs_7": {
         "text": [
             "He threatens them with surveillance cameras. So he can spy on everybody... like he spies on all of us here.",
@@ -818,29 +902,33 @@ export const script: Script = {
 
     // ===================== Two Whales Diner - Frank =====================
     "diner_frank1": {
-        "choices": [
-            {
-                "name": "(Shot at Frank)",
-                "text": "You show up after almost shooting me? You have serious balls, little girl. But hanging out with Chloe, playing with guns and dressing like Rachel doesn't make you cool or tough. The fuck do you want?",
-                "next": "diner_frank1b"
-            },
-            {
-                "name": "(Didn't shoot at Frank)",
-                "text": "You have serious balls, little girl. But hanging out with Chloe, playing with guns and dressing up like Rachel doesn't make you cool or tough. What the fuck do you want? Take a picture of me and I'll break your fucking camera.",
-                "next": "diner_frank1b"
-            }
+        "text": "",
+        "next": [
+            { "name": "shot_at_frank", "type": "eq", "value": true, "node": "diner_frank1_shot" },
+            { "name": "shot_at_frank", "type": "eq", "value": false, "node": "diner_frank1_not" }
         ]
+    },
+    "diner_frank1_shot": {
+        "text": "You show up after almost shooting me? You have serious balls, little girl. But hanging out with Chloe, playing with guns and dressing like Rachel doesn't make you cool or tough. The fuck do you want?",
+        "next": "diner_frank1b"
+    },
+    "diner_frank1_not": {
+        "text": "You have serious balls, little girl. But hanging out with Chloe, playing with guns and dressing up like Rachel doesn't make you cool or tough. What the fuck do you want? Take a picture of me and I'll break your fucking camera.",
+        "next": "diner_frank1b"
     },
     "diner_frank1b": {
         "text": "How do you know these are Rachel's clothes?",
         "next": "diner_frank1c"
     },
     "diner_frank1c": {
-        "choices": [
-            { "name": "(Shot at Frank)", "text": "Because she looks beautiful in them and you look like ass. Aiming a gun doesn't make you any sexier.", "next": "diner_frank1d" },
-            { "name": "(Didn't shoot at Frank)", "text": "Because she looks beautiful in them and you look like ass. You're lucky I just took that gun from you...", "next": "diner_frank1d" }
+        "text": "",
+        "next": [
+            { "name": "shot_at_frank", "type": "eq", "value": true, "node": "diner_frank1c_shot" },
+            { "name": "shot_at_frank", "type": "eq", "value": false, "node": "diner_frank1c_not" }
         ]
     },
+    "diner_frank1c_shot": { "text": "Because she looks beautiful in them and you look like ass. Aiming a gun doesn't make you any sexier.", "next": "diner_frank1d" },
+    "diner_frank1c_not": { "text": "Because she looks beautiful in them and you look like ass. You're lucky I just took that gun from you...", "next": "diner_frank1d" },
     "diner_frank1d": {
         "text": [
             "Grab your keys and let's check out your RV...",
