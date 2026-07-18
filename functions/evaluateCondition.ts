@@ -6,6 +6,8 @@ export const evaluateCondition = (condition:GetCondition, context:Context):boole
     switch (condition.type) {
         case "eq":
             return variableValue === condition.value;
+        case "ne":
+            return variableValue !== condition.value;
         case "gt":
             return variableValue > condition.value;
         case "gte":

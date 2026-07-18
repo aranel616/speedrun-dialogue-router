@@ -3,15 +3,15 @@ export type Next = string | ConditionalNext;
 
 export interface GetCondition {
     name: string,
-    type: "eq" | "gt" | "gte" | "lt" | "lte",
-    value: boolean | number,
+    type: "eq" | "ne" | "gt" | "gte" | "lt" | "lte",
+    value: boolean | number | string,
     node: string
 }
 
 export interface SetCondition {
     name: string,
     type: "set" | "add" | "subtract",
-    value: boolean | number
+    value: boolean | number | string
 }
 
 export type ConditionalNext = GetCondition[];
@@ -36,5 +36,5 @@ export type Interaction = InteractionWithChoices | InteractionWithoutChoices;
 export type Script = {[key: string]: Interaction};
 
 export interface Context {
-    [key: string]: boolean | number
+    [key: string]: boolean | number | string
 }

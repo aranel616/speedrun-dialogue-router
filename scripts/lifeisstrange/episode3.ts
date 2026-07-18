@@ -7,32 +7,17 @@ export const script: Script = {
     // episode instead of being free.
     "start": {
         "choices": [
-            { "name": "(Saved Kate)", "text": "", "set": { "name": "saved_kate", "type": "set", "value": true }, "next": "setup_nathan_susp" },
-            { "name": "(Didn't save Kate)", "text": "", "set": { "name": "saved_kate", "type": "set", "value": false }, "next": "setup_nathan_susp" }
+            { "name": "(Saved Kate)", "text": "", "set": { "name": "saved_kate", "type": "set", "value": true }, "next": "setup_suspended" },
+            { "name": "(Didn't save Kate)", "text": "", "set": { "name": "saved_kate", "type": "set", "value": false }, "next": "setup_suspended" }
         ]
     },
-    "setup_nathan_susp": {
+    "setup_suspended": {
         "choices": [
-            { "name": "(Nathan suspended)", "text": "", "set": { "name": "nathan_suspended", "type": "set", "value": true }, "next": "setup_david_susp" },
-            { "name": "(Nathan not suspended)", "text": "", "set": { "name": "nathan_suspended", "type": "set", "value": false }, "next": "setup_david_susp" }
-        ]
-    },
-    "setup_david_susp": {
-        "choices": [
-            { "name": "(David on leave)", "text": "", "set": { "name": "david_suspended", "type": "set", "value": true }, "next": "setup_jeff_susp" },
-            { "name": "(David not on leave)", "text": "", "set": { "name": "david_suspended", "type": "set", "value": false }, "next": "setup_jeff_susp" }
-        ]
-    },
-    "setup_jeff_susp": {
-        "choices": [
-            { "name": "(Jefferson out of contest)", "text": "", "set": { "name": "jefferson_suspended", "type": "set", "value": true }, "next": "setup_max_susp" },
-            { "name": "(Jefferson in contest)", "text": "", "set": { "name": "jefferson_suspended", "type": "set", "value": false }, "next": "setup_max_susp" }
-        ]
-    },
-    "setup_max_susp": {
-        "choices": [
-            { "name": "(Max suspended)", "text": "", "set": { "name": "max_suspended", "type": "set", "value": true }, "next": "setup_chloe3" },
-            { "name": "(Max not suspended)", "text": "", "set": { "name": "max_suspended", "type": "set", "value": false }, "next": "setup_chloe3" }
+            { "name": "(Blamed Nathan → Nathan suspended)", "text": "", "set": { "name": "suspended", "type": "set", "value": "nathan" }, "next": "setup_chloe3" },
+            { "name": "(Blamed David → David on leave)", "text": "", "set": { "name": "suspended", "type": "set", "value": "david" }, "next": "setup_chloe3" },
+            { "name": "(Blamed Jefferson → out of contest)", "text": "", "set": { "name": "suspended", "type": "set", "value": "jefferson" }, "next": "setup_chloe3" },
+            { "name": "(Blame backfired → Max suspended)", "text": "", "set": { "name": "suspended", "type": "set", "value": "max" }, "next": "setup_chloe3" },
+            { "name": "(No one suspended)", "text": "", "set": { "name": "suspended", "type": "set", "value": "none" }, "next": "setup_chloe3" }
         ]
     },
     "setup_chloe3": {
@@ -177,11 +162,11 @@ export const script: Script = {
     "campus_6": {
         "text": "",
         "next": [
-            { "name": "nathan_suspended", "type": "eq", "value": true, "node": "campus_6_nathan" },
-            { "name": "david_suspended", "type": "eq", "value": true, "node": "campus_6_david" },
-            { "name": "jefferson_suspended", "type": "eq", "value": true, "node": "campus_6_jefferson" },
-            { "name": "max_suspended", "type": "eq", "value": true, "node": "campus_6_max" },
-            { "name": "nathan_suspended", "type": "eq", "value": false, "node": "campus_6_none" }
+            { "name": "suspended", "type": "eq", "value": "nathan", "node": "campus_6_nathan" },
+            { "name": "suspended", "type": "eq", "value": "david", "node": "campus_6_david" },
+            { "name": "suspended", "type": "eq", "value": "jefferson", "node": "campus_6_jefferson" },
+            { "name": "suspended", "type": "eq", "value": "max", "node": "campus_6_max" },
+            { "name": "suspended", "type": "eq", "value": "none", "node": "campus_6_none" }
         ]
     },
     "campus_6_nathan": { "text": "Especially after I just got Nathan expelled...", "next": "campus_7" },
@@ -295,8 +280,8 @@ export const script: Script = {
     "campus_12": {
         "text": "",
         "next": [
-            { "name": "max_suspended", "type": "eq", "value": true, "node": "campus_12_susp" },
-            { "name": "max_suspended", "type": "eq", "value": false, "node": "campus_12_not" }
+            { "name": "suspended", "type": "eq", "value": "max", "node": "campus_12_susp" },
+            { "name": "suspended", "type": "ne", "value": "max", "node": "campus_12_not" }
         ]
     },
     "campus_12_susp": {
@@ -350,8 +335,8 @@ export const script: Script = {
     "campus_16": {
         "text": "",
         "next": [
-            { "name": "jefferson_suspended", "type": "eq", "value": true, "node": "campus_16_out" },
-            { "name": "jefferson_suspended", "type": "eq", "value": false, "node": "campus_16_in" }
+            { "name": "suspended", "type": "eq", "value": "jefferson", "node": "campus_16_out" },
+            { "name": "suspended", "type": "ne", "value": "jefferson", "node": "campus_16_in" }
         ]
     },
     "campus_16_out": {
@@ -369,8 +354,8 @@ export const script: Script = {
     "campus_18": {
         "text": "",
         "next": [
-            { "name": "jefferson_suspended", "type": "eq", "value": true, "node": "campus_18_out" },
-            { "name": "jefferson_suspended", "type": "eq", "value": false, "node": "campus_18_in" }
+            { "name": "suspended", "type": "eq", "value": "jefferson", "node": "campus_18_out" },
+            { "name": "suspended", "type": "ne", "value": "jefferson", "node": "campus_18_in" }
         ]
     },
     "campus_18_out": {
@@ -433,8 +418,8 @@ export const script: Script = {
     "hallway2_4": {
         "text": "",
         "next": [
-            { "name": "david_suspended", "type": "eq", "value": true, "node": "hallway2_4_leave" },
-            { "name": "david_suspended", "type": "eq", "value": false, "node": "hallway2_4_not" }
+            { "name": "suspended", "type": "eq", "value": "david", "node": "hallway2_4_leave" },
+            { "name": "suspended", "type": "ne", "value": "david", "node": "hallway2_4_not" }
         ]
     },
     "hallway2_4_leave": {
@@ -561,8 +546,8 @@ export const script: Script = {
     "pool_2": {
         "text": "",
         "next": [
-            { "name": "max_suspended", "type": "eq", "value": true, "node": "pool_2_susp" },
-            { "name": "max_suspended", "type": "eq", "value": false, "node": "pool_2_not" }
+            { "name": "suspended", "type": "eq", "value": "max", "node": "pool_2_susp" },
+            { "name": "suspended", "type": "ne", "value": "max", "node": "pool_2_not" }
         ]
     },
     "pool_2_susp": { "text": "We still have to play it cool, okay? Even if I'm suspended.", "next": "pool_3" },
@@ -604,8 +589,8 @@ export const script: Script = {
     "pool_6": {
         "text": "",
         "next": [
-            { "name": "david_suspended", "type": "eq", "value": true, "node": "pool_6_leave" },
-            { "name": "david_suspended", "type": "eq", "value": false, "node": "pool_6_not" }
+            { "name": "suspended", "type": "eq", "value": "david", "node": "pool_6_leave" },
+            { "name": "suspended", "type": "ne", "value": "david", "node": "pool_6_not" }
         ]
     },
     "pool_6_leave": { "text": "You want me to crash where the Blackwell security officer I just busted lives, so I'll be safe? Okay!", "next": "pool_7" },
@@ -638,8 +623,8 @@ export const script: Script = {
     "upstairs_choice": {
         "text": "",
         "next": [
-            { "name": "max_suspended", "type": "eq", "value": true, "node": "upstairs_choice_susp" },
-            { "name": "max_suspended", "type": "eq", "value": false, "node": "upstairs_choice_not" }
+            { "name": "suspended", "type": "eq", "value": "max", "node": "upstairs_choice_susp" },
+            { "name": "suspended", "type": "ne", "value": "max", "node": "upstairs_choice_not" }
         ]
     },
     "upstairs_choice_susp": {
@@ -829,8 +814,8 @@ export const script: Script = {
     "downstairs_david": {
         "text": "",
         "next": [
-            { "name": "david_suspended", "type": "eq", "value": true, "node": "downstairs_david_leave" },
-            { "name": "david_suspended", "type": "eq", "value": false, "node": "downstairs_david_not" }
+            { "name": "suspended", "type": "eq", "value": "david", "node": "downstairs_david_leave" },
+            { "name": "suspended", "type": "ne", "value": "david", "node": "downstairs_david_not" }
         ]
     },
     "downstairs_david_leave": {
@@ -863,8 +848,8 @@ export const script: Script = {
     "downstairs_david2": {
         "text": "",
         "next": [
-            { "name": "max_suspended", "type": "eq", "value": true, "node": "downstairs_david2_susp" },
-            { "name": "max_suspended", "type": "eq", "value": false, "node": "downstairs_david2_not" }
+            { "name": "suspended", "type": "eq", "value": "max", "node": "downstairs_david2_susp" },
+            { "name": "suspended", "type": "ne", "value": "max", "node": "downstairs_david2_not" }
         ]
     },
     "downstairs_david2_susp": { "text": "Must be nice to be suspended and have some free time off Blackwell.", "next": "downstairs_david3" },
@@ -872,8 +857,8 @@ export const script: Script = {
     "downstairs_david3": {
         "text": "",
         "next": [
-            { "name": "david_suspended", "type": "eq", "value": true, "node": "downstairs_david3_leave" },
-            { "name": "david_suspended", "type": "eq", "value": false, "node": "downstairs_david3_not" }
+            { "name": "suspended", "type": "eq", "value": "david", "node": "downstairs_david3_leave" },
+            { "name": "suspended", "type": "ne", "value": "david", "node": "downstairs_david3_not" }
         ]
     },
     "downstairs_david3_leave": { "text": "Leave Max alone, David. I can't believe you got fired—no, of course I can believe you got fired. Did you threaten some poor student with the stockade?", "next": "downstairs_7" },

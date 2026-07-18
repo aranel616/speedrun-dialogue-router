@@ -39,8 +39,10 @@ traverse(script, nodeId, currentLength, context, depth) → [totalLength, path[]
 ### Type System (`types.ts`)
 
 - `Next = string | ConditionalNext` — a node ID or an array of `GetCondition` (first matching condition wins, evaluated by `getNextNode`).
+- `GetCondition.type` supports `eq | ne | gt | gte | lt | lte`. `ne` (not-equal) is used to express "any value except X" against a multi-valued variable (see Inherited Decisions below).
+- Condition/context **values may be `boolean | number | string`.** String values model exclusive multi-way state (e.g. `suspended` ∈ `{nathan, david, jefferson, max, none}`) as one variable instead of several booleans.
 - `SetCondition` supports `set | add | subtract`, but only `"set"` is currently applied in `traverse.ts`. `add`/`subtract` are parsed but ignored.
-- `Context` is a flat `{[name]: boolean | number}` map passed immutably (spread-copied before mutations).
+- `Context` is a flat `{[name]: boolean | number | string}` map passed immutably (spread-copied before mutations).
 
 ### Adding a New Script
 
@@ -124,6 +126,35 @@ When a bridge node routes to different destinations based on a prior flag, use a
 }
 ```
 If no condition matches, the node becomes terminal (safe default for exhaustive flag coverage).
+
+### Inherited Decisions (cross-episode carried state)
+
+Episodes 2+ react to choices made in earlier episodes (did you save Kate, who did you blame, etc.). Because those choices are fixed once (before the episode starts), model them as **setup forks** rather than scattered per-occurrence choices — otherwise the pathfinder cherry-picks a different value at each occurrence and produces an inconsistent (and semantically impossible) playthrough.
+
+**Setup fork** — a chain of choice nodes at the very top of the script, one per inherited variable, each option carrying empty text and a `set`, all options routing to the next fork. The last fork routes to the real first content node:
+```typescript
+"start": {                       // first setup fork; the client detects the chain from "start"
+    "choices": [
+        { "name": "(Saved Kate)",     "text": "", "set": { "name": "saved_kate", "type": "set", "value": true },  "next": "setup_next" },
+        { "name": "(Didn't save Kate)","text": "", "set": { "name": "saved_kate", "type": "set", "value": false }, "next": "setup_next" }
+    ]
+},
+// ... more forks ...
+"setup_last": { "choices": [ /* → content root, e.g. "maxroom_intro" */ ] }
+```
+- The client renders the fork chain as a detached green list above the graph (`GraphCanvas` walks setup forks from `"start"`); the content root is the first non-fork node. Add the content root as the first `toc.ts` entry (not `"start"`).
+- The DFS searches the full cross-product of inherited values at find-shortest-path time, so each variable stays constant along any one path but the optimum may use any combination.
+
+**Exclusive multi-way state → one string variable, not N booleans.** When the underlying game choice produces exactly one of several outcomes, model it as a single string-valued variable, not independent booleans (which the solver could set true simultaneously). Example: the Episode 2 Principal's Office produces exactly one of *Nathan suspended / David on leave / Jefferson out of contest / Max suspended / no one* — all driven by who you blame. This is one variable `suspended` ∈ `{nathan, david, jefferson, max, none}`, set by a 5-option setup fork. Occurrences route with `eq` for the matched value and `ne` for "any other value":
+```typescript
+"campus_x": { "text": "", "next": [
+    { "name": "suspended", "type": "eq", "value": "david", "node": "campus_x_leave" },
+    { "name": "suspended", "type": "ne", "value": "david", "node": "campus_x_not" }
+] }
+```
+For a variable that is a **combination** of two others (e.g. Episode 5's nightmare reacts to `kissed_chloe` × `kissed_warren`), nest routing nodes: branch on the first variable, then on the second within each branch.
+
+**In-episode vs inherited.** Only carry-in state goes in the setup forks. State decided *within* the episode (puzzles, framing choices) stays as ordinary choice nodes at its decision point. If an in-episode determinant appears in multiple later occurrences that must agree (e.g. Episode 5's `david_killed_jefferson`), give it a setup fork too so the occurrences can't disagree.
 
 ### Context Flags
 

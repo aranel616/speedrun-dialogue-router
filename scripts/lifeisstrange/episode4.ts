@@ -24,26 +24,17 @@ export const script: Script = {
     },
     "setup4_victoria": {
         "choices": [
-            { "name": "(Made fun of Victoria)", "text": "", "set": { "name": "made_fun_of_victoria", "type": "set", "value": true }, "next": "setup4_maxsusp" },
-            { "name": "(Comforted Victoria)", "text": "", "set": { "name": "made_fun_of_victoria", "type": "set", "value": false }, "next": "setup4_maxsusp" }
+            { "name": "(Made fun of Victoria)", "text": "", "set": { "name": "made_fun_of_victoria", "type": "set", "value": true }, "next": "setup4_suspended" },
+            { "name": "(Comforted Victoria)", "text": "", "set": { "name": "made_fun_of_victoria", "type": "set", "value": false }, "next": "setup4_suspended" }
         ]
     },
-    "setup4_maxsusp": {
+    "setup4_suspended": {
         "choices": [
-            { "name": "(Max suspended)", "text": "", "set": { "name": "max_suspended", "type": "set", "value": true }, "next": "setup4_nathansusp" },
-            { "name": "(Max not suspended)", "text": "", "set": { "name": "max_suspended", "type": "set", "value": false }, "next": "setup4_nathansusp" }
-        ]
-    },
-    "setup4_nathansusp": {
-        "choices": [
-            { "name": "(Nathan suspended)", "text": "", "set": { "name": "nathan_suspended", "type": "set", "value": true }, "next": "setup4_blamejeff" },
-            { "name": "(Nathan not suspended)", "text": "", "set": { "name": "nathan_suspended", "type": "set", "value": false }, "next": "setup4_blamejeff" }
-        ]
-    },
-    "setup4_blamejeff": {
-        "choices": [
-            { "name": "(Blamed Jefferson)", "text": "", "set": { "name": "blamed_jefferson", "type": "set", "value": true }, "next": "setup4_gun" },
-            { "name": "(Didn't blame Jefferson)", "text": "", "set": { "name": "blamed_jefferson", "type": "set", "value": false }, "next": "setup4_gun" }
+            { "name": "(Blamed Nathan → Nathan suspended)", "text": "", "set": { "name": "suspended", "type": "set", "value": "nathan" }, "next": "setup4_gun" },
+            { "name": "(Blamed David → David on leave)", "text": "", "set": { "name": "suspended", "type": "set", "value": "david" }, "next": "setup4_gun" },
+            { "name": "(Blamed Jefferson → out of contest)", "text": "", "set": { "name": "suspended", "type": "set", "value": "jefferson" }, "next": "setup4_gun" },
+            { "name": "(Blame backfired → Max suspended)", "text": "", "set": { "name": "suspended", "type": "set", "value": "max" }, "next": "setup4_gun" },
+            { "name": "(No one suspended)", "text": "", "set": { "name": "suspended", "type": "set", "value": "none" }, "next": "setup4_gun" }
         ]
     },
     "setup4_gun": {
@@ -771,8 +762,8 @@ export const script: Script = {
     "hospital_kate_nathan": {
         "text": "",
         "next": [
-            { "name": "nathan_suspended", "type": "eq", "value": true, "node": "hospital_kate_nathan_susp" },
-            { "name": "nathan_suspended", "type": "eq", "value": false, "node": "hospital_kate_nathan_not" }
+            { "name": "suspended", "type": "eq", "value": "nathan", "node": "hospital_kate_nathan_susp" },
+            { "name": "suspended", "type": "ne", "value": "nathan", "node": "hospital_kate_nathan_not" }
         ]
     },
     "hospital_kate_nathan_susp": {
@@ -850,8 +841,8 @@ export const script: Script = {
     "dorm_jeff1": {
         "text": "",
         "next": [
-            { "name": "max_suspended", "type": "eq", "value": false, "node": "dorm_jeff1_not" },
-            { "name": "max_suspended", "type": "eq", "value": true, "node": "dorm_jeff1_susp" }
+            { "name": "suspended", "type": "ne", "value": "max", "node": "dorm_jeff1_not" },
+            { "name": "suspended", "type": "eq", "value": "max", "node": "dorm_jeff1_susp" }
         ]
     },
     "dorm_jeff1_not": {
@@ -877,8 +868,8 @@ export const script: Script = {
     "dorm_jeff2": {
         "text": "",
         "next": [
-            { "name": "blamed_jefferson", "type": "eq", "value": false, "node": "dorm_jeff2_didnt" },
-            { "name": "blamed_jefferson", "type": "eq", "value": true, "node": "dorm_jeff2_blamed" }
+            { "name": "suspended", "type": "ne", "value": "jefferson", "node": "dorm_jeff2_didnt" },
+            { "name": "suspended", "type": "eq", "value": "jefferson", "node": "dorm_jeff2_blamed" }
         ]
     },
     "dorm_jeff2_didnt": { "text": "I feel like a total loser, but it's been a hard week to focus. No pun intended.", "next": "dorm_jeff3" },

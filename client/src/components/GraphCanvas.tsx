@@ -242,7 +242,7 @@ export function GraphCanvas({ scriptId, graphNodes, graphEdges, visitedNodeIds, 
       const arr = children.get(e.source);
       if (arr) arr.push(e.target); else children.set(e.source, [e.target]);
     }
-    const forks: { id: string; variable: string; options: { label: string; value: boolean | number; ciId: string }[] }[] = [];
+    const forks: { id: string; variable: string; options: { label: string; value: boolean | number | string; ciId: string }[] }[] = [];
     const hidden = new Set<string>();
     let cur: string | undefined = "start";
     let contentRoot = "start";
@@ -450,21 +450,31 @@ export function GraphCanvas({ scriptId, graphNodes, graphEdges, visitedNodeIds, 
   const { x, y, zoom } = viewport;
 
   // Detached list of inherited decisions, stacked above the graph's top node.
-  const INH_W = 320, INH_H = 62, INH_GAP = 8;
+  const INH_W = 320, INH_GAP = 8;
+  // Each option wraps onto (roughly) its own row in the 320px card, so height
+  // grows with option count rather than being fixed — 5-value forks fit cleanly.
+  const inhCardH = (nOpts: number) => 30 + nOpts * 20;
   const inheritedCards = (() => {
     if (inherited.forks.length === 0 || posNodes.length === 0) return [];
     const topY = Math.min(...posNodes.map(n => n.y));
     const root = posNodes.find(n => n.id === inherited.contentRoot) ?? posNodes[0]!;
     const cx = root.x + root.w / 2;
-    const totalH = inherited.forks.length * (INH_H + INH_GAP) - INH_GAP;
+    const heights = inherited.forks.map(f => inhCardH(f.options.length));
+    const totalH = heights.reduce((a, h) => a + h + INH_GAP, 0) - INH_GAP;
     const listTop = topY - 72 - totalH;
-    return inherited.forks.map((f, i) => ({
-      id: f.id,
-      variable: f.variable,
-      options: f.options.map(o => ({ label: o.label, onPath: visitedNodeIds.has(o.ciId) })),
-      left: cx - INH_W / 2,
-      top: listTop + i * (INH_H + INH_GAP),
-    }));
+    let cursor = listTop;
+    return inherited.forks.map((f, i) => {
+      const top = cursor;
+      cursor += heights[i]! + INH_GAP;
+      return {
+        id: f.id,
+        variable: f.variable,
+        height: heights[i]!,
+        options: f.options.map(o => ({ label: o.label, onPath: visitedNodeIds.has(o.ciId) })),
+        left: cx - INH_W / 2,
+        top,
+      };
+    });
   })();
 
   return (

@@ -12,7 +12,7 @@ export interface ScriptListResponse {
 export interface GraphChoice {
   name: string;
   text: string | string[];
-  sets?: Array<{ name: string; type: string; value: boolean | number }>;
+  sets?: Array<{ name: string; type: string; value: boolean | number | string }>;
 }
 
 export interface GraphNode {
@@ -22,7 +22,7 @@ export interface GraphNode {
   isTerminal: boolean;
   // choiceItem-only fields
   choiceName?: string;
-  sets?: Array<{ name: string; type: string; value: boolean | number }>;
+  sets?: Array<{ name: string; type: string; value: boolean | number | string }>;
   // conditionItem-only field: human-readable branch condition (e.g. "took_photo_of_kate = true")
   condition?: string;
 }
@@ -44,13 +44,13 @@ export interface GraphResponse {
 export interface TraverseRequest {
   scriptId: string;
   startNode?: string;
-  initialContext?: Record<string, boolean | number>;
+  initialContext?: Record<string, boolean | number | string>;
 }
 
 export interface TraverseResponse {
   length: number;
   path: string[];
-  context: Record<string, boolean | number>;
+  context: Record<string, boolean | number | string>;
   visitedNodeIds: string[];
   cumulativeCounts: Record<string, number>;
 }

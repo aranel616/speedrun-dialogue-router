@@ -1,7 +1,7 @@
 import { Script, GetCondition } from "../../types";
 import { GraphNode, GraphEdge, GraphResponse } from "../types";
 
-const OP: Record<string, string> = { eq: "=", gt: ">", gte: "≥", lt: "<", lte: "≤" };
+const OP: Record<string, string> = { eq: "=", ne: "≠", gt: ">", gte: "≥", lt: "<", lte: "≤" };
 
 // Full "name op value" — used for the fallback (mixed-variable) fork display.
 function condLabel(c: GetCondition): string {
