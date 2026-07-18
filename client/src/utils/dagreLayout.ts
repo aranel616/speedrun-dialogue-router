@@ -2,7 +2,8 @@ import type { Node, Edge } from "@xyflow/react";
 
 const NODE_WIDTH = 420;
 const H_GAP = 80;
-const V_GAP = 60;
+const V_GAP_STRAIGHT = 40; // gap below a linear rank
+const V_GAP_BRANCH = 80;   // gap below a rank that fans out to multiple nodes
 const FALLBACK_HEIGHT = 88;
 
 export function applyDagreLayout(nodes: Node[], edges: Edge[], nodeHeights: Map<string, number>): Node[] {
@@ -107,7 +108,10 @@ export function applyDagreLayout(nodes: Node[], edges: Edge[], nodeHeights: Map<
   for (const r of sortedRanks) {
     rankY.set(r, cumY);
     const maxH = Math.max(...byRank.get(r)!.map(id => nodeHeights.get(id) ?? FALLBACK_HEIGHT));
-    cumY += maxH + V_GAP;
+    // Wider gap below ranks that fan out (a node with >1 child) to give diverging
+    // edges room; tight gap for straight linear chains.
+    const branches = byRank.get(r)!.some(id => (childrenOf.get(id)?.length ?? 0) > 1);
+    cumY += maxH + (branches ? V_GAP_BRANCH : V_GAP_STRAIGHT);
   }
 
   // Position: center each rank horizontally
