@@ -1,4 +1,4 @@
-import {calculateDialogueLength} from "../functions/calculateDialogueLength";
+import {calculateDialogueLength} from "../calculateDialogueLength";
 
 describe("calculateDialogueLength", () => {
     it("returns length of a simple string", () => {

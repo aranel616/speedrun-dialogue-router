@@ -1,4 +1,4 @@
-import {Script, Context} from "../types";
+import {Script, Context} from "./types";
 import {calculateDialogueLength} from "./calculateDialogueLength";
 import {getNextNode} from "./getNextNode";
 

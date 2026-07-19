@@ -1,4 +1,4 @@
-import {getNextNode} from "../functions/getNextNode";
+import {getNextNode} from "../getNextNode";
 import type {GetCondition} from "../types";
 
 const cond = (name: string, type: GetCondition["type"], value: boolean | number, node: string): GetCondition =>

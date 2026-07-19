@@ -1,0 +1,17 @@
+{
+  // Shared compiler options for every workspace package. Each package extends
+  // this and sets its own rootDir/outDir/types and include globs.
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es2020",
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "strict": true,
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": false,
+    "moduleDetection": "force",
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  }
+}

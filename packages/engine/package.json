@@ -1,0 +1,10 @@
+{
+  "name": "@sdr/engine",
+  "version": "0.1.0",
+  "description": "Shortest-path routing engine for branching dialogue scripts",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "test": "jest"
+  }
+}

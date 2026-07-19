@@ -1,6 +1,6 @@
 import type {Script} from "../types";
-import {traverse} from "../functions/traverse";
-import * as calcMod from "../functions/calculateDialogueLength";
+import {traverse} from "../traverse";
+import * as calcMod from "../calculateDialogueLength";
 
 beforeAll(() => {
     jest.spyOn(console, "log").mockImplementation(() => {});

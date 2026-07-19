@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import {Script} from "../../types";
+import {Script} from "@sdr/engine";
 
 const SCRIPTS_DIR = path.resolve(__dirname, "../../scripts");
 

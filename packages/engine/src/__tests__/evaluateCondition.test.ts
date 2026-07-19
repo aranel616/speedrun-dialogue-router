@@ -1,4 +1,4 @@
-import {evaluateCondition} from "../functions/evaluateCondition";
+import {evaluateCondition} from "../evaluateCondition";
 import type {GetCondition} from "../types";
 
 const cond = (type: GetCondition["type"], name: string, value: boolean | number): GetCondition =>

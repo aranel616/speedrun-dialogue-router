@@ -12,6 +12,7 @@ module.exports = {
     '**/*.ts',
     '!**/*.d.ts',
     '!**/__tests__/**',
+    '!**/dist/**',
     '!scripts/**',
     '!client/**',
   ],

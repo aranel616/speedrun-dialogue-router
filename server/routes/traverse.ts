@@ -1,11 +1,8 @@
 import {Router, Request, Response} from "express";
 import {loadScript} from "../lib/scriptLoader";
-import {traverse} from "../../functions/traverse";
-import {getNextNode} from "../../functions/getNextNode";
-import {evaluateCondition} from "../../functions/evaluateCondition";
-import {calculateDialogueLength} from "../../functions/calculateDialogueLength";
+import {traverse, getNextNode, evaluateCondition, calculateDialogueLength} from "@sdr/engine";
 import {isSingleVariableFork} from "../lib/graphBuilder";
-import {Script, Context} from "../../types";
+import {Script, Context} from "@sdr/engine";
 import {TraverseRequest, TraverseResponse} from "../types";
 
 const router = Router();

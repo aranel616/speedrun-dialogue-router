@@ -1,5 +1,11 @@
 {
+  "name": "speedrun-dialogue-router",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "dependencies": {
+    "@sdr/engine": "*",
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "ts-node": "^10.9.2",
@@ -25,7 +31,7 @@
     "test": "jest --coverage",
     "test:watch": "jest --watch",
     "server": "ts-node server/index.ts",
-    "server:dev": "nodemon --exec ts-node --watch server --watch functions --watch scripts --ext ts server/index.ts",
+    "server:dev": "nodemon --exec ts-node --watch server --watch packages/engine --watch scripts --ext ts server/index.ts",
     "build:client": "cd client && npm install && npm run build",
     "start": "node server/index.js"
   }

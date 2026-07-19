@@ -1,4 +1,4 @@
-import {GetCondition, Context} from "../types";
+import {GetCondition, Context} from "./types";
 
 export const evaluateCondition = (condition: GetCondition, context: Context): boolean => {
     const variableValue = context[condition.name];

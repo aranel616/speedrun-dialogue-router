@@ -1,4 +1,4 @@
-import {Script, GetCondition} from "../../types";
+import {Script, GetCondition} from "@sdr/engine";
 import {GraphNode, GraphEdge, GraphResponse} from "../types";
 
 const OP: Record<string, string> = {eq: "=", ne: "≠", gt: ">", gte: "≥", lt: "<", lte: "≤"};

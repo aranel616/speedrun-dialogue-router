@@ -1,4 +1,4 @@
-import {Dialogue} from "../types";
+import {Dialogue} from "./types";
 
 export const calculateDialogueLength = (dialogue: Dialogue): number => {
     if (typeof dialogue === "string") {
