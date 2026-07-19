@@ -308,7 +308,10 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
         syncVP({x, y, zoom});
     }, [posNodes, syncVP, inherited.contentRoot]);
 
-    // Wheel zoom (needs non-passive listener)
+    // Wheel zoom/pan (needs a non-passive listener so preventDefault works).
+    // Re-runs on graphNodes.length so it (re)attaches when the canvas mounts —
+    // the container isn't rendered until a graph is loaded (see the early
+    // return below), and this effect's deps must change for it to retry.
     useEffect(() => {
         const el = containerRef.current;
         if (!el) {return;}
@@ -330,7 +333,7 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
         };
         el.addEventListener("wheel", onWheel, {passive: false});
         return (): void => el.removeEventListener("wheel", onWheel);
-    }, [syncVP]);
+    }, [syncVP, graphNodes.length]);
 
     const onMouseDown = useCallback((e: React.MouseEvent) => {
         if (e.button !== 0) {return;}
