@@ -6,14 +6,13 @@
     "apps/*"
   ],
   "scripts": {
+    "dev": "npm run dev --workspace @sdr/web",
+    "build": "npm run build --workspace @sdr/web",
+    "preview": "npm run preview --workspace @sdr/web",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "typecheck": "tsc -p . --noEmit",
     "test": "jest --coverage",
-    "test:watch": "jest --watch",
-    "server:dev": "npm run dev --workspace @sdr/server",
-    "web:dev": "npm run dev --workspace @sdr/web",
-    "build:web": "npm run build --workspace @sdr/web",
-    "start": "npm run start --workspace @sdr/server"
+    "test:watch": "jest --watch"
   },
   "devDependencies": {
     "@types/jest": "^29.5.0",

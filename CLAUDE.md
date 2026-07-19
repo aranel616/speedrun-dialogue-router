@@ -8,39 +8,34 @@ A dialogue routing engine that finds the **shortest path** (by total character c
 
 ## Repository Layout
 
-npm-workspaces monorepo. `npm install` at the root installs everything.
+npm-workspaces monorepo. Fully client-side — there is no backend; the web app runs the engine in the browser and is deployed as static files. `npm install` at the root installs everything.
 
 ```
 packages/
   engine/    @sdr/engine  — the routing engine (traverse + domain types). Pure, no deps.
-  shared/    @sdr/shared  — API types shared by server and web.
-  scripts/   @sdr/scripts — the transcribed dialogue data (the corpus).
+  graph/     @sdr/graph   — builds the visualization graph + traversal result from a script.
+  shared/    @sdr/shared  — view types shared by graph and web.
+  scripts/   @sdr/scripts — the transcribed dialogue data + a static registry (the corpus).
 apps/
-  server/    @sdr/server  — Express API over the engine.
-  web/        @sdr/web    — React/Vite single-page app (the visualization).
+  web/       @sdr/web     — React/Vite single-page app (the visualization).
 tools/
   transcription/          — Python scaffolding used to transcribe scripts (not shipped).
 ```
 
-Dependency direction: `web → shared`, `server → engine, shared, scripts`, `scripts → engine`. The engine depends on nothing.
+Dependency direction: `web → engine, graph, scripts, shared`, `graph → engine, shared`, `scripts → engine`. The engine depends on nothing.
 
 ## Running the Code
 
-**Development** (two processes):
-
 ```bash
-npm install            # installs all workspaces
-npm run server:dev     # API on http://localhost:3001 (auto-reloads)
-npm run web:dev        # Vite dev server on http://localhost:5175
+npm install        # installs all workspaces
+npm run dev        # Vite dev server on http://localhost:5175
 ```
 
-Open http://localhost:5175 — Vite proxies `/api` to the server on 3001.
-
-**Single process** (server serves the built web app):
+Build the static site (output in `apps/web/dist`, deployable to any static host, e.g. GitHub Pages):
 
 ```bash
-npm run build:web      # builds apps/web into apps/web/dist
-npm run start          # serves apps/web/dist + /api on http://localhost:3001
+npm run build      # tsc + vite build
+npm run preview    # serve the build locally
 ```
 
 Root scripts: `npm run lint`, `npm run typecheck`, `npm test` (with coverage). In the UI, pick a script and run "find shortest path" to see the optimal route, running character counts, and the graph visualization.
