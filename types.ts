@@ -2,39 +2,39 @@ export type Dialogue = string | string[];
 export type Next = string | ConditionalNext;
 
 export interface GetCondition {
-    name: string,
-    type: "eq" | "ne" | "gt" | "gte" | "lt" | "lte",
-    value: boolean | number | string,
-    node: string
+    name: string;
+    type: "eq" | "ne" | "gt" | "gte" | "lt" | "lte";
+    value: boolean | number | string;
+    node: string;
 }
 
 export interface SetCondition {
-    name: string,
-    type: "set" | "add" | "subtract",
-    value: boolean | number | string
+    name: string;
+    type: "set" | "add" | "subtract";
+    value: boolean | number | string;
 }
 
 export type ConditionalNext = GetCondition[];
 
 export type Choice = {
-    name: string,
-    text: Dialogue,
-    set?: SetCondition | SetCondition[],
-    next?: Next
+    name: string;
+    text: Dialogue;
+    set?: SetCondition | SetCondition[];
+    next?: Next;
 }
 
 export interface InteractionWithChoices {
-    choices: [Choice, ...Choice[]]
+    choices: [Choice, ...Choice[]];
 }
 
 export interface InteractionWithoutChoices {
-    text: Dialogue,
-    next?: Next
+    text: Dialogue;
+    next?: Next;
 }
 
 export type Interaction = InteractionWithChoices | InteractionWithoutChoices;
 export type Script = {[key: string]: Interaction};
 
 export interface Context {
-    [key: string]: boolean | number | string
+    [key: string]: boolean | number | string;
 }

@@ -1,5 +1,5 @@
-import { traverse } from "./functions/traverse";
-import { script } from "./scripts/lifeisstrange/episode1";
+import {traverse} from "./functions/traverse";
+import {script} from "./scripts/lifeisstrange/episode1";
 
 const startTime = performance.now();
 let endTime;

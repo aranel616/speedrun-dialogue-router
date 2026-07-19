@@ -1,8 +1,8 @@
-import { GetCondition, Context } from "../types";
+import {GetCondition, Context} from "../types";
 
-export const evaluateCondition = (condition:GetCondition, context:Context):boolean => {
+export const evaluateCondition = (condition: GetCondition, context: Context): boolean => {
     const variableValue = context[condition.name];
-  
+
     switch (condition.type) {
         case "eq":
             return variableValue === condition.value;
@@ -19,4 +19,4 @@ export const evaluateCondition = (condition:GetCondition, context:Context):boole
         default:
             return false;
     }
-  }
+}

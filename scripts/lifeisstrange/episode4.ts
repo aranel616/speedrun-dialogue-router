@@ -1,4 +1,4 @@
-import { Script } from "../../types";
+import {Script} from "../../types";
 
 export const script: Script = {
     // ============ Inherited decisions (set once at episode start) ============
@@ -6,53 +6,53 @@ export const script: Script = {
     // these get driven by the prior episode instead of being free.
     "start": {
         "choices": [
-            { "name": "(Saved Kate)", "text": "", "set": { "name": "saved_kate", "type": "set", "value": true }, "next": "setup4_answered" },
-            { "name": "(Didn't save Kate)", "text": "", "set": { "name": "saved_kate", "type": "set", "value": false }, "next": "setup4_answered" }
+            {"name": "(Saved Kate)", "text": "", "set": {"name": "saved_kate", "type": "set", "value": true}, "next": "setup4_answered"},
+            {"name": "(Didn't save Kate)", "text": "", "set": {"name": "saved_kate", "type": "set", "value": false}, "next": "setup4_answered"}
         ]
     },
     "setup4_answered": {
         "choices": [
-            { "name": "(Answered Kate's call)", "text": "", "set": { "name": "answered_kate_call", "type": "set", "value": true }, "next": "setup4_warren" },
-            { "name": "(Didn't answer Kate's call)", "text": "", "set": { "name": "answered_kate_call", "type": "set", "value": false }, "next": "setup4_warren" }
+            {"name": "(Answered Kate's call)", "text": "", "set": {"name": "answered_kate_call", "type": "set", "value": true}, "next": "setup4_warren"},
+            {"name": "(Didn't answer Kate's call)", "text": "", "set": {"name": "answered_kate_call", "type": "set", "value": false}, "next": "setup4_warren"}
         ]
     },
     "setup4_warren": {
         "choices": [
-            { "name": "(Accepted Warren's invitation)", "text": "", "set": { "name": "accepted_warren_invite", "type": "set", "value": true }, "next": "setup4_victoria" },
-            { "name": "(Declined Warren's invitation)", "text": "", "set": { "name": "accepted_warren_invite", "type": "set", "value": false }, "next": "setup4_victoria" }
+            {"name": "(Accepted Warren's invitation)", "text": "", "set": {"name": "accepted_warren_invite", "type": "set", "value": true}, "next": "setup4_victoria"},
+            {"name": "(Declined Warren's invitation)", "text": "", "set": {"name": "accepted_warren_invite", "type": "set", "value": false}, "next": "setup4_victoria"}
         ]
     },
     "setup4_victoria": {
         "choices": [
-            { "name": "(Made fun of Victoria)", "text": "", "set": { "name": "made_fun_of_victoria", "type": "set", "value": true }, "next": "setup4_suspended" },
-            { "name": "(Comforted Victoria)", "text": "", "set": { "name": "made_fun_of_victoria", "type": "set", "value": false }, "next": "setup4_suspended" }
+            {"name": "(Made fun of Victoria)", "text": "", "set": {"name": "made_fun_of_victoria", "type": "set", "value": true}, "next": "setup4_suspended"},
+            {"name": "(Comforted Victoria)", "text": "", "set": {"name": "made_fun_of_victoria", "type": "set", "value": false}, "next": "setup4_suspended"}
         ]
     },
     "setup4_suspended": {
         "choices": [
-            { "name": "(Blamed Nathan → Nathan suspended)", "text": "", "set": { "name": "suspended", "type": "set", "value": "nathan" }, "next": "setup4_gun" },
-            { "name": "(Blamed David → David on leave)", "text": "", "set": { "name": "suspended", "type": "set", "value": "david" }, "next": "setup4_gun" },
-            { "name": "(Blamed Jefferson → out of contest)", "text": "", "set": { "name": "suspended", "type": "set", "value": "jefferson" }, "next": "setup4_gun" },
-            { "name": "(Blame backfired → Max suspended)", "text": "", "set": { "name": "suspended", "type": "set", "value": "max" }, "next": "setup4_gun" },
-            { "name": "(No one suspended)", "text": "", "set": { "name": "suspended", "type": "set", "value": "none" }, "next": "setup4_gun" }
+            {"name": "(Blamed Nathan → Nathan suspended)", "text": "", "set": {"name": "suspended", "type": "set", "value": "nathan"}, "next": "setup4_gun"},
+            {"name": "(Blamed David → David on leave)", "text": "", "set": {"name": "suspended", "type": "set", "value": "david"}, "next": "setup4_gun"},
+            {"name": "(Blamed Jefferson → out of contest)", "text": "", "set": {"name": "suspended", "type": "set", "value": "jefferson"}, "next": "setup4_gun"},
+            {"name": "(Blame backfired → Max suspended)", "text": "", "set": {"name": "suspended", "type": "set", "value": "max"}, "next": "setup4_gun"},
+            {"name": "(No one suspended)", "text": "", "set": {"name": "suspended", "type": "set", "value": "none"}, "next": "setup4_gun"}
         ]
     },
     "setup4_gun": {
         "choices": [
-            { "name": "(Chloe has a gun)", "text": "", "set": { "name": "chloe_has_gun", "type": "set", "value": true }, "next": "setup4_money" },
-            { "name": "(Chloe doesn't have a gun)", "text": "", "set": { "name": "chloe_has_gun", "type": "set", "value": false }, "next": "setup4_money" }
+            {"name": "(Chloe has a gun)", "text": "", "set": {"name": "chloe_has_gun", "type": "set", "value": true}, "next": "setup4_money"},
+            {"name": "(Chloe doesn't have a gun)", "text": "", "set": {"name": "chloe_has_gun", "type": "set", "value": false}, "next": "setup4_money"}
         ]
     },
     "setup4_money": {
         "choices": [
-            { "name": "(Stole the money)", "text": "", "set": { "name": "stole_money", "type": "set", "value": true }, "next": "setup4_sided" },
-            { "name": "(Left the money)", "text": "", "set": { "name": "stole_money", "type": "set", "value": false }, "next": "setup4_sided" }
+            {"name": "(Stole the money)", "text": "", "set": {"name": "stole_money", "type": "set", "value": true}, "next": "setup4_sided"},
+            {"name": "(Left the money)", "text": "", "set": {"name": "stole_money", "type": "set", "value": false}, "next": "setup4_sided"}
         ]
     },
     "setup4_sided": {
         "choices": [
-            { "name": "(Sided with Chloe)", "text": "", "set": { "name": "sided_with_chloe", "type": "set", "value": true }, "next": "alt_beach_intro" },
-            { "name": "(Sided with David)", "text": "", "set": { "name": "sided_with_chloe", "type": "set", "value": false }, "next": "alt_beach_intro" }
+            {"name": "(Sided with Chloe)", "text": "", "set": {"name": "sided_with_chloe", "type": "set", "value": true}, "next": "alt_beach_intro"},
+            {"name": "(Sided with David)", "text": "", "set": {"name": "sided_with_chloe", "type": "set", "value": false}, "next": "alt_beach_intro"}
         ]
     },
 
@@ -424,15 +424,15 @@ export const script: Script = {
     // ===================== Chloe's Room (back to reality) =====================
     "real_room_1": {
         "choices": [
-            { "name": "Accepted Alternative Chloe's request", "text": "Chloe...you're alive. Yes!", "next": "real_room_kiss" },
-            { "name": "Refused Alternative Chloe's request", "text": "Chloe...you're back.", "next": "real_room_kiss" }
+            {"name": "Accepted Alternative Chloe's request", "text": "Chloe...you're alive. Yes!", "next": "real_room_kiss"},
+            {"name": "Refused Alternative Chloe's request", "text": "Chloe...you're back.", "next": "real_room_kiss"}
         ]
     },
     "real_room_kiss": {
         "choices": [
-            { "name": "Kissed Chloe", "text": "Whoa! Down, Max! You get one kiss and now you're all over me...", "next": "real_room_2" },
-            { "name": "Didn't kiss Chloe", "text": "Oh yeah, now you suddenly want to kiss me? You had your chance.", "next": "real_room_2" },
-            { "name": "Skipped that scene (Glitched Out of Bounds)", "text": "", "next": "real_room_2" }
+            {"name": "Kissed Chloe", "text": "Whoa! Down, Max! You get one kiss and now you're all over me...", "next": "real_room_2"},
+            {"name": "Didn't kiss Chloe", "text": "Oh yeah, now you suddenly want to kiss me? You had your chance.", "next": "real_room_2"},
+            {"name": "Skipped that scene (Glitched Out of Bounds)", "text": "", "next": "real_room_2"}
         ]
     },
     "real_room_2": {
@@ -451,8 +451,8 @@ export const script: Script = {
     },
     "real_room_3": {
         "choices": [
-            { "name": "Chloe has a gun", "text": ["And I do have a gun now...", "Keep it in your pants."], "next": "real_room_4" },
-            { "name": "Chloe doesn't have a gun", "text": ["Too bad I don't have a gun anymore...", "Yes, that's the solution."], "next": "real_room_4" }
+            {"name": "Chloe has a gun", "text": ["And I do have a gun now...", "Keep it in your pants."], "next": "real_room_4"},
+            {"name": "Chloe doesn't have a gun", "text": ["Too bad I don't have a gun anymore...", "Yes, that's the solution."], "next": "real_room_4"}
         ]
     },
     "real_room_4": {
@@ -465,8 +465,8 @@ export const script: Script = {
     },
     "real_room_5": {
         "choices": [
-            { "name": "Left the money", "text": ["You didn't even let me take that money to pay Frank off.", "And I'm glad. We have to be better than that."], "next": "real_room_6" },
-            { "name": "Stole the money", "text": ["At least you let me take that money to pay Frank off.", "Don't remind me. I just want him off your back. Our back..."], "next": "real_room_6" }
+            {"name": "Left the money", "text": ["You didn't even let me take that money to pay Frank off.", "And I'm glad. We have to be better than that."], "next": "real_room_6"},
+            {"name": "Stole the money", "text": ["At least you let me take that money to pay Frank off.", "Don't remind me. I just want him off your back. Our back..."], "next": "real_room_6"}
         ]
     },
     "real_room_6": {
@@ -475,8 +475,8 @@ export const script: Script = {
     },
     "real_room_7": {
         "choices": [
-            { "name": "Sided with David", "text": ["And be careful of step-crack...unless you want to hang out with him after you stood up for his ass yesterday.", "Oh, please."], "next": "real_room_8" },
-            { "name": "Sided with Chloe", "text": ["And be careful of step-crack. He's not going to be a happy camper after you reamed him yesterday, and Mom is giving him the boot...", "I'm on it, partner."], "next": "real_room_8" }
+            {"name": "Sided with David", "text": ["And be careful of step-crack...unless you want to hang out with him after you stood up for his ass yesterday.", "Oh, please."], "next": "real_room_8"},
+            {"name": "Sided with Chloe", "text": ["And be careful of step-crack. He's not going to be a happy camper after you reamed him yesterday, and Mom is giving him the boot...", "I'm on it, partner."], "next": "real_room_8"}
         ]
     },
     "real_room_8": {
@@ -487,13 +487,13 @@ export const script: Script = {
     // ===================== Upstairs / Downstairs (bird, David) =====================
     "upstairs_bird": {
         "choices": [
-            { "name": "Saved the bird", "text": ["Oh no, that poor little bird has been trapped in here!", "Fly! Be free!"], "next": "downstairs_david" },
-            { "name": "Let the bird die", "text": "", "next": "downstairs_david" }
+            {"name": "Saved the bird", "text": ["Oh no, that poor little bird has been trapped in here!", "Fly! Be free!"], "next": "downstairs_david"},
+            {"name": "Let the bird die", "text": "", "next": "downstairs_david"}
         ]
     },
     "downstairs_david": {
         "choices": [
-            { "name": "Sided with David", "text": "", "next": "garage" },
+            {"name": "Sided with David", "text": "", "next": "garage"},
             {
                 "name": "Sided with Chloe",
                 "text": [
@@ -519,8 +519,8 @@ export const script: Script = {
     "garage_open": {
         "text": "",
         "next": [
-            { "name": "sided_with_chloe", "type": "eq", "value": false, "node": "garage_open_david" },
-            { "name": "sided_with_chloe", "type": "eq", "value": true, "node": "garage_open_chloe" }
+            {"name": "sided_with_chloe", "type": "eq", "value": false, "node": "garage_open_david"},
+            {"name": "sided_with_chloe", "type": "eq", "value": true, "node": "garage_open_chloe"}
         ]
     },
     "garage_open_david": {
@@ -557,8 +557,8 @@ export const script: Script = {
     "garage_next": {
         "text": "",
         "next": [
-            { "name": "saved_kate", "type": "eq", "value": true, "node": "garage_next_saved" },
-            { "name": "saved_kate", "type": "eq", "value": false, "node": "garage_next_not" }
+            {"name": "saved_kate", "type": "eq", "value": true, "node": "garage_next_saved"},
+            {"name": "saved_kate", "type": "eq", "value": false, "node": "garage_next_not"}
         ]
     },
     "garage_next_saved": {
@@ -589,8 +589,8 @@ export const script: Script = {
     "hospital_call": {
         "text": "",
         "next": [
-            { "name": "answered_kate_call", "type": "eq", "value": true, "node": "hospital_call_ans" },
-            { "name": "answered_kate_call", "type": "eq", "value": false, "node": "hospital_call_no" }
+            {"name": "answered_kate_call", "type": "eq", "value": true, "node": "hospital_call_ans"},
+            {"name": "answered_kate_call", "type": "eq", "value": false, "node": "hospital_call_no"}
         ]
     },
     "hospital_call_ans": {
@@ -688,8 +688,8 @@ export const script: Script = {
     "hospital_kate_warren2": {
         "text": "",
         "next": [
-            { "name": "accepted_warren_invite", "type": "eq", "value": true, "node": "hospital_kate_warren2_acc" },
-            { "name": "accepted_warren_invite", "type": "eq", "value": false, "node": "hospital_kate_warren2_dec" }
+            {"name": "accepted_warren_invite", "type": "eq", "value": true, "node": "hospital_kate_warren2_acc"},
+            {"name": "accepted_warren_invite", "type": "eq", "value": false, "node": "hospital_kate_warren2_dec"}
         ]
     },
     "hospital_kate_warren2_acc": {
@@ -716,8 +716,8 @@ export const script: Script = {
     "hospital_kate_vic": {
         "text": "",
         "next": [
-            { "name": "made_fun_of_victoria", "type": "eq", "value": true, "node": "hospital_kate_vic_made" },
-            { "name": "made_fun_of_victoria", "type": "eq", "value": false, "node": "hospital_kate_vic_comf" }
+            {"name": "made_fun_of_victoria", "type": "eq", "value": true, "node": "hospital_kate_vic_made"},
+            {"name": "made_fun_of_victoria", "type": "eq", "value": false, "node": "hospital_kate_vic_comf"}
         ]
     },
     "hospital_kate_vic_made": {
@@ -762,8 +762,8 @@ export const script: Script = {
     "hospital_kate_nathan": {
         "text": "",
         "next": [
-            { "name": "suspended", "type": "eq", "value": "nathan", "node": "hospital_kate_nathan_susp" },
-            { "name": "suspended", "type": "ne", "value": "nathan", "node": "hospital_kate_nathan_not" }
+            {"name": "suspended", "type": "eq", "value": "nathan", "node": "hospital_kate_nathan_susp"},
+            {"name": "suspended", "type": "ne", "value": "nathan", "node": "hospital_kate_nathan_not"}
         ]
     },
     "hospital_kate_nathan_susp": {
@@ -841,8 +841,8 @@ export const script: Script = {
     "dorm_jeff1": {
         "text": "",
         "next": [
-            { "name": "suspended", "type": "ne", "value": "max", "node": "dorm_jeff1_not" },
-            { "name": "suspended", "type": "eq", "value": "max", "node": "dorm_jeff1_susp" }
+            {"name": "suspended", "type": "ne", "value": "max", "node": "dorm_jeff1_not"},
+            {"name": "suspended", "type": "eq", "value": "max", "node": "dorm_jeff1_susp"}
         ]
     },
     "dorm_jeff1_not": {
@@ -868,12 +868,12 @@ export const script: Script = {
     "dorm_jeff2": {
         "text": "",
         "next": [
-            { "name": "suspended", "type": "ne", "value": "jefferson", "node": "dorm_jeff2_didnt" },
-            { "name": "suspended", "type": "eq", "value": "jefferson", "node": "dorm_jeff2_blamed" }
+            {"name": "suspended", "type": "ne", "value": "jefferson", "node": "dorm_jeff2_didnt"},
+            {"name": "suspended", "type": "eq", "value": "jefferson", "node": "dorm_jeff2_blamed"}
         ]
     },
-    "dorm_jeff2_didnt": { "text": "I feel like a total loser, but it's been a hard week to focus. No pun intended.", "next": "dorm_jeff3" },
-    "dorm_jeff2_blamed": { "text": "So, you don't hate me for what I said to the Principal?", "next": "dorm_jeff3" },
+    "dorm_jeff2_didnt": {"text": "I feel like a total loser, but it's been a hard week to focus. No pun intended.", "next": "dorm_jeff3"},
+    "dorm_jeff2_blamed": {"text": "So, you don't hate me for what I said to the Principal?", "next": "dorm_jeff3"},
     "dorm_jeff3": {
         "text": [
             "I'm proud of you for caring so much about a troubled friend. And I take hope in the fact that you have plenty of time to find your way. Just...get in the habit of putting your work out there.",
@@ -1041,8 +1041,8 @@ export const script: Script = {
     "beach_gun": {
         "text": "",
         "next": [
-            { "name": "chloe_has_gun", "type": "eq", "value": true, "node": "beach_gun_has" },
-            { "name": "chloe_has_gun", "type": "eq", "value": false, "node": "beach_gun_no" }
+            {"name": "chloe_has_gun", "type": "eq", "value": true, "node": "beach_gun_has"},
+            {"name": "chloe_has_gun", "type": "eq", "value": false, "node": "beach_gun_no"}
         ]
     },
     "beach_gun_has": {
@@ -1075,12 +1075,12 @@ export const script: Script = {
     "beach_money": {
         "text": "",
         "next": [
-            { "name": "stole_money", "type": "eq", "value": false, "node": "beach_money_left" },
-            { "name": "stole_money", "type": "eq", "value": true, "node": "beach_money_stole" }
+            {"name": "stole_money", "type": "eq", "value": false, "node": "beach_money_left"},
+            {"name": "stole_money", "type": "eq", "value": true, "node": "beach_money_stole"}
         ]
     },
-    "beach_money_left": { "text": "Just talk to Frank so we can get that code for the book from him. That's all.", "next": "beach_3" },
-    "beach_money_stole": { "text": "Just pay Frank his money and then we can get that code for the book from him. That's all.", "next": "beach_3" },
+    "beach_money_left": {"text": "Just talk to Frank so we can get that code for the book from him. That's all.", "next": "beach_3"},
+    "beach_money_stole": {"text": "Just pay Frank his money and then we can get that code for the book from him. That's all.", "next": "beach_3"},
     "beach_3": {
         "text": [
             "Got it. No dicking around.",
@@ -1091,7 +1091,7 @@ export const script: Script = {
     },
     "beach_approach": {
         "choices": [
-            { "name": "(Max didn't rewind)", "text": "", "next": "beach_frank_intro" },
+            {"name": "(Max didn't rewind)", "text": "", "next": "beach_frank_intro"},
             {
                 "name": "(Max rewound the whole scene)",
                 "text": [
@@ -1141,8 +1141,8 @@ export const script: Script = {
     "beach_money2": {
         "text": "",
         "next": [
-            { "name": "stole_money", "type": "eq", "value": true, "node": "beach_money2_give" },
-            { "name": "stole_money", "type": "eq", "value": false, "node": "beach_money2_keep" }
+            {"name": "stole_money", "type": "eq", "value": true, "node": "beach_money2_give"},
+            {"name": "stole_money", "type": "eq", "value": false, "node": "beach_money2_keep"}
         ]
     },
     "beach_money2_give": {
@@ -1367,9 +1367,9 @@ export const script: Script = {
     },
     "invest_hurt": {
         "choices": [
-            { "name": "(No one was hurt)", "text": ["I'm glad things worked out okay with Frank. It's nice to have one less enemy in Arcadia Bay.", "Amen to that."], "next": "invest_2" },
-            { "name": "(Frank was injured)", "text": ["Sorry, I just keep thinking about shooting Frank in the leg.", "Please don't. You saved us. Frank is lucky. We have to keep moving forward."], "next": "invest_2" },
-            { "name": "(Frank was killed)", "text": ["I'm sorry, I... I keep seeing Frank... dead. And I'm the one who killed him.", "Listen, you saved my life. And yours. We have to keep going forward."], "next": "invest_2" }
+            {"name": "(No one was hurt)", "text": ["I'm glad things worked out okay with Frank. It's nice to have one less enemy in Arcadia Bay.", "Amen to that."], "next": "invest_2"},
+            {"name": "(Frank was injured)", "text": ["Sorry, I just keep thinking about shooting Frank in the leg.", "Please don't. You saved us. Frank is lucky. We have to keep moving forward."], "next": "invest_2"},
+            {"name": "(Frank was killed)", "text": ["I'm sorry, I... I keep seeing Frank... dead. And I'm the one who killed him.", "Listen, you saved my life. And yours. We have to keep going forward."], "next": "invest_2"}
         ]
     },
     "invest_2": {
@@ -1493,8 +1493,8 @@ export const script: Script = {
     },
     "parking_warren_choice": {
         "choices": [
-            { "name": "(Max stopped Warren from beating Nathan)", "text": "I'm glad you stopped me... Nathan is dangerous.", "next": "parking_2" },
-            { "name": "(Warren beat up Nathan)", "text": "I really flipped out on Nathan. I just hate bullies... and Max, he's dangerous.", "next": "parking_2" }
+            {"name": "(Max stopped Warren from beating Nathan)", "text": "I'm glad you stopped me... Nathan is dangerous.", "next": "parking_2"},
+            {"name": "(Warren beat up Nathan)", "text": "I really flipped out on Nathan. I just hate bullies... and Max, he's dangerous.", "next": "parking_2"}
         ]
     },
     "parking_2": {
@@ -1605,12 +1605,12 @@ export const script: Script = {
     "party_vic_apology": {
         "text": "",
         "next": [
-            { "name": "made_fun_of_victoria", "type": "eq", "value": false, "node": "party_vic_apology_comf" },
-            { "name": "made_fun_of_victoria", "type": "eq", "value": true, "node": "party_vic_apology_made" }
+            {"name": "made_fun_of_victoria", "type": "eq", "value": false, "node": "party_vic_apology_comf"},
+            {"name": "made_fun_of_victoria", "type": "eq", "value": true, "node": "party_vic_apology_made"}
         ]
     },
-    "party_vic_apology_comf": { "text": "Real cute, Max. And after I apologized to you the other day...", "next": "party_vic_kate" },
-    "party_vic_apology_made": { "text": "Real cute, Max. You still pissed about me taking your picture?", "next": "party_vic_kate" },
+    "party_vic_apology_comf": {"text": "Real cute, Max. And after I apologized to you the other day...", "next": "party_vic_kate"},
+    "party_vic_apology_made": {"text": "Real cute, Max. You still pissed about me taking your picture?", "next": "party_vic_kate"},
     "party_vic_kate": {
         "text": "Do you even have a clue what's going on at Blackwell?",
         "next": "party_vic_kate_choice"
@@ -1618,12 +1618,12 @@ export const script: Script = {
     "party_vic_kate_choice": {
         "text": "",
         "next": [
-            { "name": "saved_kate", "type": "eq", "value": false, "node": "party_vic_kate_died" },
-            { "name": "saved_kate", "type": "eq", "value": true, "node": "party_vic_kate_lived" }
+            {"name": "saved_kate", "type": "eq", "value": false, "node": "party_vic_kate_died"},
+            {"name": "saved_kate", "type": "eq", "value": true, "node": "party_vic_kate_lived"}
         ]
     },
-    "party_vic_kate_died": { "text": "Kate Marsh killed herself in front of you and me... everybody here!", "next": "party_vic_blame" },
-    "party_vic_kate_lived": { "text": "Kate Marsh tried to kill herself in front of you and me... everybody here!", "next": "party_vic_blame" },
+    "party_vic_kate_died": {"text": "Kate Marsh killed herself in front of you and me... everybody here!", "next": "party_vic_blame"},
+    "party_vic_kate_lived": {"text": "Kate Marsh tried to kill herself in front of you and me... everybody here!", "next": "party_vic_blame"},
     "party_vic_blame": {
         "text": "That's not my fault, Max. Don't you even try to blame me!",
         "next": "party_vic_argue"
@@ -1665,8 +1665,8 @@ export const script: Script = {
     },
     "party_vic_warn": {
         "choices": [
-            { "name": "THE DARK ROOM", "text": "", "next": "party_vic_dr" },
-            { "name": "DON'T WARN HER", "text": "", "next": "party_vic_dw" }
+            {"name": "THE DARK ROOM", "text": "", "next": "party_vic_dr"},
+            {"name": "DON'T WARN HER", "text": "", "next": "party_vic_dw"}
         ]
     },
     "party_vic_dr": {
@@ -1738,9 +1738,9 @@ export const script: Script = {
     },
     "party_vic_thoughts": {
         "choices": [
-            { "name": "(Max didn't warn Victoria)", "text": "Should I have warned Victoria about Nathan? She might be evil, but...", "next": "party_chloe" },
-            { "name": "(Victoria didn't believe Max)", "text": "Okay, I tried... She's not gonna believe me over her Vortex Club partner…", "next": "party_chloe" },
-            { "name": "(Victoria believed Max)", "text": "Maybe there's hope yet for Victoria and me... I'm glad I warned her. I hope she's okay.", "next": "party_chloe" }
+            {"name": "(Max didn't warn Victoria)", "text": "Should I have warned Victoria about Nathan? She might be evil, but...", "next": "party_chloe"},
+            {"name": "(Victoria didn't believe Max)", "text": "Okay, I tried... She's not gonna believe me over her Vortex Club partner…", "next": "party_chloe"},
+            {"name": "(Victoria believed Max)", "text": "Maybe there's hope yet for Victoria and me... I'm glad I warned her. I hope she's okay.", "next": "party_chloe"}
         ]
     },
 
@@ -1776,12 +1776,12 @@ export const script: Script = {
     "contest_dedicate": {
         "text": "",
         "next": [
-            { "name": "saved_kate", "type": "eq", "value": false, "node": "contest_dedicate_died" },
-            { "name": "saved_kate", "type": "eq", "value": true, "node": "contest_dedicate_lived" }
+            {"name": "saved_kate", "type": "eq", "value": false, "node": "contest_dedicate_died"},
+            {"name": "saved_kate", "type": "eq", "value": true, "node": "contest_dedicate_lived"}
         ]
     },
-    "contest_dedicate_died": { "text": "And I'd like to dedicate this prize to the memory of Kate Marsh... She was the real \"everyday hero\" of Blackwell...", "next": "contest_end" },
-    "contest_dedicate_lived": { "text": "And I'd like to dedicate this prize to Kate Marsh... She is the real \"everyday hero\" of Blackwell. And I can't wait for her to come back.", "next": "contest_end" },
+    "contest_dedicate_died": {"text": "And I'd like to dedicate this prize to the memory of Kate Marsh... She was the real \"everyday hero\" of Blackwell...", "next": "contest_end"},
+    "contest_dedicate_lived": {"text": "And I'd like to dedicate this prize to Kate Marsh... She is the real \"everyday hero\" of Blackwell. And I can't wait for her to come back.", "next": "contest_end"},
     "contest_end": {
         "text": [
             "Thank you.",

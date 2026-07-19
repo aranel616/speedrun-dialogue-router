@@ -1,7 +1,7 @@
-import { Script, Next, Context } from "../types";
-import { evaluateCondition } from "./evaluateCondition";
+import {Script, Next, Context} from "../types";
+import {evaluateCondition} from "./evaluateCondition";
 
-export const getNextNode = (script:Script, next:Next|undefined, context:Context) => {
+export const getNextNode = (script: Script, next: Next|undefined, context: Context) => {
     if (!next) {
         return false;
     }
@@ -15,7 +15,7 @@ export const getNextNode = (script:Script, next:Next|undefined, context:Context)
             return condition.node;
         }
     }
-      
+
     console.error("No conditions matched", next, context);
-    return false; 
+    return false;
 }

@@ -1,6 +1,6 @@
-import { Script, Context, Next } from "../types";
-import { calculateDialogueLength } from "./calculateDialogueLength";
-import { getNextNode } from "./getNextNode";
+import {Script, Context, Next} from "../types";
+import {calculateDialogueLength} from "./calculateDialogueLength";
+import {getNextNode} from "./getNextNode";
 
 type Result = [number, string[], Context];
 // Keyed per Script object so caches never leak between different scripts sharing
@@ -8,7 +8,7 @@ type Result = [number, string[], Context];
 // (require-cached module) reuses its cache across traversals.
 const caches = new WeakMap<Script, Map<string, Result>>();
 
-export const traverse = (script:Script, nodeId:string, currentLength:number, context:Context, depth:number, visited:Set<string> = new Set()):Result => {
+export const traverse = (script: Script, nodeId: string, currentLength: number, context: Context, depth: number, visited: Set<string> = new Set()): Result => {
     let cache = caches.get(script);
     if (!cache) { cache = new Map<string, Result>(); caches.set(script, cache); }
 
@@ -37,7 +37,7 @@ export const traverse = (script:Script, nodeId:string, currentLength:number, con
     }
 
     let dialogueLength = 0;
-    let nextNodeId:string|false;
+    let nextNodeId: string|false;
 
     if ("text" in currentNode) {
         dialogueLength = calculateDialogueLength(currentNode.text);
@@ -52,8 +52,8 @@ export const traverse = (script:Script, nodeId:string, currentLength:number, con
     }
 
     let shortestLength = Infinity;
-    let shortestPath:string[] = [];
-    let shortestContext:Context = context;
+    let shortestPath: string[] = [];
+    let shortestContext: Context = context;
 
     for (const choice of currentNode.choices) {
         const dialogueLength = calculateDialogueLength(choice.text);
@@ -66,7 +66,7 @@ export const traverse = (script:Script, nodeId:string, currentLength:number, con
                 if (setAction.type === "set") {
                     choiceContext[setAction.name] = setAction.value;
                 }
-              }
+            }
         }
 
         if (!nextNodeId) {
@@ -88,8 +88,8 @@ export const traverse = (script:Script, nodeId:string, currentLength:number, con
     }
 
     // After calculating the result, update the cache (store marginal cost, not total)
-    const result:Result = [shortestLength, shortestPath, shortestContext];
+    const result: Result = [shortestLength, shortestPath, shortestContext];
     cache.set(cacheKey, [shortestLength - currentLength, shortestPath, shortestContext]);
 
     return result;
-  }
+}

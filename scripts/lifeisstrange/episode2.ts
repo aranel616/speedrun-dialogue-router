@@ -1,4 +1,4 @@
-import { Script } from "../../types";
+import {Script} from "../../types";
 
 export const script: Script = {
     // ============ Inherited decisions (set once at episode start) ============
@@ -9,39 +9,39 @@ export const script: Script = {
             {
                 "name": "(Photographed Kate)",
                 "text": "",
-                "set": { "name": "took_photo_of_kate", "type": "set", "value": true },
+                "set": {"name": "took_photo_of_kate", "type": "set", "value": true},
                 "next": "setup_report"
             },
             {
                 "name": "(Intervened for Kate)",
                 "text": "",
-                "set": { "name": "took_photo_of_kate", "type": "set", "value": false },
+                "set": {"name": "took_photo_of_kate", "type": "set", "value": false},
                 "next": "setup_report"
             }
         ]
     },
     "setup_report": {
         "choices": [
-            { "name": "(Reported Nathan)", "text": "", "set": { "name": "reported_nathan", "type": "set", "value": true }, "next": "setup_victoria" },
-            { "name": "(Hid the truth)", "text": "", "set": { "name": "reported_nathan", "type": "set", "value": false }, "next": "setup_victoria" }
+            {"name": "(Reported Nathan)", "text": "", "set": {"name": "reported_nathan", "type": "set", "value": true}, "next": "setup_victoria"},
+            {"name": "(Hid the truth)", "text": "", "set": {"name": "reported_nathan", "type": "set", "value": false}, "next": "setup_victoria"}
         ]
     },
     "setup_victoria": {
         "choices": [
-            { "name": "(Made fun of Victoria)", "text": "", "set": { "name": "made_fun_of_victoria", "type": "set", "value": true }, "next": "setup_chloe" },
-            { "name": "(Comforted Victoria)", "text": "", "set": { "name": "made_fun_of_victoria", "type": "set", "value": false }, "next": "setup_chloe" }
+            {"name": "(Made fun of Victoria)", "text": "", "set": {"name": "made_fun_of_victoria", "type": "set", "value": true}, "next": "setup_chloe"},
+            {"name": "(Comforted Victoria)", "text": "", "set": {"name": "made_fun_of_victoria", "type": "set", "value": false}, "next": "setup_chloe"}
         ]
     },
     "setup_chloe": {
         "choices": [
-            { "name": "(Took the blame for Chloe)", "text": "", "set": { "name": "intervened_for_chloe", "type": "set", "value": true }, "next": "setup_call" },
-            { "name": "(Stayed hidden / blamed Chloe)", "text": "", "set": { "name": "intervened_for_chloe", "type": "set", "value": false }, "next": "setup_call" }
+            {"name": "(Took the blame for Chloe)", "text": "", "set": {"name": "intervened_for_chloe", "type": "set", "value": true}, "next": "setup_call"},
+            {"name": "(Stayed hidden / blamed Chloe)", "text": "", "set": {"name": "intervened_for_chloe", "type": "set", "value": false}, "next": "setup_call"}
         ]
     },
     "setup_call": {
         "choices": [
-            { "name": "(Answered Kate's call)", "text": "", "set": { "name": "answered_kate_call", "type": "set", "value": true }, "next": "maxroom_intro" },
-            { "name": "(Didn't answer Kate's call)", "text": "", "set": { "name": "answered_kate_call", "type": "set", "value": false }, "next": "maxroom_intro" }
+            {"name": "(Answered Kate's call)", "text": "", "set": {"name": "answered_kate_call", "type": "set", "value": true}, "next": "maxroom_intro"},
+            {"name": "(Didn't answer Kate's call)", "text": "", "set": {"name": "answered_kate_call", "type": "set", "value": false}, "next": "maxroom_intro"}
         ]
     },
 
@@ -70,8 +70,8 @@ export const script: Script = {
     "showers_1": {
         "text": "",
         "next": [
-            { "name": "took_photo_of_kate", "type": "eq", "value": true, "node": "showers_1_took" },
-            { "name": "took_photo_of_kate", "type": "eq", "value": false, "node": "showers_1_interv" }
+            {"name": "took_photo_of_kate", "type": "eq", "value": true, "node": "showers_1_took"},
+            {"name": "took_photo_of_kate", "type": "eq", "value": false, "node": "showers_1_interv"}
         ]
     },
     "showers_1_took": {
@@ -119,8 +119,8 @@ export const script: Script = {
     "showers_2": {
         "text": "",
         "next": [
-            { "name": "made_fun_of_victoria", "type": "eq", "value": true, "node": "showers_2_madefun" },
-            { "name": "made_fun_of_victoria", "type": "eq", "value": false, "node": "showers_2_comforted" }
+            {"name": "made_fun_of_victoria", "type": "eq", "value": true, "node": "showers_2_madefun"},
+            {"name": "made_fun_of_victoria", "type": "eq", "value": false, "node": "showers_2_comforted"}
         ]
     },
     "showers_2_madefun": {
@@ -156,9 +156,9 @@ export const script: Script = {
     "maxroom_return": {
         "text": "",
         "next": [
-            { "name": "reported_nathan", "type": "eq", "value": true, "node": "maxroom_return_vandal" },
-            { "name": "made_fun_of_victoria", "type": "eq", "value": true, "node": "maxroom_return_vandal" },
-            { "name": "reported_nathan", "type": "eq", "value": false, "node": "maxroom_return_bridge" }
+            {"name": "reported_nathan", "type": "eq", "value": true, "node": "maxroom_return_vandal"},
+            {"name": "made_fun_of_victoria", "type": "eq", "value": true, "node": "maxroom_return_vandal"},
+            {"name": "reported_nathan", "type": "eq", "value": false, "node": "maxroom_return_bridge"}
         ]
     },
     "maxroom_return_vandal": {
@@ -187,8 +187,8 @@ export const script: Script = {
     "kateroom_1": {
         "text": "",
         "next": [
-            { "name": "took_photo_of_kate", "type": "eq", "value": true, "node": "kateroom_1_took" },
-            { "name": "took_photo_of_kate", "type": "eq", "value": false, "node": "kateroom_1_interv" }
+            {"name": "took_photo_of_kate", "type": "eq", "value": true, "node": "kateroom_1_took"},
+            {"name": "took_photo_of_kate", "type": "eq", "value": false, "node": "kateroom_1_interv"}
         ]
     },
     "kateroom_1_took": {
@@ -540,8 +540,8 @@ export const script: Script = {
     "dorm_warren_4a": {
         "text": "",
         "next": [
-            { "name": "reported_nathan", "type": "eq", "value": true, "node": "dorm_warren_4a_rep" },
-            { "name": "reported_nathan", "type": "eq", "value": false, "node": "dorm_warren_4a_hid" }
+            {"name": "reported_nathan", "type": "eq", "value": true, "node": "dorm_warren_4a_rep"},
+            {"name": "reported_nathan", "type": "eq", "value": false, "node": "dorm_warren_4a_hid"}
         ]
     },
     "dorm_warren_4a_rep": {
@@ -595,8 +595,8 @@ export const script: Script = {
     "junkyard_1": {
         "text": "",
         "next": [
-            { "name": "answered_kate_call", "type": "eq", "value": true, "node": "junkyard_1_answered" },
-            { "name": "answered_kate_call", "type": "eq", "value": false, "node": "junkyard_1_didnt" }
+            {"name": "answered_kate_call", "type": "eq", "value": true, "node": "junkyard_1_answered"},
+            {"name": "answered_kate_call", "type": "eq", "value": false, "node": "junkyard_1_didnt"}
         ]
     },
     "junkyard_1_answered": {
@@ -741,8 +741,8 @@ export const script: Script = {
     "railroad_4": {
         "text": "",
         "next": [
-            { "name": "intervened_for_chloe", "type": "eq", "value": true, "node": "railroad_4_blame" },
-            { "name": "intervened_for_chloe", "type": "eq", "value": false, "node": "railroad_4_hidden" }
+            {"name": "intervened_for_chloe", "type": "eq", "value": true, "node": "railroad_4_blame"},
+            {"name": "intervened_for_chloe", "type": "eq", "value": false, "node": "railroad_4_hidden"}
         ]
     },
     "railroad_4_hidden": {
@@ -999,8 +999,8 @@ export const script: Script = {
     "david_2": {
         "text": "",
         "next": [
-            { "name": "intervened_for_chloe", "type": "eq", "value": true, "node": "david_2b_intro" },
-            { "name": "intervened_for_chloe", "type": "eq", "value": false, "node": "david_2a_intro" }
+            {"name": "intervened_for_chloe", "type": "eq", "value": true, "node": "david_2b_intro"},
+            {"name": "intervened_for_chloe", "type": "eq", "value": false, "node": "david_2a_intro"}
         ]
     },
     "david_2a_intro": {
@@ -1070,8 +1070,8 @@ export const script: Script = {
     "david_4": {
         "text": "",
         "next": [
-            { "name": "took_photo_of_kate", "type": "eq", "value": true, "node": "david_4a_sub" },
-            { "name": "took_photo_of_kate", "type": "eq", "value": false, "node": "david_4b_sub" }
+            {"name": "took_photo_of_kate", "type": "eq", "value": true, "node": "david_4a_sub"},
+            {"name": "took_photo_of_kate", "type": "eq", "value": false, "node": "david_4b_sub"}
         ]
     },
     "david_4a_sub": {
@@ -1193,8 +1193,8 @@ export const script: Script = {
     "jeff_4": {
         "text": "",
         "next": [
-            { "name": "took_photo_of_kate", "type": "eq", "value": true, "node": "jeff_4_took" },
-            { "name": "took_photo_of_kate", "type": "eq", "value": false, "node": "jeff_4_interv" }
+            {"name": "took_photo_of_kate", "type": "eq", "value": true, "node": "jeff_4_took"},
+            {"name": "took_photo_of_kate", "type": "eq", "value": false, "node": "jeff_4_interv"}
         ]
     },
     "jeff_4_took": {
@@ -1274,8 +1274,8 @@ export const script: Script = {
     "jeff_7": {
         "text": "",
         "next": [
-            { "name": "answered_kate_call", "type": "eq", "value": true, "node": "jeff_7_answered" },
-            { "name": "answered_kate_call", "type": "eq", "value": false, "node": "jeff_7_ignored" }
+            {"name": "answered_kate_call", "type": "eq", "value": true, "node": "jeff_7_answered"},
+            {"name": "answered_kate_call", "type": "eq", "value": false, "node": "jeff_7_ignored"}
         ]
     },
     "jeff_7_answered": {
@@ -1297,8 +1297,8 @@ export const script: Script = {
     "jeff_9": {
         "text": "",
         "next": [
-            { "name": "reported_nathan", "type": "eq", "value": true, "node": "jeff_9_rep" },
-            { "name": "reported_nathan", "type": "eq", "value": false, "node": "jeff_9_hid" }
+            {"name": "reported_nathan", "type": "eq", "value": true, "node": "jeff_9_rep"},
+            {"name": "reported_nathan", "type": "eq", "value": false, "node": "jeff_9_hid"}
         ]
     },
     "jeff_9_rep": {
@@ -1355,8 +1355,8 @@ export const script: Script = {
     "jeff_9_trust": {
         "text": "",
         "next": [
-            { "name": "intervened_for_chloe", "type": "eq", "value": false, "node": "jeff_9_trust_hid" },
-            { "name": "intervened_for_chloe", "type": "eq", "value": true, "node": "jeff_9_trust_blame" }
+            {"name": "intervened_for_chloe", "type": "eq", "value": false, "node": "jeff_9_trust_hid"},
+            {"name": "intervened_for_chloe", "type": "eq", "value": true, "node": "jeff_9_trust_blame"}
         ]
     },
     "jeff_9_trust_hid": {
@@ -1407,8 +1407,8 @@ export const script: Script = {
     "jeff_12": {
         "text": "",
         "next": [
-            { "name": "reported_nathan", "type": "eq", "value": true, "node": "jeff_12_rep" },
-            { "name": "reported_nathan", "type": "eq", "value": false, "node": "jeff_12_hid" }
+            {"name": "reported_nathan", "type": "eq", "value": true, "node": "jeff_12_rep"},
+            {"name": "reported_nathan", "type": "eq", "value": false, "node": "jeff_12_hid"}
         ]
     },
     "jeff_12_rep": {
@@ -1422,8 +1422,8 @@ export const script: Script = {
     "jeff_12a": {
         "text": "",
         "next": [
-            { "name": "made_fun_of_victoria", "type": "eq", "value": true, "node": "jeff_12a_madefun" },
-            { "name": "made_fun_of_victoria", "type": "eq", "value": false, "node": "jeff_12a_comforted" }
+            {"name": "made_fun_of_victoria", "type": "eq", "value": true, "node": "jeff_12a_madefun"},
+            {"name": "made_fun_of_victoria", "type": "eq", "value": false, "node": "jeff_12a_comforted"}
         ]
     },
     "jeff_12a_madefun": {
@@ -1451,8 +1451,8 @@ export const script: Script = {
     "jeff_12b": {
         "text": "",
         "next": [
-            { "name": "made_fun_of_victoria", "type": "eq", "value": true, "node": "jeff_12b_madefun" },
-            { "name": "made_fun_of_victoria", "type": "eq", "value": false, "node": "jeff_12b_comforted" }
+            {"name": "made_fun_of_victoria", "type": "eq", "value": true, "node": "jeff_12b_madefun"},
+            {"name": "made_fun_of_victoria", "type": "eq", "value": false, "node": "jeff_12b_comforted"}
         ]
     },
     "jeff_12b_madefun": {
@@ -1651,8 +1651,8 @@ export const script: Script = {
     "principal_1": {
         "text": "",
         "next": [
-            { "name": "saved_kate", "type": "eq", "value": true, "node": "principal_1_saved" },
-            { "name": "saved_kate", "type": "eq", "value": false, "node": "principal_1_notsaved" }
+            {"name": "saved_kate", "type": "eq", "value": true, "node": "principal_1_saved"},
+            {"name": "saved_kate", "type": "eq", "value": false, "node": "principal_1_notsaved"}
         ]
     },
     "principal_1_saved": {
@@ -1715,8 +1715,8 @@ export const script: Script = {
     "principal_A_nested": {
         "text": "",
         "next": [
-            { "name": "reported_nathan", "type": "eq", "value": true, "node": "principal_A_rep" },
-            { "name": "reported_nathan", "type": "eq", "value": false, "node": "principal_A_hidtext" }
+            {"name": "reported_nathan", "type": "eq", "value": true, "node": "principal_A_rep"},
+            {"name": "reported_nathan", "type": "eq", "value": false, "node": "principal_A_hidtext"}
         ]
     },
     "principal_A_rep": {
@@ -1735,8 +1735,8 @@ export const script: Script = {
     "principal_A_hid": {
         "text": "",
         "next": [
-            { "name": "intervened_for_chloe", "type": "eq", "value": false, "node": "principal_A_hid_stayed" },
-            { "name": "intervened_for_chloe", "type": "eq", "value": true, "node": "principal_A_hid_blame" }
+            {"name": "intervened_for_chloe", "type": "eq", "value": false, "node": "principal_A_hid_stayed"},
+            {"name": "intervened_for_chloe", "type": "eq", "value": true, "node": "principal_A_hid_blame"}
         ]
     },
     "principal_A_hid_stayed": {
@@ -1759,8 +1759,8 @@ export const script: Script = {
     "principal_B_nested": {
         "text": "",
         "next": [
-            { "name": "intervened_for_chloe", "type": "eq", "value": false, "node": "principal_B_nested_stayed" },
-            { "name": "intervened_for_chloe", "type": "eq", "value": true, "node": "principal_B_nested_blame" }
+            {"name": "intervened_for_chloe", "type": "eq", "value": false, "node": "principal_B_nested_stayed"},
+            {"name": "intervened_for_chloe", "type": "eq", "value": true, "node": "principal_B_nested_blame"}
         ]
     },
     "principal_B_nested_stayed": {
@@ -1777,8 +1777,8 @@ export const script: Script = {
     "principal_B_a": {
         "text": "",
         "next": [
-            { "name": "took_photo_of_kate", "type": "eq", "value": true, "node": "principal_B_a_took" },
-            { "name": "took_photo_of_kate", "type": "eq", "value": false, "node": "principal_B_a_interv" }
+            {"name": "took_photo_of_kate", "type": "eq", "value": true, "node": "principal_B_a_took"},
+            {"name": "took_photo_of_kate", "type": "eq", "value": false, "node": "principal_B_a_interv"}
         ]
     },
     "principal_B_a_took": {
@@ -1800,8 +1800,8 @@ export const script: Script = {
     "principal_B_b": {
         "text": "",
         "next": [
-            { "name": "took_photo_of_kate", "type": "eq", "value": true, "node": "principal_B_b_took" },
-            { "name": "took_photo_of_kate", "type": "eq", "value": false, "node": "principal_B_b_intervened" }
+            {"name": "took_photo_of_kate", "type": "eq", "value": true, "node": "principal_B_b_took"},
+            {"name": "took_photo_of_kate", "type": "eq", "value": false, "node": "principal_B_b_intervened"}
         ]
     },
     "principal_B_b_took": {
@@ -1815,8 +1815,8 @@ export const script: Script = {
     "principal_B_b_intervened": {
         "text": "",
         "next": [
-            { "name": "reported_nathan", "type": "eq", "value": true, "node": "principal_B_b_interv_rep" },
-            { "name": "reported_nathan", "type": "eq", "value": false, "node": "principal_B_b_interv_hid" }
+            {"name": "reported_nathan", "type": "eq", "value": true, "node": "principal_B_b_interv_rep"},
+            {"name": "reported_nathan", "type": "eq", "value": false, "node": "principal_B_b_interv_hid"}
         ]
     },
     "principal_B_b_interv_rep": {
@@ -1830,8 +1830,8 @@ export const script: Script = {
     "principal_photo_wells": {
         "text": "",
         "next": [
-            { "name": "saved_kate", "type": "eq", "value": true, "node": "principal_photo_saved" },
-            { "name": "saved_kate", "type": "eq", "value": false, "node": "principal_photo_notsaved" }
+            {"name": "saved_kate", "type": "eq", "value": true, "node": "principal_photo_saved"},
+            {"name": "saved_kate", "type": "eq", "value": false, "node": "principal_photo_notsaved"}
         ]
     },
     "principal_photo_saved": {
@@ -1855,8 +1855,8 @@ export const script: Script = {
     "principal_C_nested": {
         "text": "",
         "next": [
-            { "name": "answered_kate_call", "type": "eq", "value": true, "node": "principal_C_answered" },
-            { "name": "answered_kate_call", "type": "eq", "value": false, "node": "principal_C_ignored" }
+            {"name": "answered_kate_call", "type": "eq", "value": true, "node": "principal_C_answered"},
+            {"name": "answered_kate_call", "type": "eq", "value": false, "node": "principal_C_ignored"}
         ]
     },
     "principal_C_answered": {
@@ -1901,8 +1901,8 @@ export const script: Script = {
     "principal_break": {
         "text": "Excuse me, I think Max and Nathan need a break before we grill them further.",
         "next": [
-            { "name": "saved_kate", "type": "eq", "value": true, "node": "principal_break_saved" },
-            { "name": "saved_kate", "type": "eq", "value": false, "node": "principal_break_notsaved" }
+            {"name": "saved_kate", "type": "eq", "value": true, "node": "principal_break_saved"},
+            {"name": "saved_kate", "type": "eq", "value": false, "node": "principal_break_notsaved"}
         ]
     },
     "principal_break_saved": {
@@ -1932,8 +1932,8 @@ export const script: Script = {
     "warren_end_1": {
         "text": "",
         "next": [
-            { "name": "saved_kate", "type": "eq", "value": true, "node": "warren_end_saved" },
-            { "name": "saved_kate", "type": "eq", "value": false, "node": "warren_end_notsaved" }
+            {"name": "saved_kate", "type": "eq", "value": true, "node": "warren_end_saved"},
+            {"name": "saved_kate", "type": "eq", "value": false, "node": "warren_end_notsaved"}
         ]
     },
     "warren_end_saved": {
