@@ -6,6 +6,9 @@ export default defineConfig({
     server: {
         host: true,
         port: 5175,
+        // Dev server is reached by various LAN hostnames; allow any rather than
+        // pinning a machine-specific name.
+        allowedHosts: true,
     },
     build: {
         outDir: "dist",
