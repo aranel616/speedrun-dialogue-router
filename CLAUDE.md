@@ -8,19 +8,26 @@ A dialogue routing engine that finds the **shortest path** (by total character c
 
 ## Running the Code
 
-No `package.json` exists. Run directly with `ts-node`:
+The app is a web UI (React client) over an Express API that wraps the routing engine.
+
+**Development** (two processes):
 
 ```bash
-ts-node run.ts
+npm install                                # root deps (engine + server)
+npm run server:dev                         # API on http://localhost:3001 (auto-reloads)
+cd client && npm install && npm run dev    # Vite dev server on http://localhost:5175
 ```
 
-Or compile then run:
+Open http://localhost:5175 — Vite proxies `/api` to the server on 3001.
+
+**Single process** (server serves the built client):
 
 ```bash
-tsc && node run.js
+npm run build:client                       # builds client/ into client/dist
+npm run server                             # serves client/dist + /api on http://localhost:3001
 ```
 
-Output: shortest dialogue length (chars), the ordered path of choice/node names taken, final context state, and execution time.
+In the UI, pick a script and run "find shortest path" to see the optimal route, running character counts, and the graph visualization.
 
 ## Architecture
 
@@ -46,7 +53,7 @@ traverse(script, nodeId, currentLength, context, depth) → [totalLength, path[]
 
 ### Adding a New Script
 
-Create a file under `scripts/<game>/episodeN.ts` exporting a `Script` object, then update the import in `run.ts`. Each key in the `Script` map is a node ID. A node is either:
+Create a file under `scripts/<game>/episodeN.ts` exporting a `Script` object. The server's `scriptLoader` auto-discovers it (no registration needed); optionally add a table-of-contents outline in `client/src/toc.ts`. Each key in the `Script` map is a node ID. A node is either:
 
 - `{ text, next? }` — linear dialogue
 - `{ choices: [{ name, text, set?, next? }] }` — branching choice point
