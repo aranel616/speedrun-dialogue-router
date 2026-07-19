@@ -1,0 +1,11 @@
+{
+  "name": "@sdr/graph",
+  "version": "0.1.0",
+  "description": "Builds the visualization graph and traversal result from a script",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "@sdr/engine": "*",
+    "@sdr/shared": "*"
+  }
+}

@@ -13,7 +13,6 @@ export const traverse = (script: Script, nodeId: string, currentLength: number, 
     if (!cache) { cache = new Map<string, Result>(); caches.set(script, cache); }
 
     const cacheKey = `${nodeId}-${JSON.stringify(context)}`;
-    console.log(`${depth} - ${cacheKey}`);
 
     if (cache.has(cacheKey)) {
         const cacheHit = cache.get(cacheKey)!;

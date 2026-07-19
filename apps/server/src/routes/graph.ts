@@ -1,6 +1,6 @@
 import {Router, Request, Response} from "express";
 import {loadScript} from "../lib/scriptLoader";
-import {buildGraph} from "../lib/graphBuilder";
+import {buildGraph} from "@sdr/graph";
 
 const router = Router();
 

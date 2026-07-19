@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@sdr/engine": "*",
+    "@sdr/graph": "*",
     "@sdr/scripts": "*",
     "@sdr/shared": "*",
     "cors": "^2.8.5",
