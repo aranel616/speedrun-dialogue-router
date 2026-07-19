@@ -22,9 +22,8 @@
   },
   "scripts": {
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "test": "jest",
+    "test": "jest --coverage",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
     "server": "ts-node server/index.ts",
     "server:dev": "nodemon --exec ts-node --watch server --watch functions --watch scripts --ext ts server/index.ts",
     "build:client": "cd client && npm install && npm run build",
