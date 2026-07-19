@@ -1,5 +1,5 @@
 import {Handle, Position, type NodeProps} from "@xyflow/react";
-import type {GraphNode} from "../../types";
+import type {GraphNode} from "@sdr/shared";
 
 function textPreview(text: string | string[] | undefined): string {
     if (!text) {return "(no text)";}

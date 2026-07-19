@@ -1,5 +1,5 @@
 import {Handle, Position, type NodeProps} from "@xyflow/react";
-import type {GraphNode} from "../../types";
+import type {GraphNode} from "@sdr/shared";
 
 export function ChoiceNode({data, selected}: NodeProps): JSX.Element {
     const d = data as unknown as GraphNode & { highlighted?: boolean };

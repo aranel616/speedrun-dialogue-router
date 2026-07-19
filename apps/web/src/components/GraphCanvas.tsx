@@ -1,6 +1,6 @@
 import {useState, useCallback, useMemo, useEffect, useLayoutEffect, useRef, memo} from "react";
 import type {Node, Edge} from "@xyflow/react";
-import type {GraphNode, GraphEdge} from "../types";
+import type {GraphNode, GraphEdge} from "@sdr/shared";
 import {applyDagreLayout} from "../utils/dagreLayout";
 import {TOC} from "../toc";
 

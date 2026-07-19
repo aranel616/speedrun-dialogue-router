@@ -1,4 +1,4 @@
-import type {ScriptListResponse, GraphResponse, TraverseRequest, TraverseResponse} from "./types";
+import type {ScriptListResponse, GraphResponse, TraverseRequest, TraverseResponse} from "@sdr/shared";
 
 export async function fetchScripts(): Promise<ScriptListResponse> {
     const res = await fetch("/api/scripts");

@@ -14,7 +14,7 @@ module.exports = {
     '!**/__tests__/**',
     '!**/dist/**',
     '!packages/scripts/**',
-    '!client/**',
+    '!apps/web/**',
   ],
   coverageReporters: ['text', 'text-summary', 'html', 'lcov'],
 };

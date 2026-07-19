@@ -1,6 +1,6 @@
 import {useState, useEffect, useCallback, useMemo} from "react";
 import {fetchScripts, fetchGraph, postTraverse} from "./api";
-import type {ScriptMeta, GraphResponse, GraphNode, TraverseResponse} from "./types";
+import type {ScriptMeta, GraphResponse, GraphNode, TraverseResponse} from "@sdr/shared";
 import {ControlBar} from "./components/ControlBar";
 import {GraphCanvas} from "./components/GraphCanvas";
 import {Sidebar} from "./components/Sidebar";

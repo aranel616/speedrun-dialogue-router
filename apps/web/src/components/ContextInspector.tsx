@@ -1,4 +1,4 @@
-import type {TraverseResponse} from "../types";
+import type {TraverseResponse} from "@sdr/shared";
 
 interface Props {
   result: TraverseResponse | null;

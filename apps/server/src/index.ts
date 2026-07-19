@@ -15,7 +15,7 @@ app.use("/api/scripts", scriptsRouter);
 app.use("/api/graph", graphRouter);
 app.use("/api/traverse", traverseRouter);
 
-const clientDist = path.resolve(__dirname, "../client/dist");
+const clientDist = path.resolve(__dirname, "../../web/dist");
 app.use(express.static(clientDist));
 app.get("*", (_req, res) => {
     res.sendFile(path.join(clientDist, "index.html"));

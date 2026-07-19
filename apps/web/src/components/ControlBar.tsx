@@ -1,4 +1,4 @@
-import type {ScriptMeta} from "../types";
+import type {ScriptMeta} from "@sdr/shared";
 
 interface Props {
   scripts: ScriptMeta[];

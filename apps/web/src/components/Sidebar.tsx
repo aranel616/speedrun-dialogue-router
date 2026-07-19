@@ -1,4 +1,4 @@
-import type {GraphNode} from "../types";
+import type {GraphNode} from "@sdr/shared";
 
 interface Props {
   node: GraphNode | null;
