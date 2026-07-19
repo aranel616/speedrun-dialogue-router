@@ -1,0 +1,8 @@
+{
+  "name": "@sdr/scripts",
+  "version": "0.1.0",
+  "description": "Transcribed dialogue scripts (data) consumed by the server",
+  "dependencies": {
+    "@sdr/engine": "*"
+  }
+}

@@ -1,4 +1,4 @@
-import {Script} from "../../types";
+import {Script} from "@sdr/engine";
 
 export const script: Script = {
     // ============ Inherited decisions (set once at episode start) ============

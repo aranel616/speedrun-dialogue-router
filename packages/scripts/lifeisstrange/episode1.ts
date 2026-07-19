@@ -1,4 +1,4 @@
-import {Script} from "../../types";
+import {Script} from "@sdr/engine";
 
 export const script: Script = {
     "start": {

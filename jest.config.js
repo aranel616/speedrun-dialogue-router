@@ -13,7 +13,7 @@ module.exports = {
     '!**/*.d.ts',
     '!**/__tests__/**',
     '!**/dist/**',
-    '!scripts/**',
+    '!packages/scripts/**',
     '!client/**',
   ],
   coverageReporters: ['text', 'text-summary', 'html', 'lcov'],

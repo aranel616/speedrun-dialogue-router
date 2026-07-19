@@ -6,6 +6,7 @@
   ],
   "dependencies": {
     "@sdr/engine": "*",
+    "@sdr/scripts": "*",
     "@sdr/shared": "*",
     "cors": "^2.8.5",
     "express": "^4.19.2",
@@ -32,7 +33,7 @@
     "test": "jest --coverage",
     "test:watch": "jest --watch",
     "server": "ts-node server/index.ts",
-    "server:dev": "nodemon --exec ts-node --watch server --watch packages/engine --watch scripts --ext ts server/index.ts",
+    "server:dev": "nodemon --exec ts-node --watch server --watch packages --ext ts server/index.ts",
     "build:client": "cd client && npm install && npm run build",
     "start": "node server/index.js"
   }

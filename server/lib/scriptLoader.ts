@@ -2,7 +2,9 @@ import * as fs from "fs";
 import * as path from "path";
 import {Script} from "@sdr/engine";
 
-const SCRIPTS_DIR = path.resolve(__dirname, "../../scripts");
+// Resolve the @sdr/scripts data package's directory, so the loader works
+// regardless of where the server itself lives in the tree.
+const SCRIPTS_DIR = path.dirname(require.resolve("@sdr/scripts/package.json"));
 
 export interface LoadedScript {
   id: string;
