@@ -45,7 +45,7 @@ function computeVisited(
             }
 
             if (choice.next === undefined) {break;}
-            const next = getNextNode(script, choice.next, context);
+            const next = getNextNode(choice.next, context);
             if (!next) {break;}
             if (Array.isArray(choice.next)) {
                 const j = choice.next.findIndex((c) => evaluateCondition(c, context));
@@ -58,7 +58,7 @@ function computeVisited(
 
             pathIdx++;
             if (node.next === undefined) {break;}
-            const next = getNextNode(script, node.next, context);
+            const next = getNextNode(node.next, context);
             if (!next) {break;}
             if (Array.isArray(node.next)) {
                 const j = node.next.findIndex((c) => evaluateCondition(c, context));

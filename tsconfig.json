@@ -12,6 +12,7 @@
     "packages/shared/src",
     "packages/graph/src",
     "packages/scripts/lifeisstrange",
+    "packages/scripts/index.ts",
     "apps/server/src"
   ]
 }

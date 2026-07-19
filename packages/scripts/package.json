@@ -1,7 +1,9 @@
 {
   "name": "@sdr/scripts",
   "version": "0.1.0",
-  "description": "Transcribed dialogue scripts (data) consumed by the server",
+  "description": "Transcribed dialogue scripts (data) and a static registry",
+  "main": "index.ts",
+  "types": "index.ts",
   "dependencies": {
     "@sdr/engine": "*"
   }

@@ -1,7 +1,7 @@
-import {Script, Next, Context} from "./types";
+import {Next, Context} from "./types";
 import {evaluateCondition} from "./evaluateCondition";
 
-export const getNextNode = (script: Script, next: Next|undefined, context: Context): string | false => {
+export const getNextNode = (next: Next|undefined, context: Context): string | false => {
     if (!next) {
         return false;
     }

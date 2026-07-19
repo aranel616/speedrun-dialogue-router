@@ -40,7 +40,7 @@ export const traverse = (script: Script, nodeId: string, currentLength: number, 
 
     if ("text" in currentNode) {
         dialogueLength = calculateDialogueLength(currentNode.text);
-        nextNodeId = getNextNode(script, currentNode.next, context);
+        nextNodeId = getNextNode(currentNode.next, context);
 
         if (!nextNodeId) {
             return [currentLength + dialogueLength, [nodeId.toString()], context];
@@ -56,7 +56,7 @@ export const traverse = (script: Script, nodeId: string, currentLength: number, 
 
     for (const choice of currentNode.choices) {
         const dialogueLength = calculateDialogueLength(choice.text);
-        const nextNodeId = getNextNode(script, choice.next, context);
+        const nextNodeId = getNextNode(choice.next, context);
 
         const choiceContext = {...context};
 

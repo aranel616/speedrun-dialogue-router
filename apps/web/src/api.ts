@@ -1,23 +1,32 @@
-import type {ScriptListResponse, GraphResponse, TraverseRequest, TraverseResponse} from "@sdr/shared";
+// Data layer. Everything runs in the browser — the routing engine and graph
+// builder are pure, and the scripts are bundled — so these just call the
+// packages directly. Kept async so the calling components don't care whether
+// the work is local or (someday) remote.
+import type {GraphResponse, ScriptListResponse, TraverseRequest, TraverseResponse} from "@sdr/shared";
+import type {Context} from "@sdr/engine";
+import {SCRIPTS} from "@sdr/scripts";
+import {buildGraph, runTraverse} from "@sdr/graph";
 
 export async function fetchScripts(): Promise<ScriptListResponse> {
-    const res = await fetch("/api/scripts");
-    if (!res.ok) {throw new Error("Failed to fetch scripts");}
-    return res.json() as Promise<ScriptListResponse>;
+    return {
+        scripts: SCRIPTS.map(({id, game, episode, script}) => ({
+            id,
+            game,
+            episode,
+            nodeCount: Object.keys(script).length,
+        })),
+    };
 }
 
 export async function fetchGraph(game: string, episode: string): Promise<GraphResponse> {
-    const res = await fetch(`/api/graph/${game}/${episode}`);
-    if (!res.ok) {throw new Error(`Failed to fetch graph for ${game}/${episode}`);}
-    return res.json() as Promise<GraphResponse>;
+    const id = `${game}/${episode}`;
+    const entry = SCRIPTS.find((s) => s.id === id);
+    if (!entry) {throw new Error(`Script not found: ${id}`);}
+    return buildGraph(id, entry.script);
 }
 
 export async function postTraverse(body: TraverseRequest): Promise<TraverseResponse> {
-    const res = await fetch("/api/traverse", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(body),
-    });
-    if (!res.ok) {throw new Error("Traversal failed");}
-    return res.json() as Promise<TraverseResponse>;
+    const entry = SCRIPTS.find((s) => s.id === body.scriptId);
+    if (!entry) {throw new Error(`Script not found: ${body.scriptId}`);}
+    return runTraverse(entry.script, body.startNode ?? "start", (body.initialContext ?? {}) as Context);
 }
