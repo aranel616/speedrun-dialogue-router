@@ -51,8 +51,14 @@ export const script: Script = {
     },
     "setup4_sided": {
         "choices": [
-            {"name": "(Sided with Chloe)", "text": "", "set": {"name": "sided_with_chloe", "type": "set", "value": true}, "next": "alt_beach_intro"},
-            {"name": "(Sided with David)", "text": "", "set": {"name": "sided_with_chloe", "type": "set", "value": false}, "next": "alt_beach_intro"}
+            {"name": "(Sided with Chloe)", "text": "", "set": {"name": "sided_with_chloe", "type": "set", "value": true}, "next": "setup4_courtney"},
+            {"name": "(Sided with David)", "text": "", "set": {"name": "sided_with_chloe", "type": "set", "value": false}, "next": "setup4_courtney"}
+        ]
+    },
+    "setup4_courtney": {
+        "choices": [
+            {"name": "(Complimented Courtney in ep2 → on VIP list)", "text": "", "set": {"name": "complimented_courtney", "type": "set", "value": true}, "next": "alt_beach_intro"},
+            {"name": "(Didn't compliment Courtney → denied, gets in another way)", "text": "", "set": {"name": "complimented_courtney", "type": "set", "value": false}, "next": "alt_beach_intro"}
         ]
     },
 
@@ -1570,26 +1576,27 @@ export const script: Script = {
         "next": "party_courtney"
     },
     "party_courtney": {
-        "choices": [
-            {
-                "name": "(Courtney wrote Max's name on the list)",
-                "text": [
-                    "Max! Our guest star arrives fashionably late! You still get special access to the Vortex Club VIP lounge…",
-                    "You better let your minion know since she won't let me pass.",
-                    "Oh, that little asshole just made her last mistake. Now, let's go make an official VIP entrance, Max Factor! Sarah, you're done. And you're off the list, permanently. Welcome to the Vortex Club."
-                ],
-                "next": "party_victoria"
-            },
-            {
-                "name": "(Max isn't on the list)",
-                "text": [
-                    "What is Max Caulfield doing at a Vortex Club party? It really must be the end of the world… But seriously, like, what do you want?",
-                    "I didn't want to be alone tonight after this week… so I thought it'd be nice to hang out in the VIP section.",
-                    "Yes, it is very nice. If you're in the Vortex Club, which you're not and will never be. So, excuse me..."
-                ],
-                "next": "party_victoria"
-            }
+        "text": "",
+        "next": [
+            {"name": "complimented_courtney", "type": "eq", "value": true, "node": "party_courtney_listed"},
+            {"name": "complimented_courtney", "type": "eq", "value": false, "node": "party_courtney_notlisted"}
         ]
+    },
+    "party_courtney_listed": {
+        "text": [
+            "Max! Our guest star arrives fashionably late! You still get special access to the Vortex Club VIP lounge…",
+            "You better let your minion know since she won't let me pass.",
+            "Oh, that little asshole just made her last mistake. Now, let's go make an official VIP entrance, Max Factor! Sarah, you're done. And you're off the list, permanently. Welcome to the Vortex Club."
+        ],
+        "next": "party_victoria"
+    },
+    "party_courtney_notlisted": {
+        "text": [
+            "What is Max Caulfield doing at a Vortex Club party? It really must be the end of the world… But seriously, like, what do you want?",
+            "I didn't want to be alone tonight after this week… so I thought it'd be nice to hang out in the VIP section.",
+            "Yes, it is very nice. If you're in the Vortex Club, which you're not and will never be. So, excuse me..."
+        ],
+        "next": "party_victoria"
     },
 
     // ----- Conversation with Victoria -----
