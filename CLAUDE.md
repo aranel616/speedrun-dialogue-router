@@ -6,32 +6,48 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 A dialogue routing engine that finds the **shortest path** (by total character count) through a branching narrative script. Originally built to analyze *Life is Strange* Episode 1 — useful for speedrun route analysis or narrative structure verification.
 
-## Running the Code
+## Repository Layout
 
-The app is a web UI (React client) over an Express API that wraps the routing engine.
+npm-workspaces monorepo. `npm install` at the root installs everything.
+
+```
+packages/
+  engine/    @sdr/engine  — the routing engine (traverse + domain types). Pure, no deps.
+  shared/    @sdr/shared  — API types shared by server and web.
+  scripts/   @sdr/scripts — the transcribed dialogue data (the corpus).
+apps/
+  server/    @sdr/server  — Express API over the engine.
+  web/        @sdr/web    — React/Vite single-page app (the visualization).
+tools/
+  transcription/          — Python scaffolding used to transcribe scripts (not shipped).
+```
+
+Dependency direction: `web → shared`, `server → engine, shared, scripts`, `scripts → engine`. The engine depends on nothing.
+
+## Running the Code
 
 **Development** (two processes):
 
 ```bash
-npm install                                # root deps (engine + server)
-npm run server:dev                         # API on http://localhost:3001 (auto-reloads)
-cd client && npm install && npm run dev    # Vite dev server on http://localhost:5175
+npm install            # installs all workspaces
+npm run server:dev     # API on http://localhost:3001 (auto-reloads)
+npm run web:dev        # Vite dev server on http://localhost:5175
 ```
 
 Open http://localhost:5175 — Vite proxies `/api` to the server on 3001.
 
-**Single process** (server serves the built client):
+**Single process** (server serves the built web app):
 
 ```bash
-npm run build:client                       # builds client/ into client/dist
-npm run server                             # serves client/dist + /api on http://localhost:3001
+npm run build:web      # builds apps/web into apps/web/dist
+npm run start          # serves apps/web/dist + /api on http://localhost:3001
 ```
 
-In the UI, pick a script and run "find shortest path" to see the optimal route, running character counts, and the graph visualization.
+Root scripts: `npm run lint`, `npm run typecheck`, `npm test` (with coverage). In the UI, pick a script and run "find shortest path" to see the optimal route, running character counts, and the graph visualization.
 
 ## Architecture
 
-### Core Algorithm (`functions/traverse.ts`)
+### Core Algorithm (`packages/engine/src/traverse.ts`)
 
 Recursive depth-first search over the script graph. Signature:
 
@@ -43,17 +59,17 @@ traverse(script, nodeId, currentLength, context, depth) → [totalLength, path[]
 - **Linear nodes** (`InteractionWithoutChoices`): follows `next`, which is either a node ID string or a `ConditionalNext` array evaluated by `getNextNode`.
 - **Memoization**: cache is keyed on `${nodeId}-${JSON.stringify(context)}` and held in a `WeakMap<Script, Map>` so each script gets its own cache — different scripts sharing node ids (e.g. `start`) never contaminate each other in a long-lived server process. Both cache reads and writes are active; results are stored as marginal cost (`shortestLength - currentLength`) and re-based on read.
 
-### Type System (`types.ts`)
+### Type System (`packages/engine/src/types.ts`)
 
 - `Next = string | ConditionalNext` — a node ID or an array of `GetCondition` (first matching condition wins, evaluated by `getNextNode`).
 - `GetCondition.type` supports `eq | ne | gt | gte | lt | lte`. `ne` (not-equal) is used to express "any value except X" against a multi-valued variable (see Inherited Decisions below).
 - Condition/context **values may be `boolean | number | string`.** String values model exclusive multi-way state (e.g. `suspended` ∈ `{nathan, david, jefferson, max, none}`) as one variable instead of several booleans.
-- `SetCondition` supports `set | add | subtract`, but only `"set"` is currently applied in `traverse.ts`. `add`/`subtract` are parsed but ignored.
+- `SetCondition` supports `set | add | subtract`, but only `"set"` is currently applied in `traverse.ts` (`packages/engine/src`). `add`/`subtract` are parsed but ignored.
 - `Context` is a flat `{[name]: boolean | number | string}` map passed immutably (spread-copied before mutations).
 
 ### Adding a New Script
 
-Create a file under `scripts/<game>/episodeN.ts` exporting a `Script` object. The server's `scriptLoader` auto-discovers it (no registration needed); optionally add a table-of-contents outline in `client/src/toc.ts`. Each key in the `Script` map is a node ID. A node is either:
+Create a file under `packages/scripts/<game>/episodeN.ts` exporting a `Script` object. The server's `scriptLoader` auto-discovers it (no registration needed); optionally add a table-of-contents outline in `apps/web/src/toc.ts`. Each key in the `Script` map is a node ID. A node is either:
 
 - `{ text, next? }` — linear dialogue
 - `{ choices: [{ name, text, set?, next? }] }` — branching choice point
@@ -69,9 +85,9 @@ This section documents how to convert game dialogue into the script data format,
 ### Source Material
 
 - Use a wiki script page (e.g. Fandom) as the authoritative reference. Save the full HTML locally.
-- Run `scripts/audit_<episode>.py` (e.g. `scripts/audit_episode1.py`) to strip the HTML to plain mandatory dialogue. The audit script outputs only mandatory (non-optional) sections — anything under a heading starting with "Optional" is excluded.
+- Run `tools/transcription/audit_<episode>.py` (e.g. `tools/transcription/audit_episode1.py`) to strip the HTML to plain mandatory dialogue. The audit script outputs only mandatory (non-optional) sections — anything under a heading starting with "Optional" is excluded.
 - The wiki HTML path is hardcoded in the audit script as the `WIKI` constant near the top — update it to point at your saved HTML file before running.
-- Always write audit/verification logic as a **Python script** in `scripts/`, not as ad-hoc bash commands. This keeps the logic inspectable and rerunnable.
+- Always write audit/verification logic as a **Python script** in `tools/transcription/`, not as ad-hoc bash commands. This keeps the logic inspectable and rerunnable.
 
 ### Two Node Types
 
@@ -149,7 +165,7 @@ Episodes 2+ react to choices made in earlier episodes (did you save Kate, who di
 // ... more forks ...
 "setup_last": { "choices": [ /* → content root, e.g. "maxroom_intro" */ ] }
 ```
-- The client renders the fork chain as a detached green list above the graph (`GraphCanvas` walks setup forks from `"start"`); the content root is the first non-fork node. Add the content root as the first `toc.ts` entry (not `"start"`).
+- The client renders the fork chain as a detached green list above the graph (`GraphCanvas` walks setup forks from `"start"`); the content root is the first non-fork node. Add the content root as the first `apps/web/src/toc.ts` entry (not `"start"`).
 - The DFS searches the full cross-product of inherited values at find-shortest-path time, so each variable stays constant along any one path but the optimum may use any combination.
 
 **Exclusive multi-way state → one string variable, not N booleans.** When the underlying game choice produces exactly one of several outcomes, model it as a single string-valued variable, not independent booleans (which the solver could set true simultaneously). Example: the Episode 2 Principal's Office produces exactly one of *Nathan suspended / David on leave / Jefferson out of contest / Max suspended / no one* — all driven by who you blame. This is one variable `suspended` ∈ `{nathan, david, jefferson, max, none}`, set by a 5-option setup fork. Occurrences route with `eq` for the matched value and `ne` for "any other value":
@@ -186,7 +202,7 @@ Flags propagate forward through the graph — the context is forked (spread-copi
 
 1. Run the audit script to get plain mandatory text:
    ```bash
-   python3 scripts/audit_episode1.py > /tmp/audit_output.txt
+   python3 tools/transcription/audit_episode1.py > /tmp/audit_output.txt
    ```
 2. Read the audit output section by section. Each `=== Section Header ===` marks a new scene.
 3. For each scene: identify choice points (lines that appear as two short alternatives, or lines labeled with choice names). Every choice point needs a `choices` node.
