@@ -4,7 +4,7 @@ interface Props {
   result: TraverseResponse | null;
 }
 
-export function ContextInspector({result}: Props) {
+export function ContextInspector({result}: Props): JSX.Element | null {
     if (!result) {return null;}
 
     const contextEntries = Object.entries(result.context);

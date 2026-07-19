@@ -1,12 +1,6 @@
 import type {Script} from "../types";
-
-let traverse: (script: Script, nodeId: string, currentLength: number, context: Record<string, boolean | number>, depth: number)=> [number, string[], Record<string, boolean | number>];
-
-beforeEach(() => {
-    jest.isolateModules(() => {
-        traverse = require("../functions/traverse").traverse;
-    });
-});
+import {traverse} from "../functions/traverse";
+import * as calcMod from "../functions/calculateDialogueLength";
 
 beforeAll(() => {
     jest.spyOn(console, "log").mockImplementation(() => {});
@@ -53,27 +47,24 @@ describe("traverse — integration", () => {
     });
 
     it("cache re-use across branches: spy confirms fork choices not re-evaluated on cache hit", () => {
-        jest.isolateModules(() => {
-            const calcMod = require("../functions/calculateDialogueLength");
-            const spy = jest.spyOn(calcMod, "calculateDialogueLength");
-            const traverseMod = require("../functions/traverse");
+        const spy = jest.spyOn(calcMod, "calculateDialogueLength");
 
-            // heavy(10) → fork → fast(5)/slow(10) → end(1)
-            // light(2)  → fork (cache hit)         → end(1)
-            // heavy: 10+5+1=16, light: 2+marginal(6)=8 → light wins
-            const script: Script = {
-                start: {choices: [{name: "heavy", text: "abcdefghij", next: "fork"}, {name: "light", text: "ab", next: "fork"}]},
-                fork:  {choices: [{name: "fast", text: "hello", next: "end"}, {name: "slow", text: "helloworld", next: "end"}]},
-                end:   {text: "!"},
-            };
+        // heavy(10) → fork → fast(5)/slow(10) → end(1)
+        // light(2)  → fork (cache hit)         → end(1)
+        // heavy: 10+5+1=16, light: 2+marginal(6)=8 → light wins
+        const script: Script = {
+            start: {choices: [{name: "heavy", text: "abcdefghij", next: "fork"}, {name: "light", text: "ab", next: "fork"}]},
+            fork:  {choices: [{name: "fast", text: "hello", next: "end"}, {name: "slow", text: "helloworld", next: "end"}]},
+            end:   {text: "!"},
+        };
 
-            const result = traverseMod.traverse(script, "start", 0, {}, 0);
-            expect(result).toEqual([8, ["light", "fast", "end"], {}]);
-            // heavy(1) + fork.fast(1) + end via fast(1) + fork.slow(1) + end via slow(1) + light(1) = 6 calls
-            // linear nodes are not cached, so end is called twice within fork's evaluation
-            // fork's choices are NOT re-evaluated on the cache hit for light
-            expect(spy).toHaveBeenCalledTimes(6);
-        });
+        const result = traverse(script, "start", 0, {}, 0);
+        expect(result).toEqual([8, ["light", "fast", "end"], {}]);
+        // heavy(1) + fork.fast(1) + end via fast(1) + fork.slow(1) + end via slow(1) + light(1) = 6 calls
+        // linear nodes are not cached, so end is called twice within fork's evaluation
+        // fork's choices are NOT re-evaluated on the cache hit for light
+        expect(spy).toHaveBeenCalledTimes(6);
+        spy.mockRestore();
     });
 
     it("array dialogue text in a linear chain is summed correctly", () => {
@@ -99,10 +90,8 @@ describe("traverse — integration", () => {
         };
 
         expect(traverse(script, "start", 0, {score: 10}, 0)).toEqual([3, ["start", "win"],  {score: 10}]);
-        // Reset cache for second call with different context
-        jest.isolateModules(() => {
-            const freshTraverse = require("../functions/traverse").traverse;
-            expect(freshTraverse(script, "start", 0, {score: 5}, 0)).toEqual([7, ["start", "lose"], {score: 5}]);
-        });
+        // Different context → different cache key ({"score":5} vs {"score":10}), so
+        // the second call recomputes and routes to the other branch.
+        expect(traverse(script, "start", 0, {score: 5}, 0)).toEqual([7, ["start", "lose"], {score: 5}]);
     });
 });

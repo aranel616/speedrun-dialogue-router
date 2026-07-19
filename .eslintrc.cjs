@@ -16,7 +16,9 @@ module.exports = {
     ecmaFeatures: {jsx: true}
   },
   plugins: ['react-refresh'],
-  settings: {react: {version: 'detect'}},
+  // react lives in client/, not the root, so pin the version rather than
+  // 'detect' (which warns when the package isn't resolvable from here).
+  settings: {react: {version: '18.3'}},
   rules: {
     'react-refresh/only-export-components': ['warn', {allowConstantExport: true}],
     'indent': ['error', 4, {'SwitchCase': 1, 'ignoredNodes': ['JSXElement *']}],

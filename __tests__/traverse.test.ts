@@ -1,12 +1,6 @@
 import type {Script} from "../types";
-
-let traverse: (script: Script, nodeId: string, currentLength: number, context: Record<string, boolean | number>, depth: number)=> [number, string[], Record<string, boolean | number>];
-
-beforeEach(() => {
-    jest.isolateModules(() => {
-        traverse = require("../functions/traverse").traverse;
-    });
-});
+import {traverse} from "../functions/traverse";
+import * as calcMod from "../functions/calculateDialogueLength";
 
 beforeAll(() => {
     jest.spyOn(console, "log").mockImplementation(() => {});
@@ -218,24 +212,21 @@ describe("traverse — cache correctness", () => {
     });
 
     it("cache hit reduces calculateDialogueLength call count", () => {
-        jest.isolateModules(() => {
-            const calcMod = require("../functions/calculateDialogueLength");
-            const spy = jest.spyOn(calcMod, "calculateDialogueLength");
+        const spy = jest.spyOn(calcMod, "calculateDialogueLength");
+        // Fresh script object → its own (empty) cache in the WeakMap.
+        const script: Script = {
+            start: {choices: [{name: "heavy", text: "abcdefghij", next: "fork"}, {name: "light", text: "ab", next: "fork"}]},
+            fork:  {choices: [{name: "fast", text: "hello", next: "end"}, {name: "slow", text: "helloworld", next: "end"}]},
+            end:   {text: "!"},
+        };
 
-            const traverseMod = require("../functions/traverse");
-            const script: Script = {
-                start: {choices: [{name: "heavy", text: "abcdefghij", next: "fork"}, {name: "light", text: "ab", next: "fork"}]},
-                fork:  {choices: [{name: "fast", text: "hello", next: "end"}, {name: "slow", text: "helloworld", next: "end"}]},
-                end:   {text: "!"},
-            };
+        traverse(script, "start", 0, {}, 0);
 
-            traverseMod.traverse(script, "start", 0, {}, 0);
-
-            // heavy(1) + fork.fast(1) + end via fast(1) + fork.slow(1) + end via slow(1) + light(1) = 6
-            // linear nodes are not cached, so end is called twice within fork's evaluation
-            // fork's choices are NOT re-evaluated on the cache hit for 'light'
-            expect(spy).toHaveBeenCalledTimes(6);
-        });
+        // heavy(1) + fork.fast(1) + end via fast(1) + fork.slow(1) + end via slow(1) + light(1) = 6
+        // linear nodes are not cached, so end is called twice within fork's evaluation
+        // fork's choices are NOT re-evaluated on the cache hit for 'light'
+        expect(spy).toHaveBeenCalledTimes(6);
+        spy.mockRestore();
     });
 });
 
@@ -251,8 +242,8 @@ describe("traverse — set action on terminal choice", () => {
         const script: Script = {
             A: {
                 choices: [
-                    {name: "long",  text: "abcde", set: {name: "result", type: "set", value: "long" as any}},
-                    {name: "short", text: "ab",    set: {name: "result", type: "set", value: "short" as any}},
+                    {name: "long",  text: "abcde", set: {name: "result", type: "set", value: "long"}},
+                    {name: "short", text: "ab",    set: {name: "result", type: "set", value: "short"}},
                 ],
             },
         };

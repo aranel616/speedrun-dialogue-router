@@ -21,12 +21,12 @@ function nodeWidth(type: GraphNode["type"]): number {
     return type === "choiceItem" ? 330 : type === "conditionItem" ? 260 : 420;
 }
 
-const NOOP = () => {};
+const NOOP = (): void => {};
 
 interface Viewport { x: number; y: number; zoom: number }
 interface PosNode { id: string; x: number; y: number; w: number; h: number; node: GraphNode }
 
-function clamp(v: number, lo: number, hi: number) { return Math.max(lo, Math.min(hi, v)); }
+function clamp(v: number, lo: number, hi: number): number { return Math.max(lo, Math.min(hi, v)); }
 
 function edgePath(sx: number, sy: number, tx: number, ty: number): string {
     const my = (sy + ty) / 2;
@@ -39,7 +39,7 @@ function cleanLabel(id: string): string {
 
 function NodeCard({node, highlighted, selected, onClick, cumulative}: {
   node: GraphNode; highlighted: boolean; selected: boolean; onClick: ()=> void; cumulative?: number;
-}) {
+}): JSX.Element {
     if (node.type === "choice") {
         return (
             <div
@@ -117,7 +117,7 @@ function Minimap({posNodes, visitedNodeIds, viewport, containerW, containerH, on
   containerW: number;
   containerH: number;
   onNavigate: (v: Viewport)=> void;
-}) {
+}): JSX.Element | null {
     const dragging = useRef(false);
     if (posNodes.length === 0) {return null;}
 
@@ -137,7 +137,7 @@ function Minimap({posNodes, visitedNodeIds, viewport, containerW, containerH, on
     const scaleX = innerW / gW;
     const scaleY = innerH / gH;
 
-    function toMM(gx: number, gy: number) {
+    function toMM(gx: number, gy: number): {mx: number; my: number} {
         return {mx: MM_PAD + (gx - gx0) * scaleX, my: MM_PAD + (gy - gy0) * scaleY};
     }
 
@@ -149,7 +149,7 @@ function Minimap({posNodes, visitedNodeIds, viewport, containerW, containerH, on
     const vpMH = (containerH / vz) * scaleY;
 
     // Navigation is vertical-only; the graph stays horizontally centred.
-    function navigate(e: React.MouseEvent<SVGSVGElement>) {
+    function navigate(e: React.MouseEvent<SVGSVGElement>): void {
         const rect = e.currentTarget.getBoundingClientRect();
         const gy = (e.clientY - rect.top - MM_PAD) / scaleY + gy0;
         const gxc = gx0 + gW / 2;
@@ -198,7 +198,7 @@ interface Props {
   cumulativeCounts: Record<string, number>;
 }
 
-export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, selectedNodeId, onNodeClick, cumulativeCounts}: Props) {
+export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, selectedNodeId, onNodeClick, cumulativeCounts}: Props): JSX.Element {
     const containerRef = useRef<HTMLDivElement>(null);
     const vpRef = useRef<Viewport>({x: 0, y: 0, zoom: 1});
     const [viewport, setVP] = useState<Viewport>({x: 0, y: 0, zoom: 1});
@@ -213,7 +213,7 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
     // Measure the hidden layer's real card heights whenever the graph changes.
     // Runs before paint, so the positioned layout below uses true measurements.
     useLayoutEffect(() => {
-        const measure = () => {
+        const measure = (): void => {
             const next = new Map<string, number>();
             for (const n of graphNodes) {
                 const el = measureRefs.current.get(n.id);
@@ -228,7 +228,7 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
         // Re-measure once the web font is ready — text wrapping (and height) depends on it.
         let cancelled = false;
         document.fonts?.ready.then(() => { if (!cancelled) {measure();} });
-        return () => { cancelled = true; };
+        return (): void => { cancelled = true; };
     }, [graphNodes]);
 
     // Inherited-decision forks: the chain of flag-setting choices at the very top
@@ -312,7 +312,7 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
     useEffect(() => {
         const el = containerRef.current;
         if (!el) {return;}
-        const onWheel = (e: WheelEvent) => {
+        const onWheel = (e: WheelEvent): void => {
             e.preventDefault();
             const v = vpRef.current;
             // Ctrl/Cmd + wheel (and trackpad pinch, which sends ctrlKey) → zoom toward cursor.
@@ -329,7 +329,7 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
             syncVP({...v, x: v.x - e.deltaX, y: v.y - e.deltaY});
         };
         el.addEventListener("wheel", onWheel, {passive: false});
-        return () => el.removeEventListener("wheel", onWheel);
+        return (): void => el.removeEventListener("wheel", onWheel);
     }, [syncVP]);
 
     const onMouseDown = useCallback((e: React.MouseEvent) => {
@@ -417,7 +417,7 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
     // Edge rendering
     const edgePaths = useMemo(() => {
         const byId = new Map(posNodes.map((n) => [n.id, n]));
-        const visitedEdge = (e: GraphEdge) => visitedNodeIds.has(e.source) && visitedNodeIds.has(e.target);
+        const visitedEdge = (e: GraphEdge): boolean => visitedNodeIds.has(e.source) && visitedNodeIds.has(e.target);
         return graphEdges.map((e) => {
             const src = byId.get(e.source);
             const tgt = byId.get(e.target);
@@ -453,8 +453,8 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
     const INH_W = 320, INH_GAP = 8;
     // Each option wraps onto (roughly) its own row in the 320px card, so height
     // grows with option count rather than being fixed — 5-value forks fit cleanly.
-    const inhCardH = (nOpts: number) => 30 + nOpts * 20;
-    const inheritedCards = (() => {
+    const inhCardH = (nOpts: number): number => 30 + nOpts * 20;
+    const inheritedCards = ((): Array<{id: string; variable: string; height: number; options: {label: string; onPath: boolean}[]; left: number; top: number}> => {
         if (inherited.forks.length === 0 || posNodes.length === 0) {return [];}
         const topY = Math.min(...posNodes.map((n) => n.y));
         const root = posNodes.find((n) => n.id === inherited.contentRoot) ?? posNodes[0]!;

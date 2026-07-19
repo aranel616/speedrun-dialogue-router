@@ -30,7 +30,7 @@ export function buildGraph(scriptId: string, script: Script): GraphResponse {
     //      source ─► [took_photo_of_kate] ──true──► nodeA
     //                                      ──false─► nodeB
     //  - mixed variables (fallback): one node per branch labelled "name op value".
-    function emitConditional(sourceId: string, conds: GetCondition[]) {
+    function emitConditional(sourceId: string, conds: GetCondition[]): void {
         if (isSingleVariableFork(conds)) {
             const condId = `${sourceId}__cond`;
             nodes.push({id: condId, type: "conditionItem", condition: conds[0]!.name, isTerminal: false});

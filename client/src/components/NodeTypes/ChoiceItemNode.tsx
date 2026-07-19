@@ -8,7 +8,7 @@ function preview(text: string | string[] | undefined): string {
     return first.length > 44 ? first.slice(0, 41) + "…" : first;
 }
 
-export function ChoiceItemNode({data, selected}: NodeProps) {
+export function ChoiceItemNode({data, selected}: NodeProps): JSX.Element {
     const d = data as unknown as GraphNode & { highlighted?: boolean };
     return (
         <div className={`choice-item-node${selected ? " selected" : ""}${d.highlighted ? " highlighted" : ""}${d.isTerminal ? " terminal" : ""}`}>

@@ -8,7 +8,7 @@ function textPreview(text: string | string[] | undefined): string {
     return first.length > 50 ? first.slice(0, 47) + "…" : first;
 }
 
-export function LinearNode({data, selected}: NodeProps) {
+export function LinearNode({data, selected}: NodeProps): JSX.Element {
     const d = data as unknown as GraphNode & { highlighted?: boolean };
     return (
         <div className={`dialogue-node linear-node${selected ? " selected" : ""}${d.highlighted ? " highlighted" : ""}${d.isTerminal ? " terminal" : ""}`}>

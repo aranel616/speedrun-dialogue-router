@@ -1,5 +1,5 @@
 import {evaluateCondition} from "../functions/evaluateCondition";
-import type {GetCondition, Context} from "../types";
+import type {GetCondition} from "../types";
 
 const cond = (type: GetCondition["type"], name: string, value: boolean | number): GetCondition =>
     ({name, type, value, node: "any"});
@@ -89,7 +89,7 @@ describe("evaluateCondition", () => {
 
     describe("unknown type", () => {
         it("returns false for an unrecognized type", () => {
-            expect(evaluateCondition(cond("unknown" as any, "x", 5), {x: 5})).toBe(false);
+            expect(evaluateCondition(cond("unknown" as unknown as GetCondition["type"], "x", 5), {x: 5})).toBe(false);
         });
     });
 });

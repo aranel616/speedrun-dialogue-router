@@ -7,7 +7,7 @@ import {Sidebar} from "./components/Sidebar";
 import {ContextInspector} from "./components/ContextInspector";
 import "./styles.css";
 
-export default function App() {
+export default function App(): JSX.Element {
     const [scripts, setScripts] = useState<ScriptMeta[]>([]);
     const [selectedId, setSelectedId] = useState<string>("");
     const [graphData, setGraphData] = useState<GraphResponse | null>(null);

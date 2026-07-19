@@ -9,7 +9,7 @@ interface Props {
   hasGraph: boolean;
 }
 
-export function ControlBar({scripts, selectedId, onSelectScript, onTraverse, traversing, hasGraph}: Props) {
+export function ControlBar({scripts, selectedId, onSelectScript, onTraverse, traversing, hasGraph}: Props): JSX.Element {
     return (
         <header className="control-bar">
             <div className="control-bar-left">

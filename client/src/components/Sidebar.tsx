@@ -5,7 +5,7 @@ interface Props {
   onClose: ()=> void;
 }
 
-function TextBlock({text}: { text: string | string[] | undefined }) {
+function TextBlock({text}: { text: string | string[] | undefined }): JSX.Element | null {
     if (!text) {return null;}
     const lines = Array.isArray(text) ? text : [text];
     return (
@@ -15,7 +15,7 @@ function TextBlock({text}: { text: string | string[] | undefined }) {
     );
 }
 
-export function Sidebar({node, onClose}: Props) {
+export function Sidebar({node, onClose}: Props): JSX.Element | null {
     if (!node) {return null;}
 
     const title = node.type === "choiceItem" ? (node.choiceName ?? node.id) : node.id;
