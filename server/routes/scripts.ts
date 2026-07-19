@@ -1,6 +1,6 @@
 import {Router} from "express";
 import {discoverScriptIds, loadScript} from "../lib/scriptLoader";
-import {ScriptListResponse} from "../types";
+import {ScriptListResponse} from "@sdr/shared";
 
 const router = Router();
 

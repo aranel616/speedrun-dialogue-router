@@ -1,3 +1,6 @@
+// API contract shared by the server and the web client. Keeping it in one
+// package prevents the two copies from drifting.
+
 export interface ScriptMeta {
   id: string;
   game: string;
@@ -7,12 +10,6 @@ export interface ScriptMeta {
 
 export interface ScriptListResponse {
   scripts: ScriptMeta[];
-}
-
-export interface GraphChoice {
-  name: string;
-  text: string | string[];
-  sets?: Array<{ name: string; type: string; value: boolean | number | string }>;
 }
 
 export interface GraphNode {

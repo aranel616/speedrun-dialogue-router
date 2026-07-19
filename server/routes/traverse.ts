@@ -3,7 +3,7 @@ import {loadScript} from "../lib/scriptLoader";
 import {traverse, getNextNode, evaluateCondition, calculateDialogueLength} from "@sdr/engine";
 import {isSingleVariableFork} from "../lib/graphBuilder";
 import {Script, Context} from "@sdr/engine";
-import {TraverseRequest, TraverseResponse} from "../types";
+import {TraverseRequest, TraverseResponse} from "@sdr/shared";
 
 const router = Router();
 

@@ -1,0 +1,7 @@
+{
+  "name": "@sdr/shared",
+  "version": "0.1.0",
+  "description": "Shared API types for the server and web client",
+  "main": "src/index.ts",
+  "types": "src/index.ts"
+}

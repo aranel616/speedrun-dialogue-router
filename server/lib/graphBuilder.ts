@@ -1,5 +1,5 @@
 import {Script, GetCondition} from "@sdr/engine";
-import {GraphNode, GraphEdge, GraphResponse} from "../types";
+import {GraphNode, GraphEdge, GraphResponse} from "@sdr/shared";
 
 const OP: Record<string, string> = {eq: "=", ne: "≠", gt: ">", gte: "≥", lt: "<", lte: "≤"};
 
