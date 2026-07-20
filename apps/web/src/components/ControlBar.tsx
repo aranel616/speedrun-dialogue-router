@@ -5,11 +5,10 @@ interface Props {
   selectedId: string;
   onSelectScript: (id: string)=> void;
   onTraverse: ()=> void;
-  traversing: boolean;
   hasGraph: boolean;
 }
 
-export function ControlBar({scripts, selectedId, onSelectScript, onTraverse, traversing, hasGraph}: Props): JSX.Element {
+export function ControlBar({scripts, selectedId, onSelectScript, onTraverse, hasGraph}: Props): JSX.Element {
     return (
         <header className="control-bar">
             <div className="control-bar-left">
@@ -32,9 +31,9 @@ export function ControlBar({scripts, selectedId, onSelectScript, onTraverse, tra
                 <button
                     className="traverse-btn"
                     onClick={onTraverse}
-                    disabled={!hasGraph || traversing}
+                    disabled={!hasGraph}
         >
-                    {traversing ? "Finding…" : "Find Shortest Path"}
+                    Find Shortest Path
                 </button>
             </div>
         </header>

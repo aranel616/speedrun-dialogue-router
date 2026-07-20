@@ -2,12 +2,12 @@ import {describe, it, expect, vi, beforeEach} from "vitest";
 import {render, screen, fireEvent, waitFor} from "@testing-library/react";
 import type {ScriptMeta, GraphResponse, GraphNode, TraverseResponse} from "@sdr/shared";
 import App from "./App";
-import {fetchScripts, fetchGraph, postTraverse} from "./api";
+import {listScripts, getGraph, getShortestPath} from "./api";
 
 vi.mock("./api", () => ({
-    fetchScripts: vi.fn(),
-    fetchGraph: vi.fn(),
-    postTraverse: vi.fn()
+    listScripts: vi.fn(),
+    getGraph: vi.fn(),
+    getShortestPath: vi.fn()
 }));
 
 // Stub the heavy canvas: expose the scriptId/node-count it received and a way to
@@ -53,15 +53,15 @@ const traversal = (over: Partial<TraverseResponse> = {}): TraverseResponse =>
 // return; individual tests override the specific call they exercise.
 beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(fetchScripts).mockResolvedValue({scripts: [meta()]});
-    vi.mocked(fetchGraph).mockResolvedValue(graph([linear("N1")]));
-    vi.mocked(postTraverse).mockResolvedValue(traversal());
+    vi.mocked(listScripts).mockReturnValue({scripts: [meta()]});
+    vi.mocked(getGraph).mockReturnValue(graph([linear("N1")]));
+    vi.mocked(getShortestPath).mockReturnValue(traversal());
 });
 
 // Render and wait for the graph load triggered by the two chained mount effects.
 const renderLoaded = async (): Promise<void> => {
     render(<App />);
-    await waitFor(() => expect(fetchGraph).toHaveBeenCalled());
+    await waitFor(() => expect(getGraph).toHaveBeenCalled());
     await screen.findByTestId("canvas");
 };
 
@@ -69,53 +69,27 @@ describe("App", () => {
     it("loads scripts, auto-selects the first, and loads its graph", async () => {
         await renderLoaded();
         expect(screen.getByTestId("info")).toHaveTextContent("g/e1|1");
-        expect(fetchGraph).toHaveBeenCalledWith("g", "e1");
+        expect(getGraph).toHaveBeenCalledWith("g", "e1");
     });
 
     it("does nothing further when there are no scripts", async () => {
-        vi.mocked(fetchScripts).mockResolvedValue({scripts: []});
+        vi.mocked(listScripts).mockReturnValue({scripts: []});
         render(<App />);
-        await waitFor(() => expect(fetchScripts).toHaveBeenCalled());
-        expect(fetchGraph).not.toHaveBeenCalled();
-    });
-
-    it("logs when loading scripts fails", async () => {
-        const err = vi.spyOn(console, "error").mockImplementation(() => {});
-        vi.mocked(fetchScripts).mockRejectedValue(new Error("boom"));
-        render(<App />);
-        await waitFor(() => expect(err).toHaveBeenCalled());
-        err.mockRestore();
+        await waitFor(() => expect(listScripts).toHaveBeenCalled());
+        expect(getGraph).not.toHaveBeenCalled();
     });
 
     it("skips graph loading for a malformed script id", async () => {
-        vi.mocked(fetchScripts).mockResolvedValue({scripts: [meta({id: "noslash"})]});
+        vi.mocked(listScripts).mockReturnValue({scripts: [meta({id: "noslash"})]});
         render(<App />);
-        await waitFor(() => expect(fetchScripts).toHaveBeenCalled());
-        expect(fetchGraph).not.toHaveBeenCalled();
-    });
-
-    it("clears the loading state and logs when graph loading fails", async () => {
-        const err = vi.spyOn(console, "error").mockImplementation(() => {});
-        vi.mocked(fetchGraph).mockRejectedValue(new Error("no graph"));
-        render(<App />);
-        await waitFor(() => expect(err).toHaveBeenCalled());
-        expect(await screen.findByTestId("canvas")).toBeInTheDocument();
-        err.mockRestore();
+        await waitFor(() => expect(listScripts).toHaveBeenCalled());
+        expect(getGraph).not.toHaveBeenCalled();
     });
 
     it("runs a traversal and shows the result", async () => {
         await renderLoaded();
         fireEvent.click(screen.getByRole("button", {name: /Find Shortest Path/}));
         await waitFor(() => expect(document.querySelector(".context-inspector")).not.toBeNull());
-    });
-
-    it("logs when a traversal fails", async () => {
-        const err = vi.spyOn(console, "error").mockImplementation(() => {});
-        vi.mocked(postTraverse).mockRejectedValue(new Error("fail"));
-        await renderLoaded();
-        fireEvent.click(screen.getByRole("button", {name: /Find Shortest Path/}));
-        await waitFor(() => expect(err).toHaveBeenCalled());
-        err.mockRestore();
     });
 
     it("opens the sidebar for a clicked node and closes it", async () => {
@@ -127,14 +101,14 @@ describe("App", () => {
     });
 
     it("shows no sidebar when the clicked node id is not in the graph", async () => {
-        vi.mocked(fetchGraph).mockResolvedValue(graph([linear("OTHER")]));
+        vi.mocked(getGraph).mockReturnValue(graph([linear("OTHER")]));
         await renderLoaded();
         fireEvent.click(screen.getByTestId("fire-node"));
         expect(screen.queryByRole("heading", {name: "N1"})).not.toBeInTheDocument();
     });
 
     it("reloads the graph when a different script is selected", async () => {
-        vi.mocked(fetchScripts).mockResolvedValue({
+        vi.mocked(listScripts).mockReturnValue({
             scripts: [meta(), meta({
                 id: "g/e2",
                 episode: "e2"
@@ -142,6 +116,6 @@ describe("App", () => {
         });
         await renderLoaded();
         fireEvent.change(screen.getByRole("combobox"), {target: {value: "g/e2"}});
-        await waitFor(() => expect(fetchGraph).toHaveBeenCalledWith("g", "e2"));
+        await waitFor(() => expect(getGraph).toHaveBeenCalledWith("g", "e2"));
     });
 });

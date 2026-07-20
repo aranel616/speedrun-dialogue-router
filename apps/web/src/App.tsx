@@ -1,5 +1,5 @@
 import {useState, useEffect, useCallback, useMemo} from "react";
-import {fetchScripts, fetchGraph, postTraverse} from "./api";
+import {listScripts, getGraph, getShortestPath} from "./api";
 import type {ScriptMeta, GraphResponse, GraphNode, TraverseResponse} from "@sdr/shared";
 import {ControlBar} from "./components/ControlBar";
 import {GraphCanvas} from "./components/GraphCanvas";
@@ -13,44 +13,28 @@ export default function App(): JSX.Element {
     const [graphData, setGraphData] = useState<GraphResponse | null>(null);
     const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
     const [traversalResult, setTraversalResult] = useState<TraverseResponse | null>(null);
-    const [traversing, setTraversing] = useState(false);
-    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        fetchScripts().then((r) => {
-            setScripts(r.scripts);
-            if (r.scripts.length > 0 && r.scripts[0]) {
-                setSelectedId(r.scripts[0].id);
-            }
-        }).catch(console.error);
+        const {scripts: list} = listScripts();
+        setScripts(list);
+        if (list.length > 0 && list[0]) {
+            setSelectedId(list[0].id);
+        }
     }, []);
 
     useEffect(() => {
         if (!selectedId) {return;}
         const [game, episode] = selectedId.split("/");
         if (!game || !episode) {return;}
-        setLoading(true);
-        setGraphData(null);
         setTraversalResult(null);
         setSelectedNodeId(null);
-        fetchGraph(game, episode)
-            .then(setGraphData)
-            .catch(console.error)
-            .finally(() => setLoading(false));
+        setGraphData(getGraph(game, episode));
     }, [selectedId]);
 
-    const handleTraverse = useCallback(async () => {
+    const handleTraverse = useCallback(() => {
         /* v8 ignore next -- defensive: the traverse button is disabled without a loaded graph (hence a selection) */
         if (!selectedId) {return;}
-        setTraversing(true);
-        try {
-            const result = await postTraverse({scriptId: selectedId});
-            setTraversalResult(result);
-        } catch (e) {
-            console.error(e);
-        } finally {
-            setTraversing(false);
-        }
+        setTraversalResult(getShortestPath({scriptId: selectedId}));
     }, [selectedId]);
 
     const selectedNode: GraphNode | null = selectedNodeId && graphData
@@ -59,12 +43,12 @@ export default function App(): JSX.Element {
 
     const visitedNodeIds = useMemo(
         () => new Set<string>(traversalResult?.visitedNodeIds ?? []),
-        [traversalResult]
+        [traversalResult],
     );
 
     const cumulativeCounts = useMemo(
         () => traversalResult?.cumulativeCounts ?? {},
-        [traversalResult]
+        [traversalResult],
     );
 
     return (
@@ -74,29 +58,24 @@ export default function App(): JSX.Element {
                 selectedId={selectedId}
                 onSelectScript={(id) => { setSelectedId(id); setTraversalResult(null); }}
                 onTraverse={handleTraverse}
-                traversing={traversing}
                 hasGraph={graphData !== null}
-      />
+            />
 
             <div className="main-area">
-                {loading ? (
-                    <div className="canvas-empty"><p>Loading graph…</p></div>
-                ) : (
-                    <GraphCanvas
-                        scriptId={selectedId}
-                        graphNodes={graphData?.nodes ?? []}
-                        graphEdges={graphData?.edges ?? []}
-                        visitedNodeIds={visitedNodeIds}
-                        selectedNodeId={selectedNodeId}
-                        onNodeClick={setSelectedNodeId}
-                        cumulativeCounts={cumulativeCounts}
-          />
-                )}
+                <GraphCanvas
+                    scriptId={selectedId}
+                    graphNodes={graphData?.nodes ?? []}
+                    graphEdges={graphData?.edges ?? []}
+                    visitedNodeIds={visitedNodeIds}
+                    selectedNodeId={selectedNodeId}
+                    onNodeClick={setSelectedNodeId}
+                    cumulativeCounts={cumulativeCounts}
+                />
 
                 <Sidebar
                     node={selectedNode}
                     onClose={() => setSelectedNodeId(null)}
-        />
+                />
             </div>
 
             <ContextInspector result={traversalResult} />

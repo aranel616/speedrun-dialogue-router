@@ -14,7 +14,6 @@ const props = (over = {}): React.ComponentProps<typeof ControlBar> => ({
     selectedId: "",
     onSelectScript: (): void => {},
     onTraverse: (): void => {},
-    traversing: false,
     hasGraph: false,
     ...over,
 });
@@ -41,14 +40,5 @@ describe("ControlBar", () => {
         })} />);
         fireEvent.click(screen.getByRole("button"));
         expect(onTraverse).toHaveBeenCalled();
-    });
-
-    it("shows a 'Finding…' label and disables the button while traversing", () => {
-        render(<ControlBar {...props({
-            hasGraph: true,
-            traversing: true
-        })} />);
-        expect(screen.getByText("Finding…")).toBeInTheDocument();
-        expect(screen.getByRole("button")).toBeDisabled();
     });
 });
