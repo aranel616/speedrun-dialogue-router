@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Project Does
 
-A dialogue routing engine that finds the **shortest path** (by total character count) through a branching narrative script. Originally built to analyze *Life is Strange* Episode 1 — useful for speedrun route analysis or narrative structure verification.
+A dialogue routing engine that finds the **shortest path** (by total character count) through a branching narrative script. Built to analyze *Life is Strange* — the corpus currently covers all five episodes (`packages/scripts/lifeisstrange/episode1`–`episode5`) — useful for speedrun route analysis or narrative structure verification. Episodes 2+ react to choices carried in from earlier episodes; those are modelled as setup forks (see Inherited Decisions below). The transcription examples in this guide are drawn from Episode 1, but the format and workflow apply to every episode.
 
 ## Repository Layout
 
