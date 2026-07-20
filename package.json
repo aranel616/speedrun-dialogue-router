@@ -12,6 +12,7 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "typecheck": "tsc -p . --noEmit",
     "test": "jest --coverage",
+    "test:web": "npm run test --workspace @sdr/web",
     "test:watch": "jest --watch"
   },
   "devDependencies": {

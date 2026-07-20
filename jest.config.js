@@ -2,7 +2,8 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  testMatch: ['**/__tests__/**/*.test.ts'],
+  // Jest runs the Node-side packages; the web app uses Vitest (see apps/web).
+  testMatch: ['<rootDir>/packages/**/__tests__/**/*.test.ts'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   // Cover all first-party runtime code so untested files are visible in the
   // report rather than hidden. Excluded: type-only decls, the test suite

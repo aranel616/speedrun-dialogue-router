@@ -35,6 +35,7 @@ export function applyDagreLayout(nodes: Node[], edges: Edge[], nodeHeights: Map<
     const backEdges = new Set<string>(); // "source→target" pairs to skip during ranking
 
     for (const start of starts) {
+        /* v8 ignore next -- defensive: roots have no parents, so a start is never already visited */
         if (dfsVisited.has(start.id)) {continue;}
         const stack: [string, number][] = [[start.id, 0]];
         dfsVisited.add(start.id);
@@ -42,7 +43,7 @@ export function applyDagreLayout(nodes: Node[], edges: Edge[], nodeHeights: Map<
         while (stack.length > 0) {
             const frame = stack[stack.length - 1]!;
             const [id, ci] = frame;
-            const children = childrenOf.get(id) ?? [];
+            const children = childrenOf.get(id)!;
             if (ci >= children.length) {
                 stack.pop();
                 dfsStack.delete(id);
@@ -71,7 +72,7 @@ export function applyDagreLayout(nodes: Node[], edges: Edge[], nodeHeights: Map<
     while (head < queue.length) {
         const id = queue[head++]!;
         const r = rank.get(id)!;
-        for (const child of childrenOf.get(id) ?? []) {
+        for (const child of childrenOf.get(id)!) {
             if (backEdges.has(`${id}→${child}`)) {continue;}
             const newRank = r + 1;
             if (!rank.has(child) || rank.get(child)! < newRank) {
@@ -106,10 +107,10 @@ export function applyDagreLayout(nodes: Node[], edges: Edge[], nodeHeights: Map<
         // Wider gap across a boundary that fans out (a node here has >1 child) or fans
         // in (a node in the next rank has >1 parent), to give diverging/merging edges
         // room; tight gap for straight linear chains.
-        const fanOut = byRank.get(r)!.some((id) => (childrenOf.get(id)?.length ?? 0) > 1);
+        const fanOut = byRank.get(r)!.some((id) => childrenOf.get(id)!.length > 1);
         const nextRank = sortedRanks[i + 1];
         const fanIn = nextRank !== undefined &&
-      byRank.get(nextRank)!.some((id) => (parentsOf.get(id)?.length ?? 0) > 1);
+      byRank.get(nextRank)!.some((id) => parentsOf.get(id)!.length > 1);
         cumY += maxH + (fanOut || fanIn ? V_GAP_BRANCH : V_GAP_STRAIGHT);
     }
 
@@ -126,6 +127,6 @@ export function applyDagreLayout(nodes: Node[], edges: Edge[], nodeHeights: Map<
         });
     }
 
-    const result = nodes.map((n) => ({...n, position: pos.get(n.id) ?? {x: 0, y: 0}}));
+    const result = nodes.map((n) => ({...n, position: pos.get(n.id)!}));
     return result;
 }
