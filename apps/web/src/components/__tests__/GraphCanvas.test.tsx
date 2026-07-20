@@ -428,3 +428,105 @@ describe("GraphCanvas — presentation branches", () => {
         expect(c.querySelector(".choice-item-node.terminal")).not.toBeNull();
     });
 });
+
+// Behavioural assertions: instead of "renders without throwing", check the
+// actual effect of each interaction — the viewport transform the controls
+// produce, the vertical rank order dagre lays out, and that every table-of-
+// contents entry points at a node that really exists (and moves the view).
+describe("GraphCanvas — behaviour", () => {
+    // The pannable/zoomable layer is the transform-carrying child of the canvas.
+    const layerOf = (canvas: HTMLElement): HTMLElement =>
+        [...canvas.children].find(
+            (el): el is HTMLElement => el instanceof HTMLElement && el.style.transform.includes("translate"),
+        )!;
+    const viewportOf = (canvas: HTMLElement): {x: number; y: number; zoom: number} => {
+        const m = layerOf(canvas).style.transform.match(
+            /translate\(\s*([-\d.]+)px\s*,\s*([-\d.]+)px\s*\)\s*scale\(\s*([-\d.]+)\s*\)/,
+        )!;
+        return {
+            x: parseFloat(m[1]!),
+            y: parseFloat(m[2]!),
+            zoom: parseFloat(m[3]!)
+        };
+    };
+
+    it("moves the viewport by the exact pan step, scales on zoom, and restores on reset", async () => {
+        const {container} = renderCanvas();
+        const canvas = await waitFor(() => container.querySelector(".graph-canvas") as HTMLElement);
+        // The mount effect centres the content root at 1.2x — wait for it to land.
+        await waitFor(() => expect(viewportOf(canvas).zoom).toBeCloseTo(1.2));
+        const initial = viewportOf(canvas);
+
+        // Pan up moves the world +PAN_STEP in y; pan right moves it -PAN_STEP in x.
+        fireEvent.click(screen.getByLabelText("Pan up"));
+        expect(viewportOf(canvas).y).toBeCloseTo(initial.y + 140);
+        expect(viewportOf(canvas).x).toBeCloseTo(initial.x);
+        fireEvent.click(screen.getByLabelText("Pan right"));
+        expect(viewportOf(canvas).x).toBeCloseTo(initial.x - 140);
+
+        // Zoom in raises the scale, zoom out lowers it (relative to each other).
+        fireEvent.click(screen.getByLabelText("Zoom in"));
+        const zoomedIn = viewportOf(canvas).zoom;
+        expect(zoomedIn).toBeGreaterThan(1.2);
+        fireEvent.click(screen.getByLabelText("Zoom out"));
+        expect(viewportOf(canvas).zoom).toBeLessThan(zoomedIn);
+
+        // Reset returns to the exact initial transform.
+        fireEvent.click(screen.getByLabelText("Reset view"));
+        const reset = viewportOf(canvas);
+        expect(reset.x).toBeCloseTo(initial.x);
+        expect(reset.y).toBeCloseTo(initial.y);
+        expect(reset.zoom).toBeCloseTo(initial.zoom);
+    });
+
+    // Locate a linear card in the visible layer (not the aria-hidden measurement
+    // layer) by its node-id tag, then read the top of its positioned wrapper.
+    const topOfNode = (container: HTMLElement, id: string): number => {
+        const card = [...container.querySelectorAll(".linear-node")].find(
+            (el) => !el.closest("[aria-hidden]") && el.querySelector(".node-id-tag")?.textContent === id,
+        )!;
+        return parseFloat((card.parentElement as HTMLElement).style.top);
+    };
+    const linear = (id: string, over: Partial<N> = {}): N => gn(id, {
+        type: "linear",
+        text: id,
+        ...over
+    });
+
+    it("stacks nodes by dagre rank: children sit below parents, siblings share a row", async () => {
+        // n0 -> n1 -> {n2a, n2b} (a branch), so n2a and n2b share a rank.
+        const nodes = [linear("n0"), linear("n1"), linear("n2a", {isTerminal: true}), linear("n2b", {isTerminal: true})];
+        const edges = [ge("n0", "n1", "linear"), ge("n1", "n2a", "choice"), ge("n1", "n2b", "choice")];
+        const {container} = render(
+            <GraphCanvas scriptId="none" graphNodes={nodes} graphEdges={edges} visitedNodeIds={new Set()} selectedNodeId={null} onNodeClick={vi.fn()} cumulativeCounts={{}} />,
+        );
+        await waitFor(() => expect(container.querySelector(".graph-canvas")).not.toBeNull());
+
+        const y0 = topOfNode(container, "n0");
+        const y1 = topOfNode(container, "n1");
+        const y2a = topOfNode(container, "n2a");
+        const y2b = topOfNode(container, "n2b");
+        expect(y1).toBeGreaterThan(y0);      // child below parent
+        expect(y2a).toBeGreaterThan(y1);     // grandchild below child
+        expect(y2a).toBeCloseTo(y2b);        // siblings on the same rank
+    });
+
+    it("lists only real node ids in the table of contents and recentres on click", async () => {
+        const {container} = renderCanvas();
+        const canvas = await waitFor(() => container.querySelector(".graph-canvas") as HTMLElement);
+        await waitFor(() => expect(container.querySelector(".toc-panel")).not.toBeNull());
+
+        const validIds = new Set(g.nodes.map((n) => n.id));
+        const items = [...container.querySelectorAll(".toc-item")];
+        expect(items.length).toBeGreaterThan(0);
+        for (const item of items) {
+            expect(validIds.has(item.getAttribute("title")!)).toBe(true);
+        }
+
+        await waitFor(() => expect(viewportOf(canvas).zoom).toBeCloseTo(1.2));
+        const before = viewportOf(canvas);
+        fireEvent.click(items[items.length - 1]!); // jump to the last entry
+        const after = viewportOf(canvas);
+        expect(after.y).not.toBeCloseTo(before.y); // the view scrolled to it
+    });
+});
