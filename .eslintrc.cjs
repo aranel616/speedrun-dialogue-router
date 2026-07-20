@@ -36,7 +36,9 @@ module.exports = {
     'react/jsx-indent-props': ['error', 4],
     'linebreak-style': ['error', 'unix'],
     'quotes': ['error', 'double'],
-    'no-console': 'off',
+    // Packages are side-effect-free libraries: no console at all. The apps/web
+    // override below relaxes this to warn/error at the app boundary.
+    'no-console': 'error',
     'curly': 'warn',
     'arrow-parens': ['error', 'always'],
     'react/no-unescaped-entities': ['error', {'forbid': ['>', '}']}],
@@ -65,6 +67,12 @@ module.exports = {
     'no-trailing-spaces': 'error'
   },
   overrides: [
+    {
+      // apps/web is an application, not a library: allow surfacing problems to
+      // the console via warn/error (but not stray console.log debugging).
+      files: ['apps/web/**/*.ts', 'apps/web/**/*.tsx'],
+      rules: {'no-console': ['error', {allow: ['warn', 'error']}]}
+    },
     {
       // Jest test files: provide the test-runner globals (without pulling in
       // eslint-plugin-jest just for its env).
