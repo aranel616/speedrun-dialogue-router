@@ -9,7 +9,7 @@
     "declarationMap": true,
     "strict": true,
     "exactOptionalPropertyTypes": true,
-    "noUncheckedIndexedAccess": false,
+    "noUncheckedIndexedAccess": true,
     "moduleDetection": "force",
     "esModuleInterop": true,
     "skipLibCheck": true
