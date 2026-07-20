@@ -4,7 +4,12 @@ import {ContextInspector} from "../ContextInspector";
 import type {TraverseResponse} from "@sdr/shared";
 
 const result = (over: Partial<TraverseResponse> = {}): TraverseResponse => ({
-    length: 5, path: ["a", "b"], context: {}, visitedNodeIds: [], cumulativeCounts: {}, ...over,
+    length: 5,
+    path: ["a", "b"],
+    context: {},
+    visitedNodeIds: [],
+    cumulativeCounts: {},
+    ...over,
 });
 
 describe("ContextInspector", () => {

@@ -3,9 +3,20 @@ import {render, screen, fireEvent} from "@testing-library/react";
 import {ControlBar} from "../ControlBar";
 import type {ScriptMeta} from "@sdr/shared";
 
-const scripts: ScriptMeta[] = [{id: "g/e1", game: "g", episode: "e1", nodeCount: 10}];
+const scripts: ScriptMeta[] = [{
+    id: "g/e1",
+    game: "g",
+    episode: "e1",
+    nodeCount: 10
+}];
 const props = (over = {}): React.ComponentProps<typeof ControlBar> => ({
-    scripts, selectedId: "", onSelectScript: (): void => {}, onTraverse: (): void => {}, traversing: false, hasGraph: false, ...over,
+    scripts,
+    selectedId: "",
+    onSelectScript: (): void => {},
+    onTraverse: (): void => {},
+    traversing: false,
+    hasGraph: false,
+    ...over,
 });
 
 describe("ControlBar", () => {
@@ -19,15 +30,24 @@ describe("ControlBar", () => {
 
     it("disables the button without a graph, enables and fires onTraverse with one", () => {
         const onTraverse = vi.fn();
-        const {rerender} = render(<ControlBar {...props({onTraverse, hasGraph: false})} />);
+        const {rerender} = render(<ControlBar {...props({
+            onTraverse,
+            hasGraph: false
+        })} />);
         expect(screen.getByRole("button")).toBeDisabled();
-        rerender(<ControlBar {...props({onTraverse, hasGraph: true})} />);
+        rerender(<ControlBar {...props({
+            onTraverse,
+            hasGraph: true
+        })} />);
         fireEvent.click(screen.getByRole("button"));
         expect(onTraverse).toHaveBeenCalled();
     });
 
     it("shows a 'Finding…' label and disables the button while traversing", () => {
-        render(<ControlBar {...props({hasGraph: true, traversing: true})} />);
+        render(<ControlBar {...props({
+            hasGraph: true,
+            traversing: true
+        })} />);
         expect(screen.getByText("Finding…")).toBeInTheDocument();
         expect(screen.getByRole("button")).toBeDisabled();
     });

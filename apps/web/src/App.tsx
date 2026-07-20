@@ -81,17 +81,17 @@ export default function App(): JSX.Element {
             <div className="main-area">
                 {loading ? (
                     <div className="canvas-empty"><p>Loading graph…</p></div>
-        ) : (
-            <GraphCanvas
-                scriptId={selectedId}
-                graphNodes={graphData?.nodes ?? []}
-                graphEdges={graphData?.edges ?? []}
-                visitedNodeIds={visitedNodeIds}
-                selectedNodeId={selectedNodeId}
-                onNodeClick={setSelectedNodeId}
-                cumulativeCounts={cumulativeCounts}
+                ) : (
+                    <GraphCanvas
+                        scriptId={selectedId}
+                        graphNodes={graphData?.nodes ?? []}
+                        graphEdges={graphData?.edges ?? []}
+                        visitedNodeIds={visitedNodeIds}
+                        selectedNodeId={selectedNodeId}
+                        onNodeClick={setSelectedNodeId}
+                        cumulativeCounts={cumulativeCounts}
           />
-        )}
+                )}
 
                 <Sidebar
                     node={selectedNode}

@@ -70,7 +70,10 @@ function computeVisited(
         }
     }
 
-    return {visitedNodeIds: visited, cumulativeCounts};
+    return {
+        visitedNodeIds: visited,
+        cumulativeCounts
+    };
 }
 
 // Run the shortest-path search and package the full response the UI needs.
@@ -81,5 +84,11 @@ export function runTraverse(
 ): TraverseResponse {
     const [length, path, context] = traverse(script, startNode, 0, initialContext, 0);
     const {visitedNodeIds, cumulativeCounts} = computeVisited(script, path, startNode, initialContext);
-    return {length, path, context, visitedNodeIds, cumulativeCounts};
+    return {
+        length,
+        path,
+        context,
+        visitedNodeIds,
+        cumulativeCounts
+    };
 }

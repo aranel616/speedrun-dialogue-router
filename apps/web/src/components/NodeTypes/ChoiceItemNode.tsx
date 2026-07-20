@@ -18,9 +18,9 @@ export function ChoiceItemNode({data, selected}: NodeProps): JSX.Element {
             <div className="ci-sets">
                 {d.sets.map((s, i) => (
                     <span key={i} className="set-badge">{s.name}={String(s.value)}</span>
-          ))}
+                ))}
             </div>
-      )}
+            )}
             {!d.isTerminal && <Handle type="source" position={Position.Bottom} />}
         </div>
     );

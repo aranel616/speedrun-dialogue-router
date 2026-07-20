@@ -1255,8 +1255,18 @@ export const script: Script = {
     "chloe_12": {
         "text": "Now for the big question: did you tell anybody?",
         "next": [
-            {"name": "reported_nathan", "type": "eq", "value": true, "node": "chloe_reported_1"},
-            {"name": "reported_nathan", "type": "eq", "value": false, "node": "chloe_hid_1"}
+            {
+                "name": "reported_nathan",
+                "type": "eq",
+                "value": true,
+                "node": "chloe_reported_1"
+            },
+            {
+                "name": "reported_nathan",
+                "type": "eq",
+                "value": false,
+                "node": "chloe_hid_1"
+            }
         ]
     },
     "chloe_reported_1": {
@@ -1394,8 +1404,18 @@ export const script: Script = {
                     "I... Listen, you asked for that. You know exactly what you're doing."
                 ],
                 "next": [
-                    {"name": "took_photo_of_kate", "type": "eq", "value": true, "node": "david_blame_photo"},
-                    {"name": "took_photo_of_kate", "type": "eq", "value": false, "node": "david_blame_intervene"}
+                    {
+                        "name": "took_photo_of_kate",
+                        "type": "eq",
+                        "value": true,
+                        "node": "david_blame_photo"
+                    },
+                    {
+                        "name": "took_photo_of_kate",
+                        "type": "eq",
+                        "value": false,
+                        "node": "david_blame_intervene"
+                    }
                 ]
             },
             {
@@ -1405,8 +1425,18 @@ export const script: Script = {
                     "So you're bringing drugs into my home. How about if I call the police? That would screw up your spotless Blackwell record... You do seem to get around...\"Max\". I'm sick of you losers dragging Chloe down."
                 ],
                 "next": [
-                    {"name": "took_photo_of_kate", "type": "eq", "value": true, "node": "david_take_photo"},
-                    {"name": "took_photo_of_kate", "type": "eq", "value": false, "node": "david_take_intervene"}
+                    {
+                        "name": "took_photo_of_kate",
+                        "type": "eq",
+                        "value": true,
+                        "node": "david_take_photo"
+                    },
+                    {
+                        "name": "took_photo_of_kate",
+                        "type": "eq",
+                        "value": false,
+                        "node": "david_take_intervene"
+                    }
                 ]
             }
         ]
@@ -1472,8 +1502,18 @@ export const script: Script = {
                     "Chloe, I'm sorry. I care about your mother and... You just keep pushing me."
                 ],
                 "next": [
-                    {"name": "took_photo_of_kate", "type": "eq", "value": true, "node": "david_stay_photo"},
-                    {"name": "took_photo_of_kate", "type": "eq", "value": false, "node": "david_stay_intervene"}
+                    {
+                        "name": "took_photo_of_kate",
+                        "type": "eq",
+                        "value": true,
+                        "node": "david_stay_photo"
+                    },
+                    {
+                        "name": "took_photo_of_kate",
+                        "type": "eq",
+                        "value": false,
+                        "node": "david_stay_intervene"
+                    }
                 ]
             },
             {
@@ -1483,8 +1523,18 @@ export const script: Script = {
                     "Well, well. I don't like strangers in my home. Especially dopers. So you're bringing drugs into my home. How about if I call the police? That would screw up your spotless Blackwell record... You do seem to get around...\"Max\". I'm sick of you losers dragging Chloe down."
                 ],
                 "next": [
-                    {"name": "took_photo_of_kate", "type": "eq", "value": true, "node": "david_step_photo"},
-                    {"name": "took_photo_of_kate", "type": "eq", "value": false, "node": "david_step_intervene"}
+                    {
+                        "name": "took_photo_of_kate",
+                        "type": "eq",
+                        "value": true,
+                        "node": "david_step_photo"
+                    },
+                    {
+                        "name": "took_photo_of_kate",
+                        "type": "eq",
+                        "value": false,
+                        "node": "david_step_intervene"
+                    }
                 ]
             }
         ]
@@ -1612,8 +1662,18 @@ export const script: Script = {
     "lighthouse_kate": {
         "text": "",
         "next": [
-            {"name": "took_photo_of_kate", "type": "eq", "value": true, "node": "lighthouse_kate_photo"},
-            {"name": "took_photo_of_kate", "type": "eq", "value": false, "node": "lighthouse_kate_intervene"}
+            {
+                "name": "took_photo_of_kate",
+                "type": "eq",
+                "value": true,
+                "node": "lighthouse_kate_photo"
+            },
+            {
+                "name": "took_photo_of_kate",
+                "type": "eq",
+                "value": false,
+                "node": "lighthouse_kate_intervene"
+            }
         ]
     },
     "lighthouse_kate_photo": {
@@ -1784,16 +1844,36 @@ export const script: Script = {
                 "name": "He's still dangerous.",
                 "text": "He's still dangerous, Chloe. Not just to you.",
                 "next": [
-                    {"name": "reported_nathan", "type": "eq", "value": true, "node": "lighthouse_dangerous_reported"},
-                    {"name": "reported_nathan", "type": "eq", "value": false, "node": "lighthouse_dangerous_hid"}
+                    {
+                        "name": "reported_nathan",
+                        "type": "eq",
+                        "value": true,
+                        "node": "lighthouse_dangerous_reported"
+                    },
+                    {
+                        "name": "reported_nathan",
+                        "type": "eq",
+                        "value": false,
+                        "node": "lighthouse_dangerous_hid"
+                    }
                 ]
             },
             {
                 "name": "Let's call the police.",
                 "text": "What are you going to do? Pop a cap in his ass? Let's call the police...",
                 "next": [
-                    {"name": "reported_nathan", "type": "eq", "value": true, "node": "lighthouse_police_reported"},
-                    {"name": "reported_nathan", "type": "eq", "value": false, "node": "lighthouse_police_hid"}
+                    {
+                        "name": "reported_nathan",
+                        "type": "eq",
+                        "value": true,
+                        "node": "lighthouse_police_reported"
+                    },
+                    {
+                        "name": "reported_nathan",
+                        "type": "eq",
+                        "value": false,
+                        "node": "lighthouse_police_hid"
+                    }
                 ]
             }
         ]

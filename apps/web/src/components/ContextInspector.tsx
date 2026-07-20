@@ -19,7 +19,7 @@ export function ContextInspector({result}: Props): JSX.Element | null {
             <div className="inspector-path">
                 {result.path.map((step, i) => (
                     <span key={i} className="path-step">{step}</span>
-        ))}
+                ))}
             </div>
 
             {contextEntries.length > 0 && (
@@ -32,11 +32,11 @@ export function ContextInspector({result}: Props): JSX.Element | null {
                                 <td className="ctx-key">{key}</td>
                                 <td className="ctx-val">{String(val)}</td>
                             </tr>
-              ))}
+                        ))}
                     </tbody>
                 </table>
             </div>
-      )}
+            )}
         </div>
     );
 }

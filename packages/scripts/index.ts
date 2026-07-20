@@ -17,9 +17,34 @@ export interface ScriptEntry {
 }
 
 export const SCRIPTS: ScriptEntry[] = [
-    {id: "lifeisstrange/episode1", game: "lifeisstrange", episode: "episode1", script: lifeisstrange_episode1},
-    {id: "lifeisstrange/episode2", game: "lifeisstrange", episode: "episode2", script: lifeisstrange_episode2},
-    {id: "lifeisstrange/episode3", game: "lifeisstrange", episode: "episode3", script: lifeisstrange_episode3},
-    {id: "lifeisstrange/episode4", game: "lifeisstrange", episode: "episode4", script: lifeisstrange_episode4},
-    {id: "lifeisstrange/episode5", game: "lifeisstrange", episode: "episode5", script: lifeisstrange_episode5},
+    {
+        id: "lifeisstrange/episode1",
+        game: "lifeisstrange",
+        episode: "episode1",
+        script: lifeisstrange_episode1
+    },
+    {
+        id: "lifeisstrange/episode2",
+        game: "lifeisstrange",
+        episode: "episode2",
+        script: lifeisstrange_episode2
+    },
+    {
+        id: "lifeisstrange/episode3",
+        game: "lifeisstrange",
+        episode: "episode3",
+        script: lifeisstrange_episode3
+    },
+    {
+        id: "lifeisstrange/episode4",
+        game: "lifeisstrange",
+        episode: "episode4",
+        script: lifeisstrange_episode4
+    },
+    {
+        id: "lifeisstrange/episode5",
+        game: "lifeisstrange",
+        episode: "episode5",
+        script: lifeisstrange_episode5
+    },
 ];

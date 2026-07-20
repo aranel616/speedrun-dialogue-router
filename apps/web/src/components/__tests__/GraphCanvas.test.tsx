@@ -7,11 +7,30 @@ import {GraphCanvas} from "../GraphCanvas";
 // happy-dom returns 0 for layout; give the canvas and cards real dimensions so
 // heights measure, posNodes lays out, and the full graph renders.
 beforeAll(() => {
-    Object.defineProperty(HTMLElement.prototype, "offsetHeight", {configurable: true, get: () => 50});
-    Object.defineProperty(HTMLElement.prototype, "offsetWidth", {configurable: true, get: () => 800});
+    Object.defineProperty(HTMLElement.prototype, "offsetHeight", {
+        configurable: true,
+        get: () => 50
+    });
+    Object.defineProperty(HTMLElement.prototype, "offsetWidth", {
+        configurable: true,
+        get: () => 800
+    });
     HTMLElement.prototype.getBoundingClientRect = (): DOMRect =>
-        ({left: 0, top: 0, right: 800, bottom: 600, width: 800, height: 600, x: 0, y: 0, toJSON: () => ({})});
-    Object.defineProperty(document, "fonts", {configurable: true, value: {ready: Promise.resolve()}});
+        ({
+            left: 0,
+            top: 0,
+            right: 800,
+            bottom: 600,
+            width: 800,
+            height: 600,
+            x: 0,
+            y: 0,
+            toJSON: () => ({})
+        });
+    Object.defineProperty(document, "fonts", {
+        configurable: true,
+        value: {ready: Promise.resolve()}
+    });
 });
 
 const ep3 = SCRIPTS.find((s) => s.id === "lifeisstrange/episode3")!.script;
@@ -34,12 +53,18 @@ function renderCanvas(overrides: Partial<React.ComponentProps<typeof GraphCanvas
             {...overrides}
         />,
     );
-    return {onNodeClick, container};
+    return {
+        onNodeClick,
+        container
+    };
 }
 
 describe("GraphCanvas", () => {
     it("renders the empty prompt when there are no nodes", () => {
-        const {container} = renderCanvas({graphNodes: [], graphEdges: []});
+        const {container} = renderCanvas({
+            graphNodes: [],
+            graphEdges: []
+        });
         expect(container.querySelector(".canvas-empty")).not.toBeNull();
     });
 
@@ -68,14 +93,28 @@ describe("GraphCanvas", () => {
         expect(onNodeClick).toHaveBeenCalled();
         onNodeClick.mockClear();
         // drag then release → click is suppressed
-        fireEvent.mouseDown(canvas, {button: 0, clientX: 0, clientY: 0});
-        fireEvent.mouseMove(canvas, {clientX: 40, clientY: 40});
+        fireEvent.mouseDown(canvas, {
+            button: 0,
+            clientX: 0,
+            clientY: 0
+        });
+        fireEvent.mouseMove(canvas, {
+            clientX: 40,
+            clientY: 40
+        });
         fireEvent.mouseUp(canvas);
         fireEvent.click(card);
         expect(onNodeClick).not.toHaveBeenCalled();
         // a sub-threshold move keeps it a click (movedRef stays false)
-        fireEvent.mouseDown(canvas, {button: 0, clientX: 0, clientY: 0});
-        fireEvent.mouseMove(canvas, {clientX: 2, clientY: 2});
+        fireEvent.mouseDown(canvas, {
+            button: 0,
+            clientX: 0,
+            clientY: 0
+        });
+        fireEvent.mouseMove(canvas, {
+            clientX: 2,
+            clientY: 2
+        });
         fireEvent.mouseUp(canvas);
         // clicking a hidden measurement-layer card runs the NOOP handler
         const hidden = container.querySelector("[aria-hidden] .choice-item-node, [aria-hidden] .dialogue-node")!;
@@ -87,7 +126,10 @@ describe("GraphCanvas", () => {
         await waitFor(() => expect(container.querySelector(".graph-canvas")).not.toBeNull());
         const canvas = container.querySelector(".graph-canvas") as HTMLElement;
         fireEvent.mouseDown(canvas, {button: 2}); // right-click → ignored
-        fireEvent.mouseMove(canvas, {clientX: 30, clientY: 30}); // no drag started → no-op
+        fireEvent.mouseMove(canvas, {
+            clientX: 30,
+            clientY: 30
+        }); // no drag started → no-op
         fireEvent.mouseDown(container.querySelector(".toc-panel") as HTMLElement);
         fireEvent.mouseDown(container.querySelector(".canvas-controls") as HTMLElement);
         expect(canvas).toBeInTheDocument();
@@ -98,15 +140,28 @@ describe("GraphCanvas", () => {
         await waitFor(() => expect(container.querySelector(".graph-canvas")).not.toBeNull());
         const canvas = container.querySelector(".graph-canvas") as HTMLElement;
         const wheel = (init: WheelEventInit & {ctrlKey?: boolean; metaKey?: boolean}): void => {
-            const ev = new WheelEvent("wheel", {bubbles: true, cancelable: true, ...init});
+            const ev = new WheelEvent("wheel", {
+                bubbles: true,
+                cancelable: true,
+                ...init
+            });
             // happy-dom's WheelEvent constructor drops modifier keys; force them.
             if (init.ctrlKey) {Object.defineProperty(ev, "ctrlKey", {value: true});}
             if (init.metaKey) {Object.defineProperty(ev, "metaKey", {value: true});}
             act(() => { canvas.dispatchEvent(ev); });
         };
-        wheel({deltaX: 10, deltaY: 20});          // plain → pan
-        wheel({deltaY: -5, ctrlKey: true});       // ctrl + wheel up → zoom in
-        wheel({deltaY: 5, metaKey: true});        // meta + wheel down → zoom out
+        wheel({
+            deltaX: 10,
+            deltaY: 20
+        });          // plain → pan
+        wheel({
+            deltaY: -5,
+            ctrlKey: true
+        });       // ctrl + wheel up → zoom in
+        wheel({
+            deltaY: 5,
+            metaKey: true
+        });        // meta + wheel down → zoom out
         expect(canvas).toBeInTheDocument();
     });
 
@@ -132,10 +187,19 @@ describe("GraphCanvas", () => {
     it("navigates via the minimap drag", async () => {
         const {container} = renderCanvas();
         const mm = await waitFor(() => container.querySelector(".minimap") as SVGElement);
-        fireEvent.mouseDown(mm, {clientX: 10, clientY: 20});
-        fireEvent.mouseMove(mm, {clientX: 10, clientY: 40});
+        fireEvent.mouseDown(mm, {
+            clientX: 10,
+            clientY: 20
+        });
+        fireEvent.mouseMove(mm, {
+            clientX: 10,
+            clientY: 40
+        });
         fireEvent.mouseUp(mm);
-        fireEvent.mouseDown(mm, {clientX: 5, clientY: 5});
+        fireEvent.mouseDown(mm, {
+            clientX: 5,
+            clientY: 5
+        });
         fireEvent.mouseLeave(mm);
         expect(mm).toBeInTheDocument();
     });
@@ -146,15 +210,41 @@ describe("GraphCanvas", () => {
 // edge cases, which the fixed episode graph doesn't hit exhaustively.
 type N = import("@sdr/shared").GraphNode;
 type E = import("@sdr/shared").GraphEdge;
-const gn = (id: string, over: Partial<N> = {}): N => ({id, type: "linear", isTerminal: false, ...over});
-const ge = (source: string, target: string, edgeType: E["edgeType"]): E => ({id: `${source}->${target}`, source, target, edgeType});
+const gn = (id: string, over: Partial<N> = {}): N => ({
+    id,
+    type: "linear",
+    isTerminal: false,
+    ...over
+});
+const ge = (source: string, target: string, edgeType: E["edgeType"]): E => ({
+    id: `${source}->${target}`,
+    source,
+    target,
+    edgeType
+});
 
 describe("GraphCanvas — presentation branches", () => {
     const nodes: N[] = [
         gn("ch", {type: "choice"}),
-        gn("ci", {type: "choiceItem", choiceName: "Pick", text: "t", sets: [{name: "f", type: "set", value: true}]}),
-        gn("cnd", {type: "conditionItem", condition: "f = true"}),
-        gn("lin", {type: "linear", text: "hello", isTerminal: true}),
+        gn("ci", {
+            type: "choiceItem",
+            choiceName: "Pick",
+            text: "t",
+            sets: [{
+                name: "f",
+                type: "set",
+                value: true
+            }]
+        }),
+        gn("cnd", {
+            type: "conditionItem",
+            condition: "f = true"
+        }),
+        gn("lin", {
+            type: "linear",
+            text: "hello",
+            isTerminal: true
+        }),
     ];
     const edges: E[] = [
         ge("ch", "ci", "choice"),        // visited both ends → highlighted stroke
@@ -186,13 +276,72 @@ describe("GraphCanvas — presentation branches", () => {
     it("treats an almost-fork start as content (each fork condition can fail)", async () => {
         const almostForks: N[][] = [
             // items carry text → not a fork
-            [gn("start", {type: "choice"}), gn("start__ci0", {type: "choiceItem", text: "x", sets: [{name: "f", type: "set", value: true}]}), gn("start__ci1", {type: "choiceItem", text: "y", sets: [{name: "f", type: "set", value: false}]}), gn("z")],
+            [gn("start", {type: "choice"}), gn("start__ci0", {
+                type: "choiceItem",
+                text: "x",
+                sets: [{
+                    name: "f",
+                    type: "set",
+                    value: true
+                }]
+            }), gn("start__ci1", {
+                type: "choiceItem",
+                text: "y",
+                sets: [{
+                    name: "f",
+                    type: "set",
+                    value: false
+                }]
+            }), gn("z")],
             // only one option → not a fork
-            [gn("start", {type: "choice"}), gn("start__ci0", {type: "choiceItem", sets: [{name: "f", type: "set", value: true}]}), gn("z")],
+            [gn("start", {type: "choice"}), gn("start__ci0", {
+                type: "choiceItem",
+                sets: [{
+                    name: "f",
+                    type: "set",
+                    value: true
+                }]
+            }), gn("z")],
             // options set multiple flags → not a fork
-            [gn("start", {type: "choice"}), gn("start__ci0", {type: "choiceItem", sets: [{name: "f", type: "set", value: true}, {name: "g", type: "set", value: 1}]}), gn("start__ci1", {type: "choiceItem", sets: [{name: "f", type: "set", value: false}, {name: "g", type: "set", value: 2}]}), gn("z")],
+            [gn("start", {type: "choice"}), gn("start__ci0", {
+                type: "choiceItem",
+                sets: [{
+                    name: "f",
+                    type: "set",
+                    value: true
+                }, {
+                    name: "g",
+                    type: "set",
+                    value: 1
+                }]
+            }), gn("start__ci1", {
+                type: "choiceItem",
+                sets: [{
+                    name: "f",
+                    type: "set",
+                    value: false
+                }, {
+                    name: "g",
+                    type: "set",
+                    value: 2
+                }]
+            }), gn("z")],
             // options lead to different targets → not a fork
-            [gn("start", {type: "choice"}), gn("start__ci0", {type: "choiceItem", sets: [{name: "f", type: "set", value: true}]}), gn("start__ci1", {type: "choiceItem", sets: [{name: "f", type: "set", value: false}]}), gn("y"), gn("z")],
+            [gn("start", {type: "choice"}), gn("start__ci0", {
+                type: "choiceItem",
+                sets: [{
+                    name: "f",
+                    type: "set",
+                    value: true
+                }]
+            }), gn("start__ci1", {
+                type: "choiceItem",
+                sets: [{
+                    name: "f",
+                    type: "set",
+                    value: false
+                }]
+            }), gn("y"), gn("z")],
         ];
         const forkEdges: E[][] = [
             [ge("start", "start__ci0", "choice"), ge("start", "start__ci1", "choice"), ge("start__ci0", "z", "choice"), ge("start__ci1", "z", "choice")],
@@ -220,7 +369,25 @@ describe("GraphCanvas — presentation branches", () => {
 
     it("detects a fork whose options have no choiceName label", async () => {
         const c = await renderGraph(
-            [gn("start", {type: "choice"}), gn("start__ci0", {type: "choiceItem", sets: [{name: "f", type: "set", value: true}]}), gn("start__ci1", {type: "choiceItem", sets: [{name: "f", type: "set", value: false}]}), gn("content", {type: "linear", text: "c", isTerminal: true})],
+            [gn("start", {type: "choice"}), gn("start__ci0", {
+                type: "choiceItem",
+                sets: [{
+                    name: "f",
+                    type: "set",
+                    value: true
+                }]
+            }), gn("start__ci1", {
+                type: "choiceItem",
+                sets: [{
+                    name: "f",
+                    type: "set",
+                    value: false
+                }]
+            }), gn("content", {
+                type: "linear",
+                text: "c",
+                isTerminal: true
+            })],
             [ge("start", "start__ci0", "choice"), ge("start", "start__ci1", "choice"), ge("start__ci0", "content", "choice"), ge("start__ci1", "content", "choice")],
         );
         expect(c.querySelector(".inherited-card")).not.toBeNull();
@@ -229,14 +396,33 @@ describe("GraphCanvas — presentation branches", () => {
     it("handles a start node with no children and a fork option with no target", async () => {
         await renderGraph([gn("start", {type: "choice"}), gn("x")], []); // start has no outgoing edges
         await renderGraph(
-            [gn("start", {type: "choice"}), gn("start__ci0", {type: "choiceItem", sets: [{name: "f", type: "set", value: true}]}), gn("start__ci1", {type: "choiceItem", sets: [{name: "f", type: "set", value: false}]}), gn("z")],
+            [gn("start", {type: "choice"}), gn("start__ci0", {
+                type: "choiceItem",
+                sets: [{
+                    name: "f",
+                    type: "set",
+                    value: true
+                }]
+            }), gn("start__ci1", {
+                type: "choiceItem",
+                sets: [{
+                    name: "f",
+                    type: "set",
+                    value: false
+                }]
+            }), gn("z")],
             [ge("start", "start__ci0", "choice"), ge("start", "start__ci1", "choice"), ge("start__ci0", "z", "choice")], // ci1 has no target
         );
     });
 
     it("renders a terminal choiceItem card", async () => {
         const c = await renderGraph(
-            [gn("a", {type: "choice"}), gn("a__ci0", {type: "choiceItem", choiceName: "end", text: "t", isTerminal: true})],
+            [gn("a", {type: "choice"}), gn("a__ci0", {
+                type: "choiceItem",
+                choiceName: "end",
+                text: "t",
+                isTerminal: true
+            })],
             [ge("a", "a__ci0", "choice")],
         );
         expect(c.querySelector(".choice-item-node.terminal")).not.toBeNull();

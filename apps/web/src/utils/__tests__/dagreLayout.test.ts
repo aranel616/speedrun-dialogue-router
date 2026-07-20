@@ -2,8 +2,19 @@ import {describe, it, expect} from "vitest";
 import type {Node, Edge} from "@xyflow/react";
 import {applyDagreLayout} from "../dagreLayout";
 
-const n = (id: string): Node => ({id, position: {x: 0, y: 0}, data: {}});
-const e = (source: string, target: string): Edge => ({id: `${source}->${target}`, source, target});
+const n = (id: string): Node => ({
+    id,
+    position: {
+        x: 0,
+        y: 0
+    },
+    data: {}
+});
+const e = (source: string, target: string): Edge => ({
+    id: `${source}->${target}`,
+    source,
+    target
+});
 const rankY = (out: Node[], id: string): number => out.find((x) => x.id === id)!.position.y;
 
 describe("applyDagreLayout", () => {

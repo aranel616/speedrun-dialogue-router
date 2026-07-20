@@ -9,10 +9,20 @@ const MAX_ZOOM = 3;
 const PAN_STEP = 140; // px the pan buttons move the view per click
 
 const zoomBtnStyle: React.CSSProperties = {
-    width: 32, height: 32, borderRadius: 6, border: "1px solid #475569",
-    background: "#1e293b", color: "#e2e8f0", fontSize: 20, lineHeight: 1,
-    cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-    padding: 0, boxShadow: "0 1px 3px rgba(0,0,0,0.4)",
+    width: 32,
+    height: 32,
+    borderRadius: 6,
+    border: "1px solid #475569",
+    background: "#1e293b",
+    color: "#e2e8f0",
+    fontSize: 20,
+    lineHeight: 1,
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 0,
+    boxShadow: "0 1px 3px rgba(0,0,0,0.4)",
 };
 
 // Fixed render width per node type (matches the card CSS). Height is measured
@@ -78,7 +88,7 @@ function NodeCard({node, highlighted, selected, onClick, cumulative}: {
                 <div className="ci-sets">
                     {node.sets.map((s, i) => <span key={i} className="set-badge">{s.name}={String(s.value)}</span>)}
                 </div>
-        )}
+                )}
                 <div className="node-stats-row">
                     <span className="node-char-count">{charCount.toLocaleString()} chars</span>
                     {cumulative !== undefined && <span className="node-cumulative-count">{cumulative.toLocaleString()} total</span>}
@@ -138,7 +148,10 @@ function Minimap({posNodes, visitedNodeIds, viewport, containerW, containerH, on
     const scaleY = innerH / gH;
 
     function toMM(gx: number, gy: number): {mx: number; my: number} {
-        return {mx: MM_PAD + (gx - gx0) * scaleX, my: MM_PAD + (gy - gy0) * scaleY};
+        return {
+            mx: MM_PAD + (gx - gx0) * scaleX,
+            my: MM_PAD + (gy - gy0) * scaleY
+        };
     }
 
     const {y: vy, zoom: vz} = viewport;
@@ -153,7 +166,11 @@ function Minimap({posNodes, visitedNodeIds, viewport, containerW, containerH, on
         const rect = e.currentTarget.getBoundingClientRect();
         const gy = (e.clientY - rect.top - MM_PAD) / scaleY + gy0;
         const gxc = gx0 + gW / 2;
-        onNavigate({x: containerW / 2 - gxc * vz, y: containerH / 2 - gy * vz, zoom: vz});
+        onNavigate({
+            x: containerW / 2 - gxc * vz,
+            y: containerH / 2 - gy * vz,
+            zoom: vz
+        });
     }
 
     function nodeColor(n: PosNode): string {
@@ -174,13 +191,13 @@ function Minimap({posNodes, visitedNodeIds, viewport, containerW, containerH, on
             onMouseLeave={() => { dragging.current = false; }}
             >
             {posNodes.map((n) => {
-        const {mx, my} = toMM(n.x, n.y);
-        return (
-            <rect key={n.id} x={mx} y={my}
-                width={Math.max(3, n.w * scaleX)} height={Math.max(2, n.h * scaleY)}
-                fill={nodeColor(n)} opacity={0.75} rx={1} />
-        );
-      })}
+                const {mx, my} = toMM(n.x, n.y);
+                return (
+                    <rect key={n.id} x={mx} y={my}
+                        width={Math.max(3, n.w * scaleX)} height={Math.max(2, n.h * scaleY)}
+                        fill={nodeColor(n)} opacity={0.75} rx={1} />
+                );
+            })}
             <rect x={MM_PAD} y={vpMY}
                 width={innerW} height={Math.max(6, vpMH)}
                 fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.5)" strokeWidth={1.5} rx={2} />
@@ -200,8 +217,16 @@ interface Props {
 
 export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, selectedNodeId, onNodeClick, cumulativeCounts}: Props): JSX.Element {
     const containerRef = useRef<HTMLDivElement>(null);
-    const vpRef = useRef<Viewport>({x: 0, y: 0, zoom: 1});
-    const [viewport, setVP] = useState<Viewport>({x: 0, y: 0, zoom: 1});
+    const vpRef = useRef<Viewport>({
+        x: 0,
+        y: 0,
+        zoom: 1
+    });
+    const [viewport, setVP] = useState<Viewport>({
+        x: 0,
+        y: 0,
+        zoom: 1
+    });
     const dragRef = useRef<{ sx: number; sy: number; ox: number; oy: number } | null>(null);
     const movedRef = useRef(false);
     // Real DOM heights of each node card, measured from a hidden layer (no estimates).
@@ -260,13 +285,21 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
             forks.push({
                 id: cur,
                 variable: items[0]!.sets![0]!.name,
-                options: items.map((it) => ({label: it.choiceName ?? "", value: it.sets![0]!.value, ciId: it.id})),
+                options: items.map((it) => ({
+                    label: it.choiceName ?? "",
+                    value: it.sets![0]!.value,
+                    ciId: it.id
+                })),
             });
             hidden.add(cur);
             items.forEach((it) => hidden.add(it.id));
             cur = targets[0];
         }
-        return {forks, hidden, contentRoot};
+        return {
+            forks,
+            hidden,
+            contentRoot
+        };
     }, [graphNodes, graphEdges]);
 
     // Layout — waits until every current node has a measured height, then lays out.
@@ -277,13 +310,20 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
         const rfNodes: Node[] = visNodes.map((n) => ({
             id: n.id,
             type: n.type,
-            position: {x: 0, y: 0},
+            position: {
+                x: 0,
+                y: 0
+            },
             style: {width: nodeWidth(n.type)},
             data: n as unknown as Record<string, unknown>,
         }));
         const rfEdges: Edge[] = graphEdges
             .filter((e) => !inherited.hidden.has(e.source) && !inherited.hidden.has(e.target))
-            .map((e) => ({id: e.id, source: e.source, target: e.target}));
+            .map((e) => ({
+                id: e.id,
+                source: e.source,
+                target: e.target
+            }));
         const laid = applyDagreLayout(rfNodes, rfEdges, heights);
         return laid.map((n) => ({
             id: n.id,
@@ -303,7 +343,11 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
         const zoom = 1.2;
         const x = el.offsetWidth / 2 - (root.x + root.w / 2) * zoom;
         const y = el.offsetHeight / 3 - (root.y + root.h / 2) * zoom;
-        syncVP({x, y, zoom});
+        syncVP({
+            x,
+            y,
+            zoom
+        });
     }, [posNodes, syncVP, inherited.contentRoot]);
 
     // Wheel zoom/pan (needs a non-passive listener so preventDefault works).
@@ -323,11 +367,19 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
                 const mx = e.clientX - rect.left;
                 const my = e.clientY - rect.top;
                 const z = clamp(v.zoom * factor, MIN_ZOOM, MAX_ZOOM);
-                syncVP({x: mx - (mx - v.x) * (z / v.zoom), y: my - (my - v.y) * (z / v.zoom), zoom: z});
+                syncVP({
+                    x: mx - (mx - v.x) * (z / v.zoom),
+                    y: my - (my - v.y) * (z / v.zoom),
+                    zoom: z
+                });
                 return;
             }
             // Plain wheel/trackpad → pan (natural direction).
-            syncVP({...v, x: v.x - e.deltaX, y: v.y - e.deltaY});
+            syncVP({
+                ...v,
+                x: v.x - e.deltaX,
+                y: v.y - e.deltaY
+            });
         };
         el.addEventListener("wheel", onWheel, {passive: false});
         return (): void => el.removeEventListener("wheel", onWheel);
@@ -337,7 +389,12 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
         if (e.button !== 0) {return;}
         movedRef.current = false;
         const v = vpRef.current;
-        dragRef.current = {sx: e.clientX, sy: e.clientY, ox: v.x, oy: v.y};
+        dragRef.current = {
+            sx: e.clientX,
+            sy: e.clientY,
+            ox: v.x,
+            oy: v.y
+        };
     }, []);
 
     const onMouseMove = useCallback((e: React.MouseEvent) => {
@@ -346,7 +403,11 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
         const dy = e.clientY - dragRef.current.sy;
         if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {movedRef.current = true;}
         if (!movedRef.current) {return;}
-        syncVP({...vpRef.current, x: dragRef.current.ox + dx, y: dragRef.current.oy + dy});
+        syncVP({
+            ...vpRef.current,
+            x: dragRef.current.ox + dx,
+            y: dragRef.current.oy + dy
+        });
     }, [syncVP]);
 
     const onMouseUp = useCallback(() => { dragRef.current = null; }, []);
@@ -360,13 +421,21 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
         const cy = el.offsetHeight / 2;
         const v = vpRef.current;
         const z = clamp(v.zoom * factor, MIN_ZOOM, MAX_ZOOM);
-        syncVP({x: cx - (cx - v.x) * (z / v.zoom), y: cy - (cy - v.y) * (z / v.zoom), zoom: z});
+        syncVP({
+            x: cx - (cx - v.x) * (z / v.zoom),
+            y: cy - (cy - v.y) * (z / v.zoom),
+            zoom: z
+        });
     }, [syncVP]);
 
     // Pan the viewport by a fixed screen-space step
     const panBy = useCallback((dx: number, dy: number) => {
         const v = vpRef.current;
-        syncVP({...v, x: v.x + dx, y: v.y + dy});
+        syncVP({
+            ...v,
+            x: v.x + dx,
+            y: v.y + dy
+        });
     }, [syncVP]);
 
     // Reset to the initial view (centre the "start" node at 1.2x)
@@ -477,7 +546,10 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
                 id: f.id,
                 variable: f.variable,
                 height: heights[i]!,
-                options: f.options.map((o) => ({label: o.label, onPath: visitedNodeIds.has(o.ciId)})),
+                options: f.options.map((o) => ({
+                    label: o.label,
+                    onPath: visitedNodeIds.has(o.ciId)
+                })),
                 left: cx - INH_W / 2,
                 top,
             };
@@ -488,14 +560,25 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
         <div
             ref={containerRef}
             className="graph-canvas"
-            style={{overflow: "hidden", cursor: dragRef.current ? "grabbing" : "grab", userSelect: "none"}}
+            style={{
+                overflow: "hidden",
+                cursor: dragRef.current ? "grabbing" : "grab",
+                userSelect: "none"
+            }}
             onMouseDown={onMouseDown}
             onMouseMove={onMouseMove}
             onMouseUp={onMouseUp}
             onMouseLeave={onMouseUp}
             >
             {/* Hidden measurement layer: real card heights feed the dagre layout. */}
-            <div aria-hidden style={{position: "absolute", top: 0, left: 0, visibility: "hidden", pointerEvents: "none", zIndex: -1}}>
+            <div aria-hidden style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                visibility: "hidden",
+                pointerEvents: "none",
+                zIndex: -1
+            }}>
                 {graphNodes.map((n) => (
                     <div
                         key={n.id}
@@ -504,14 +587,25 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
           >
                         <MemoCard node={n} highlighted={false} selected={false} onClick={NOOP} />
                     </div>
-        ))}
+                ))}
             </div>
-            <div style={{position: "absolute", transform: `translate(${x}px,${y}px) scale(${zoom})`, transformOrigin: "0 0"}}>
+            <div style={{
+                position: "absolute",
+                transform: `translate(${x}px,${y}px) scale(${zoom})`,
+                transformOrigin: "0 0"
+            }}>
                 {/* SVG edge layer */}
-                <svg style={{position: "absolute", inset: 0, width: 0, height: 0, overflow: "visible", pointerEvents: "none"}}>
+                <svg style={{
+                    position: "absolute",
+                    inset: 0,
+                    width: 0,
+                    height: 0,
+                    overflow: "visible",
+                    pointerEvents: "none"
+                }}>
                     {edgePaths.map((e) => e && (
                     <path key={e.id} d={e.d} fill="none" stroke={e.stroke} strokeWidth={e.strokeWidth} />
-          ))}
+                    ))}
                     {edgePaths.map((e) => e && e.label && (
                     <text
                         key={e.id + "-lbl"}
@@ -520,23 +614,28 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
                         textAnchor="middle"
                         dominantBaseline="middle"
                         style={{
-                fontSize: 13,
-                fontWeight: 700,
-                fontFamily: "ui-monospace, monospace",
-                fill: e.hl ? "#22c55e" : "#f59e0b",
-                stroke: "#020617",
-                strokeWidth: 4,
-                paintOrder: "stroke",
-                strokeLinejoin: "round",
-              }}
+                            fontSize: 13,
+                            fontWeight: 700,
+                            fontFamily: "ui-monospace, monospace",
+                            fill: e.hl ? "#22c55e" : "#f59e0b",
+                            stroke: "#020617",
+                            strokeWidth: 4,
+                            paintOrder: "stroke",
+                            strokeLinejoin: "round",
+                        }}
             >
                         {e.label}
                     </text>
-          ))}
+                    ))}
                 </svg>
                 {/* HTML node layer */}
                 {posNodes.map((n) => (
-                    <div key={n.id} style={{position: "absolute", left: n.x, top: n.y, width: n.w}}>
+                    <div key={n.id} style={{
+                        position: "absolute",
+                        left: n.x,
+                        top: n.y,
+                        width: n.w
+                    }}>
                         <MemoCard
                             node={n.node}
                             highlighted={visitedNodeIds.has(n.id)}
@@ -545,22 +644,27 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
                             cumulative={cumulativeCounts[n.id]}
             />
                     </div>
-        ))}
+                ))}
                 {/* Detached list of inherited decisions (presentation only, not connected) */}
                 {inheritedCards.map((c) => (
                     <div
                         key={c.id}
                         className="inherited-card"
-                        style={{position: "absolute", left: c.left, top: c.top, width: INH_W}}
+                        style={{
+                            position: "absolute",
+                            left: c.left,
+                            top: c.top,
+                            width: INH_W
+                        }}
           >
                         <span className="inherited-var">{c.variable}</span>
                         <div className="inherited-opts">
                             {c.options.map((o, i) => (
                                 <span key={i} className={`inherited-opt${o.onPath ? " on-path" : ""}`}>{o.label}</span>
-              ))}
+                            ))}
                         </div>
                     </div>
-        ))}
+                ))}
             </div>
             {toc.length > 0 && (
             <div className="toc-panel" onMouseDown={(e) => e.stopPropagation()}>
@@ -577,36 +681,52 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
                             {e.kind === "decision" && <span className="toc-diamond">◆</span>}
                             <span className="toc-title">{e.title}</span>
                         </button>
-            ))}
+                    ))}
                 </div>
                 <div className="toc-nav">
                     <button type="button" onClick={() => goToToc(tocIdx - 1)} disabled={tocIdx <= 0}>◀ Prev</button>
                     <button type="button" onClick={() => goToToc(tocIdx + 1)} disabled={tocIdx >= toc.length - 1}>Next ▶</button>
                 </div>
             </div>
-      )}
+            )}
             <div
                 className="canvas-controls"
                 onMouseDown={(e) => e.stopPropagation()}
                 style={{
-          position: "absolute", left: 12, bottom: 12, display: "flex", flexDirection: "column",
-          gap: 8, zIndex: 10,
-        }}
+                    position: "absolute",
+                    left: 12,
+                    bottom: 12,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 8,
+                    zIndex: 10,
+                }}
       >
                 {/* Directional pan pad */}
-                <div style={{display: "grid", gridTemplateColumns: "repeat(3, 32px)", gridTemplateRows: "repeat(3, 32px)", gap: 4}}>
+                <div style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(3, 32px)",
+                    gridTemplateRows: "repeat(3, 32px)",
+                    gap: 4
+                }}>
                     <span />
                     <button type="button" title="Pan up" aria-label="Pan up" onClick={() => panBy(0, PAN_STEP)} style={zoomBtnStyle}>▲</button>
                     <span />
                     <button type="button" title="Pan left" aria-label="Pan left" onClick={() => panBy(PAN_STEP, 0)} style={zoomBtnStyle}>◀</button>
-                    <button type="button" title="Reset view" aria-label="Reset view" onClick={resetView} style={{...zoomBtnStyle, fontSize: 15}}>⌂</button>
+                    <button type="button" title="Reset view" aria-label="Reset view" onClick={resetView} style={{
+                        ...zoomBtnStyle,
+                        fontSize: 15
+                    }}>⌂</button>
                     <button type="button" title="Pan right" aria-label="Pan right" onClick={() => panBy(-PAN_STEP, 0)} style={zoomBtnStyle}>▶</button>
                     <span />
                     <button type="button" title="Pan down" aria-label="Pan down" onClick={() => panBy(0, -PAN_STEP)} style={zoomBtnStyle}>▼</button>
                     <span />
                 </div>
                 {/* Zoom */}
-                <div style={{display: "flex", gap: 4}}>
+                <div style={{
+                    display: "flex",
+                    gap: 4
+                }}>
                     <button type="button" title="Zoom in" aria-label="Zoom in" onClick={() => zoomBy(1.2)} style={zoomBtnStyle}>+</button>
                     <button type="button" title="Zoom out" aria-label="Zoom out" onClick={() => zoomBy(1 / 1.2)} style={zoomBtnStyle}>−</button>
                 </div>

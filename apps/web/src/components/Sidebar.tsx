@@ -36,7 +36,7 @@ export function Sidebar({node, onClose}: Props): JSX.Element | null {
 
                 {node.type === "choice" && (
                 <p className="node-description">Branch point — choose an option below.</p>
-        )}
+                )}
 
                 {node.type === "choiceItem" && (
                 <>
@@ -46,11 +46,11 @@ export function Sidebar({node, onClose}: Props): JSX.Element | null {
                         <div className="inspector-subtitle" style={{marginBottom: 6}}>Sets</div>
                         {node.sets.map((s, i) => (
                             <span key={i} className="set-badge">{s.name} = {String(s.value)}</span>
-                ))}
+                        ))}
                     </div>
-            )}
+                    )}
                 </>
-        )}
+                )}
             </div>
         </aside>
     );

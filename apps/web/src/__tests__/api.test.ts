@@ -6,7 +6,10 @@ describe("fetchScripts", () => {
         const {scripts} = await fetchScripts();
         expect(scripts.length).toBeGreaterThan(0);
         const ep1 = scripts.find((s) => s.id === "lifeisstrange/episode1");
-        expect(ep1).toMatchObject({game: "lifeisstrange", episode: "episode1"});
+        expect(ep1).toMatchObject({
+            game: "lifeisstrange",
+            episode: "episode1"
+        });
         expect(ep1!.nodeCount).toBeGreaterThan(0);
     });
 });
@@ -31,7 +34,11 @@ describe("postTraverse", () => {
     });
 
     it("honours an explicit startNode and initialContext", async () => {
-        const r = await postTraverse({scriptId: "lifeisstrange/episode1", startNode: "start", initialContext: {}});
+        const r = await postTraverse({
+            scriptId: "lifeisstrange/episode1",
+            startNode: "start",
+            initialContext: {}
+        });
         expect(r.length).toBeGreaterThan(0);
     });
 

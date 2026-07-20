@@ -6,81 +6,324 @@ export const script: Script = {
     // route consistently. In a full-game run these get driven by prior episodes.
     "start": {
         "choices": [
-            {"name": "(Saved Kate)", "text": "", "set": {"name": "saved_kate", "type": "set", "value": true}, "next": "setup5_blame"},
-            {"name": "(Didn't save Kate)", "text": "", "set": {"name": "saved_kate", "type": "set", "value": false}, "next": "setup5_blame"}
+            {
+                "name": "(Saved Kate)",
+                "text": "",
+                "set": {
+                    "name": "saved_kate",
+                    "type": "set",
+                    "value": true
+                },
+                "next": "setup5_blame"
+            },
+            {
+                "name": "(Didn't save Kate)",
+                "text": "",
+                "set": {
+                    "name": "saved_kate",
+                    "type": "set",
+                    "value": false
+                },
+                "next": "setup5_blame"
+            }
         ]
     },
     "setup5_blame": {
         "choices": [
-            {"name": "(Blamed Nathan)", "text": "", "set": {"name": "blamed_who", "type": "set", "value": "nathan"}, "next": "setup5_warren"},
-            {"name": "(Blamed David)", "text": "", "set": {"name": "blamed_who", "type": "set", "value": "david"}, "next": "setup5_warren"},
-            {"name": "(Blamed Jefferson)", "text": "", "set": {"name": "blamed_who", "type": "set", "value": "jefferson"}, "next": "setup5_warren"}
+            {
+                "name": "(Blamed Nathan)",
+                "text": "",
+                "set": {
+                    "name": "blamed_who",
+                    "type": "set",
+                    "value": "nathan"
+                },
+                "next": "setup5_warren"
+            },
+            {
+                "name": "(Blamed David)",
+                "text": "",
+                "set": {
+                    "name": "blamed_who",
+                    "type": "set",
+                    "value": "david"
+                },
+                "next": "setup5_warren"
+            },
+            {
+                "name": "(Blamed Jefferson)",
+                "text": "",
+                "set": {
+                    "name": "blamed_who",
+                    "type": "set",
+                    "value": "jefferson"
+                },
+                "next": "setup5_warren"
+            }
         ]
     },
     "setup5_warren": {
         "choices": [
-            {"name": "(Warren beat up Nathan)", "text": "", "set": {"name": "warren_beat_nathan", "type": "set", "value": true}, "next": "setup5_vic"},
-            {"name": "(Max stopped Warren)", "text": "", "set": {"name": "warren_beat_nathan", "type": "set", "value": false}, "next": "setup5_vic"}
+            {
+                "name": "(Warren beat up Nathan)",
+                "text": "",
+                "set": {
+                    "name": "warren_beat_nathan",
+                    "type": "set",
+                    "value": true
+                },
+                "next": "setup5_vic"
+            },
+            {
+                "name": "(Max stopped Warren)",
+                "text": "",
+                "set": {
+                    "name": "warren_beat_nathan",
+                    "type": "set",
+                    "value": false
+                },
+                "next": "setup5_vic"
+            }
         ]
     },
     "setup5_vic": {
         "choices": [
-            {"name": "(Victoria was kidnapped)", "text": "", "set": {"name": "victoria_kidnapped", "type": "set", "value": true}, "next": "setup5_reported"},
-            {"name": "(Victoria wasn't kidnapped)", "text": "", "set": {"name": "victoria_kidnapped", "type": "set", "value": false}, "next": "setup5_reported"}
+            {
+                "name": "(Victoria was kidnapped)",
+                "text": "",
+                "set": {
+                    "name": "victoria_kidnapped",
+                    "type": "set",
+                    "value": true
+                },
+                "next": "setup5_reported"
+            },
+            {
+                "name": "(Victoria wasn't kidnapped)",
+                "text": "",
+                "set": {
+                    "name": "victoria_kidnapped",
+                    "type": "set",
+                    "value": false
+                },
+                "next": "setup5_reported"
+            }
         ]
     },
     "setup5_reported": {
         "choices": [
-            {"name": "(Reported Nathan)", "text": "", "set": {"name": "reported_nathan", "type": "set", "value": true}, "next": "setup5_dhit"},
-            {"name": "(Hid the truth)", "text": "", "set": {"name": "reported_nathan", "type": "set", "value": false}, "next": "setup5_dhit"}
+            {
+                "name": "(Reported Nathan)",
+                "text": "",
+                "set": {
+                    "name": "reported_nathan",
+                    "type": "set",
+                    "value": true
+                },
+                "next": "setup5_dhit"
+            },
+            {
+                "name": "(Hid the truth)",
+                "text": "",
+                "set": {
+                    "name": "reported_nathan",
+                    "type": "set",
+                    "value": false
+                },
+                "next": "setup5_dhit"
+            }
         ]
     },
     "setup5_dhit": {
         "choices": [
-            {"name": "(David hit Chloe)", "text": "", "set": {"name": "david_hit_chloe", "type": "set", "value": true}, "next": "setup5_sided"},
-            {"name": "(David didn't hit Chloe)", "text": "", "set": {"name": "david_hit_chloe", "type": "set", "value": false}, "next": "setup5_sided"}
+            {
+                "name": "(David hit Chloe)",
+                "text": "",
+                "set": {
+                    "name": "david_hit_chloe",
+                    "type": "set",
+                    "value": true
+                },
+                "next": "setup5_sided"
+            },
+            {
+                "name": "(David didn't hit Chloe)",
+                "text": "",
+                "set": {
+                    "name": "david_hit_chloe",
+                    "type": "set",
+                    "value": false
+                },
+                "next": "setup5_sided"
+            }
         ]
     },
     "setup5_sided": {
         "choices": [
-            {"name": "(Sided with Chloe)", "text": "", "set": {"name": "sided_with_chloe", "type": "set", "value": true}, "next": "setup5_altchloe"},
-            {"name": "(Sided with David)", "text": "", "set": {"name": "sided_with_chloe", "type": "set", "value": false}, "next": "setup5_altchloe"}
+            {
+                "name": "(Sided with Chloe)",
+                "text": "",
+                "set": {
+                    "name": "sided_with_chloe",
+                    "type": "set",
+                    "value": true
+                },
+                "next": "setup5_altchloe"
+            },
+            {
+                "name": "(Sided with David)",
+                "text": "",
+                "set": {
+                    "name": "sided_with_chloe",
+                    "type": "set",
+                    "value": false
+                },
+                "next": "setup5_altchloe"
+            }
         ]
     },
     "setup5_altchloe": {
         "choices": [
-            {"name": "(Accepted alternate Chloe's request)", "text": "", "set": {"name": "accepted_alt_chloe", "type": "set", "value": true}, "next": "setup5_frank"},
-            {"name": "(Refused alternate Chloe's request)", "text": "", "set": {"name": "accepted_alt_chloe", "type": "set", "value": false}, "next": "setup5_frank"}
+            {
+                "name": "(Accepted alternate Chloe's request)",
+                "text": "",
+                "set": {
+                    "name": "accepted_alt_chloe",
+                    "type": "set",
+                    "value": true
+                },
+                "next": "setup5_frank"
+            },
+            {
+                "name": "(Refused alternate Chloe's request)",
+                "text": "",
+                "set": {
+                    "name": "accepted_alt_chloe",
+                    "type": "set",
+                    "value": false
+                },
+                "next": "setup5_frank"
+            }
         ]
     },
     "setup5_frank": {
         "choices": [
-            {"name": "(Chloe killed Frank)", "text": "", "set": {"name": "chloe_killed_frank", "type": "set", "value": true}, "next": "setup5_kchloe"},
-            {"name": "(Chloe didn't kill Frank)", "text": "", "set": {"name": "chloe_killed_frank", "type": "set", "value": false}, "next": "setup5_kchloe"}
+            {
+                "name": "(Chloe killed Frank)",
+                "text": "",
+                "set": {
+                    "name": "chloe_killed_frank",
+                    "type": "set",
+                    "value": true
+                },
+                "next": "setup5_kchloe"
+            },
+            {
+                "name": "(Chloe didn't kill Frank)",
+                "text": "",
+                "set": {
+                    "name": "chloe_killed_frank",
+                    "type": "set",
+                    "value": false
+                },
+                "next": "setup5_kchloe"
+            }
         ]
     },
     "setup5_kchloe": {
         "choices": [
-            {"name": "(Kissed Chloe)", "text": "", "set": {"name": "kissed_chloe", "type": "set", "value": true}, "next": "setup5_kwarren"},
-            {"name": "(Didn't kiss Chloe)", "text": "", "set": {"name": "kissed_chloe", "type": "set", "value": false}, "next": "setup5_kwarren"}
+            {
+                "name": "(Kissed Chloe)",
+                "text": "",
+                "set": {
+                    "name": "kissed_chloe",
+                    "type": "set",
+                    "value": true
+                },
+                "next": "setup5_kwarren"
+            },
+            {
+                "name": "(Didn't kiss Chloe)",
+                "text": "",
+                "set": {
+                    "name": "kissed_chloe",
+                    "type": "set",
+                    "value": false
+                },
+                "next": "setup5_kwarren"
+            }
         ]
     },
     "setup5_kwarren": {
         "choices": [
-            {"name": "(Kissed Warren)", "text": "", "set": {"name": "kissed_warren", "type": "set", "value": true}, "next": "setup5_romance"},
-            {"name": "(Didn't kiss Warren)", "text": "", "set": {"name": "kissed_warren", "type": "set", "value": false}, "next": "setup5_romance"}
+            {
+                "name": "(Kissed Warren)",
+                "text": "",
+                "set": {
+                    "name": "kissed_warren",
+                    "type": "set",
+                    "value": true
+                },
+                "next": "setup5_romance"
+            },
+            {
+                "name": "(Didn't kiss Warren)",
+                "text": "",
+                "set": {
+                    "name": "kissed_warren",
+                    "type": "set",
+                    "value": false
+                },
+                "next": "setup5_romance"
+            }
         ]
     },
     "setup5_romance": {
         "choices": [
-            {"name": "(High romance score)", "text": "", "set": {"name": "romance_high", "type": "set", "value": true}, "next": "setup5_djeff"},
-            {"name": "(Low romance score)", "text": "", "set": {"name": "romance_high", "type": "set", "value": false}, "next": "setup5_djeff"}
+            {
+                "name": "(High romance score)",
+                "text": "",
+                "set": {
+                    "name": "romance_high",
+                    "type": "set",
+                    "value": true
+                },
+                "next": "setup5_djeff"
+            },
+            {
+                "name": "(Low romance score)",
+                "text": "",
+                "set": {
+                    "name": "romance_high",
+                    "type": "set",
+                    "value": false
+                },
+                "next": "setup5_djeff"
+            }
         ]
     },
     "setup5_djeff": {
         "choices": [
-            {"name": "(David killed Jefferson)", "text": "", "set": {"name": "david_killed_jefferson", "type": "set", "value": true}, "next": "focus1_intro"},
-            {"name": "(David didn't kill Jefferson)", "text": "", "set": {"name": "david_killed_jefferson", "type": "set", "value": false}, "next": "focus1_intro"}
+            {
+                "name": "(David killed Jefferson)",
+                "text": "",
+                "set": {
+                    "name": "david_killed_jefferson",
+                    "type": "set",
+                    "value": true
+                },
+                "next": "focus1_intro"
+            },
+            {
+                "name": "(David didn't kill Jefferson)",
+                "text": "",
+                "set": {
+                    "name": "david_killed_jefferson",
+                    "type": "set",
+                    "value": false
+                },
+                "next": "focus1_intro"
+            }
         ]
     },
     // ===================== First Focus (Dark Room) =====================
@@ -106,18 +349,34 @@ export const script: Script = {
     "focus1_victoria": {
         "text": "",
         "next": [
-            {"name": "saved_kate", "type": "eq", "value": true, "node": "focus1_victoria_yes"},
-            {"name": "saved_kate", "type": "eq", "value": false, "node": "focus1_victoria_no"}
+            {
+                "name": "saved_kate",
+                "type": "eq",
+                "value": true,
+                "node": "focus1_victoria_yes"
+            },
+            {
+                "name": "saved_kate",
+                "type": "eq",
+                "value": false,
+                "node": "focus1_victoria_no"
+            }
         ]
     },
-    "focus1_victoria_yes": {"text": [
-        "Now I know what Kate had to go through...and I almost killed her...",
-        "Shh. No, you didn't. Don't think about that now."
-    ], "next": "focus1_bridge"},
-    "focus1_victoria_no": {"text": [
-        "Now I know what Kate had to go through...and I helped kill her.",
-        "You didn't know anything. Don't think about that now."
-    ], "next": "focus1_bridge"},
+    "focus1_victoria_yes": {
+        "text": [
+            "Now I know what Kate had to go through...and I almost killed her...",
+            "Shh. No, you didn't. Don't think about that now."
+        ],
+        "next": "focus1_bridge"
+    },
+    "focus1_victoria_no": {
+        "text": [
+            "Now I know what Kate had to go through...and I helped kill her.",
+            "You didn't know anything. Don't think about that now."
+        ],
+        "next": "focus1_bridge"
+    },
     "focus1_bridge": {
         "text": [
             "God, I was so fucking stupid...",
@@ -203,14 +462,38 @@ export const script: Script = {
     "focus2_blame": {
         "text": "",
         "next": [
-            {"name": "blamed_who", "type": "eq", "value": "jefferson", "node": "focus2_blame_jefferson"},
-            {"name": "blamed_who", "type": "eq", "value": "david", "node": "focus2_blame_david"},
-            {"name": "blamed_who", "type": "eq", "value": "nathan", "node": "focus2_blame_nathan"}
+            {
+                "name": "blamed_who",
+                "type": "eq",
+                "value": "jefferson",
+                "node": "focus2_blame_jefferson"
+            },
+            {
+                "name": "blamed_who",
+                "type": "eq",
+                "value": "david",
+                "node": "focus2_blame_david"
+            },
+            {
+                "name": "blamed_who",
+                "type": "eq",
+                "value": "nathan",
+                "node": "focus2_blame_nathan"
+            }
         ]
     },
-    "focus2_blame_jefferson": {"text": "When you told the principal that I made Kate cry, I thought you almost had me. It's good our esteemed Principal Wells is like most administrators...a closet drunk.", "next": "focus2_nathan"},
-    "focus2_blame_david": {"text": "Then why did you blame David Madsen for stalking Kate? Of course, he was the only person who was about to find out the truth. Irony.", "next": "focus2_nathan"},
-    "focus2_blame_nathan": {"text": "Too bad you already made a convincing argument against Nathan in the Principal's office. Thank you so much for setting him up for me.", "next": "focus2_nathan"},
+    "focus2_blame_jefferson": {
+        "text": "When you told the principal that I made Kate cry, I thought you almost had me. It's good our esteemed Principal Wells is like most administrators...a closet drunk.",
+        "next": "focus2_nathan"
+    },
+    "focus2_blame_david": {
+        "text": "Then why did you blame David Madsen for stalking Kate? Of course, he was the only person who was about to find out the truth. Irony.",
+        "next": "focus2_nathan"
+    },
+    "focus2_blame_nathan": {
+        "text": "Too bad you already made a convincing argument against Nathan in the Principal's office. Thank you so much for setting him up for me.",
+        "next": "focus2_nathan"
+    },
     "focus2_nathan": {
         "text": "I do know that the Prescotts are going to have a major scandal when the town finds out what their elite son has been doing for homework...",
         "next": "focus2_nathan_choice"
@@ -320,12 +603,28 @@ export const script: Script = {
     "focus2_warren": {
         "text": "",
         "next": [
-            {"name": "warren_beat_nathan", "type": "eq", "value": false, "node": "focus2_warren_no"},
-            {"name": "warren_beat_nathan", "type": "eq", "value": true, "node": "focus2_warren_yes"}
+            {
+                "name": "warren_beat_nathan",
+                "type": "eq",
+                "value": false,
+                "node": "focus2_warren_no"
+            },
+            {
+                "name": "warren_beat_nathan",
+                "type": "eq",
+                "value": true,
+                "node": "focus2_warren_yes"
+            }
         ]
     },
-    "focus2_warren_no": {"text": ["Oh, I see; you're \"good\" because you stopped your friend from beating Nathan up.", "Yes, yes we are."], "next": "focus2_7"},
-    "focus2_warren_yes": {"text": ["Oh, I see... You and your friends almost beat Nathan to death. You see, we're not so different.", "Yes, yes we are."], "next": "focus2_7"},
+    "focus2_warren_no": {
+        "text": ["Oh, I see; you're \"good\" because you stopped your friend from beating Nathan up.", "Yes, yes we are."],
+        "next": "focus2_7"
+    },
+    "focus2_warren_yes": {
+        "text": ["Oh, I see... You and your friends almost beat Nathan to death. You see, we're not so different.", "Yes, yes we are."],
+        "next": "focus2_7"
+    },
     "focus2_7": {
         "text": [
             "I cared more about Nathan than you did.",
@@ -454,32 +753,48 @@ export const script: Script = {
     "photolab_vic": {
         "text": "",
         "next": [
-            {"name": "victoria_kidnapped", "type": "eq", "value": true, "node": "photolab_vic_yes"},
-            {"name": "victoria_kidnapped", "type": "eq", "value": false, "node": "photolab_vic_no"}
+            {
+                "name": "victoria_kidnapped",
+                "type": "eq",
+                "value": true,
+                "node": "photolab_vic_yes"
+            },
+            {
+                "name": "victoria_kidnapped",
+                "type": "eq",
+                "value": false,
+                "node": "photolab_vic_no"
+            }
         ]
     },
-    "photolab_vic_yes": {"text": [
-        "Yes, I see. But maybe you shouldn't...",
-        "Uh, and why not?",
-        "Hold on, Victoria. Are you okay, Max?",
-        "I will be when Victoria realizes that hiding behind a screen, posting videos of people is incredibly cruel and unfair. I just want you to think about how much it would hurt if somebody did that to you. You can always make the right choice, Victoria. I know you've got a good heart.",
-        "Listen...I...I didn't...",
-        "You don't have to explain. Wouldn't it be better to lift people up than to bring them down? You could inspire people...",
-        "Okay, I don't know what you're talking about now... Then I guess I'm done talking.",
-        "And that's okay too.",
-        "That was kind of random, Max. What did you mean?"
-    ], "next": "photolab_submit"},
-    "photolab_vic_no": {"text": [
-        "I can see you're kissing ass again. Nothing new.",
-        "What did you just say?!",
-        "Hold on, Victoria. Are you okay, Max?",
-        "Not until Victoria knows that hiding behind a screen and posting videos of people is totally fucked up. Are you proud of yourself? If you have any feelings left, you should think about your actions.",
-        "Listen... I—I didn't...",
-        "Of course you did! You're so insecure, you can't even be happy with your own talent.",
-        "Okay, I do not have to listen to this bullshit... Then I guess I'm...done talking.",
-        "I sure hope so.",
-        "I'm not going to say I didn't enjoy that, but...why?"
-    ], "next": "photolab_submit"},
+    "photolab_vic_yes": {
+        "text": [
+            "Yes, I see. But maybe you shouldn't...",
+            "Uh, and why not?",
+            "Hold on, Victoria. Are you okay, Max?",
+            "I will be when Victoria realizes that hiding behind a screen, posting videos of people is incredibly cruel and unfair. I just want you to think about how much it would hurt if somebody did that to you. You can always make the right choice, Victoria. I know you've got a good heart.",
+            "Listen...I...I didn't...",
+            "You don't have to explain. Wouldn't it be better to lift people up than to bring them down? You could inspire people...",
+            "Okay, I don't know what you're talking about now... Then I guess I'm done talking.",
+            "And that's okay too.",
+            "That was kind of random, Max. What did you mean?"
+        ],
+        "next": "photolab_submit"
+    },
+    "photolab_vic_no": {
+        "text": [
+            "I can see you're kissing ass again. Nothing new.",
+            "What did you just say?!",
+            "Hold on, Victoria. Are you okay, Max?",
+            "Not until Victoria knows that hiding behind a screen and posting videos of people is totally fucked up. Are you proud of yourself? If you have any feelings left, you should think about your actions.",
+            "Listen... I—I didn't...",
+            "Of course you did! You're so insecure, you can't even be happy with your own talent.",
+            "Okay, I do not have to listen to this bullshit... Then I guess I'm...done talking.",
+            "I sure hope so.",
+            "I'm not going to say I didn't enjoy that, but...why?"
+        ],
+        "next": "photolab_submit"
+    },
     "photolab_submit": {
         "text": [
             "Here's my photograph for the \"Everyday Heroes\" contest.",
@@ -562,30 +877,54 @@ export const script: Script = {
     },
     "darkroom_insult": {
         "choices": [
-            {"name": "Eat shit and die.", "text": "Eat shit and die.", "next": "darkroom_vic"},
-            {"name": "Fuck you.", "text": "Fuck you.", "next": "darkroom_vic"}
+            {
+                "name": "Eat shit and die.",
+                "text": "Eat shit and die.",
+                "next": "darkroom_vic"
+            },
+            {
+                "name": "Fuck you.",
+                "text": "Fuck you.",
+                "next": "darkroom_vic"
+            }
         ]
     },
 
     "darkroom_vic": {
         "text": "",
         "next": [
-            {"name": "victoria_kidnapped", "type": "eq", "value": true, "node": "darkroom_vic_yes"},
-            {"name": "victoria_kidnapped", "type": "eq", "value": false, "node": "darkroom_vic_no"}
+            {
+                "name": "victoria_kidnapped",
+                "type": "eq",
+                "value": true,
+                "node": "darkroom_vic_yes"
+            },
+            {
+                "name": "victoria_kidnapped",
+                "type": "eq",
+                "value": false,
+                "node": "darkroom_vic_no"
+            }
         ]
     },
-    "darkroom_vic_yes": {"text": [
-        "Good answer, good answer.",
-        "Hey...your nose is bleeding. Probably gave you too big a dose. Sorry about that, Max.",
-        "Oh. I had to let Victoria Chase go.",
-        "You let her...?",
-        "Don't be stupid, okay?! She's exactly where she deserves to be.",
-        "No..."
-    ], "next": "darkroom_2"},
-    "darkroom_vic_no": {"text": [
-        "Good answer, good answer.",
-        "Hey...your nose is bleeding. Probably gave you too big a dose. Sorry about that, Max. But considering you're about to die, a nosebleed is a first-world problem."
-    ], "next": "darkroom_2"},
+    "darkroom_vic_yes": {
+        "text": [
+            "Good answer, good answer.",
+            "Hey...your nose is bleeding. Probably gave you too big a dose. Sorry about that, Max.",
+            "Oh. I had to let Victoria Chase go.",
+            "You let her...?",
+            "Don't be stupid, okay?! She's exactly where she deserves to be.",
+            "No..."
+        ],
+        "next": "darkroom_2"
+    },
+    "darkroom_vic_no": {
+        "text": [
+            "Good answer, good answer.",
+            "Hey...your nose is bleeding. Probably gave you too big a dose. Sorry about that, Max. But considering you're about to die, a nosebleed is a first-world problem."
+        ],
+        "next": "darkroom_2"
+    },
     "darkroom_2": {
         "text": [
             "Your iris... Too bad you pissed away your gift. You could have won the contest, but you destroyed your own beautiful photograph. What a waste. Sorry. I burned all your stuff. I got a little carried away.",
@@ -710,20 +1049,44 @@ export const script: Script = {
     // ===================== Conversation with David =====================
     "david_1": {
         "choices": [
-            {"name": "(Max initiates the conversation)", "text": ["David?", "Are you okay?", "Look at this place...it feels like hell."], "next": "david_vic"},
-            {"name": "(David initiates the conversation)", "text": "Hold on, Max. So, where is Chloe?", "next": "david_truth"}
+            {
+                "name": "(Max initiates the conversation)",
+                "text": ["David?", "Are you okay?", "Look at this place...it feels like hell."],
+                "next": "david_vic"
+            },
+            {
+                "name": "(David initiates the conversation)",
+                "text": "Hold on, Max. So, where is Chloe?",
+                "next": "david_truth"
+            }
         ]
     },
 
     "david_vic": {
         "text": "",
         "next": [
-            {"name": "victoria_kidnapped", "type": "eq", "value": true, "node": "david_vic_yes"},
-            {"name": "victoria_kidnapped", "type": "eq", "value": false, "node": "david_vic_no"}
+            {
+                "name": "victoria_kidnapped",
+                "type": "eq",
+                "value": true,
+                "node": "david_vic_yes"
+            },
+            {
+                "name": "victoria_kidnapped",
+                "type": "eq",
+                "value": false,
+                "node": "david_vic_no"
+            }
         ]
     },
-    "david_vic_yes": {"text": ["Jefferson was...was going to kill me...like he did to Victoria Chase...", "Oh, no..."], "next": "david_suspect"},
-    "david_vic_no": {"text": ["Jefferson was going to kill me... You got here just in time.", "I'm glad..."], "next": "david_suspect"},
+    "david_vic_yes": {
+        "text": ["Jefferson was...was going to kill me...like he did to Victoria Chase...", "Oh, no..."],
+        "next": "david_suspect"
+    },
+    "david_vic_no": {
+        "text": ["Jefferson was going to kill me... You got here just in time.", "I'm glad..."],
+        "next": "david_suspect"
+    },
     "david_suspect": {
         "choices": [
             {
@@ -750,34 +1113,90 @@ export const script: Script = {
     "david_blame": {
         "text": "",
         "next": [
-            {"name": "blamed_who", "type": "eq", "value": "nathan", "node": "david_blame_nathan"},
-            {"name": "blamed_who", "type": "eq", "value": "david", "node": "david_blame_david"},
-            {"name": "blamed_who", "type": "eq", "value": "jefferson", "node": "david_blame_jefferson"}
+            {
+                "name": "blamed_who",
+                "type": "eq",
+                "value": "nathan",
+                "node": "david_blame_nathan"
+            },
+            {
+                "name": "blamed_who",
+                "type": "eq",
+                "value": "david",
+                "node": "david_blame_david"
+            },
+            {
+                "name": "blamed_who",
+                "type": "eq",
+                "value": "jefferson",
+                "node": "david_blame_jefferson"
+            }
         ]
     },
-    "david_blame_nathan": {"text": "I wasn't surprised when you accused Nathan of drugging Kate Marsh. I thought so, too.", "next": "david_kate"},
-    "david_blame_david": {"text": "I guess I looked just as suspicious when you told Principal Wells that I was...harassing Kate Marsh...and I don't blame you.", "next": "david_kate"},
-    "david_blame_jefferson": {"text": "Well, you still had the right idea to tell the principal that Jefferson acted shady around Kate Marsh.", "next": "david_kate"},
+    "david_blame_nathan": {
+        "text": "I wasn't surprised when you accused Nathan of drugging Kate Marsh. I thought so, too.",
+        "next": "david_kate"
+    },
+    "david_blame_david": {
+        "text": "I guess I looked just as suspicious when you told Principal Wells that I was...harassing Kate Marsh...and I don't blame you.",
+        "next": "david_kate"
+    },
+    "david_blame_jefferson": {
+        "text": "Well, you still had the right idea to tell the principal that Jefferson acted shady around Kate Marsh.",
+        "next": "david_kate"
+    },
 
     "david_kate": {
         "text": "",
         "next": [
-            {"name": "saved_kate", "type": "eq", "value": true, "node": "david_kate_yes"},
-            {"name": "saved_kate", "type": "eq", "value": false, "node": "david_kate_no"}
+            {
+                "name": "saved_kate",
+                "type": "eq",
+                "value": true,
+                "node": "david_kate_yes"
+            },
+            {
+                "name": "saved_kate",
+                "type": "eq",
+                "value": false,
+                "node": "david_kate_no"
+            }
         ]
     },
-    "david_kate_yes": {"text": "And, Max...I treated Kate like shit... I know she's a good person, but I'm not. I hope I get to tell her that soon.", "next": "david_kate_a"},
-    "david_kate_no": {"text": "And, Max, I'll never forgive myself for what happened to Kate. I feel like I helped push her off that roof...", "next": "david_kate_b"},
+    "david_kate_yes": {
+        "text": "And, Max...I treated Kate like shit... I know she's a good person, but I'm not. I hope I get to tell her that soon.",
+        "next": "david_kate_a"
+    },
+    "david_kate_no": {
+        "text": "And, Max, I'll never forgive myself for what happened to Kate. I feel like I helped push her off that roof...",
+        "next": "david_kate_b"
+    },
     "david_kate_a": {
         "choices": [
-            {"name": "Me too.", "text": "Me too. I think that would make her very happy.", "next": "david_3"},
-            {"name": "Kate was bullied.", "text": "Kate was bullied up to that roof...but it was still Nathan and Jefferson who put her there.", "next": "david_3"}
+            {
+                "name": "Me too.",
+                "text": "Me too. I think that would make her very happy.",
+                "next": "david_3"
+            },
+            {
+                "name": "Kate was bullied.",
+                "text": "Kate was bullied up to that roof...but it was still Nathan and Jefferson who put her there.",
+                "next": "david_3"
+            }
         ]
     },
     "david_kate_b": {
         "choices": [
-            {"name": "Not your fault.", "text": "Don't blame yourself...Nathan and Jefferson are the ones who put her up there...", "next": "david_3"},
-            {"name": "Kate was bullied.", "text": "Kate was bullied up to that roof...but it was still Nathan and Jefferson who put her there.", "next": "david_3"}
+            {
+                "name": "Not your fault.",
+                "text": "Don't blame yourself...Nathan and Jefferson are the ones who put her up there...",
+                "next": "david_3"
+            },
+            {
+                "name": "Kate was bullied.",
+                "text": "Kate was bullied up to that roof...but it was still Nathan and Jefferson who put her there.",
+                "next": "david_3"
+            }
         ]
     },
     "david_3": {
@@ -792,12 +1211,28 @@ export const script: Script = {
     "david_reported": {
         "text": "",
         "next": [
-            {"name": "reported_nathan", "type": "eq", "value": true, "node": "david_reported_yes"},
-            {"name": "reported_nathan", "type": "eq", "value": false, "node": "david_reported_no"}
+            {
+                "name": "reported_nathan",
+                "type": "eq",
+                "value": true,
+                "node": "david_reported_yes"
+            },
+            {
+                "name": "reported_nathan",
+                "type": "eq",
+                "value": false,
+                "node": "david_reported_no"
+            }
         ]
     },
-    "david_reported_yes": {"text": "No... I told Principal Wells Nathan had a gun and...almost used it. But he didn't wanna believe me. I should've been more loud.", "next": "david_learned"},
-    "david_reported_no": {"text": "No. I should've told Principal Wells Nathan had a gun and...almost used it. I put the school in danger.", "next": "david_learned"},
+    "david_reported_yes": {
+        "text": "No... I told Principal Wells Nathan had a gun and...almost used it. But he didn't wanna believe me. I should've been more loud.",
+        "next": "david_learned"
+    },
+    "david_reported_no": {
+        "text": "No. I should've told Principal Wells Nathan had a gun and...almost used it. I put the school in danger.",
+        "next": "david_learned"
+    },
     "david_learned": {
         "text": "We all make decisions we regret. But I have to admit, I'm impressed by you...and Chloe, and your investigation. I had all the high-tech toys, while you had each other.",
         "next": "david_learned_choice"
@@ -827,12 +1262,28 @@ export const script: Script = {
     "david_hit": {
         "text": "",
         "next": [
-            {"name": "david_hit_chloe", "type": "eq", "value": false, "node": "david_hit_no"},
-            {"name": "david_hit_chloe", "type": "eq", "value": true, "node": "david_hit_yes"}
+            {
+                "name": "david_hit_chloe",
+                "type": "eq",
+                "value": false,
+                "node": "david_hit_no"
+            },
+            {
+                "name": "david_hit_chloe",
+                "type": "eq",
+                "value": true,
+                "node": "david_hit_yes"
+            }
         ]
     },
-    "david_hit_no": {"text": "You both had a tough start. I know it wasn't easy.", "next": "david_5"},
-    "david_hit_yes": {"text": ["I'm sure you know I... I hit her the other day.", "I know you're sorry."], "next": "david_5"},
+    "david_hit_no": {
+        "text": "You both had a tough start. I know it wasn't easy.",
+        "next": "david_5"
+    },
+    "david_hit_yes": {
+        "text": ["I'm sure you know I... I hit her the other day.", "I know you're sorry."],
+        "next": "david_5"
+    },
     "david_5": {
         "text": "I'm not gonna make any excuses for my behavior. I tried to be a good soldier, but...I wasn't so great. I tried to be a good father, too...",
         "next": "david_sided"
@@ -841,22 +1292,54 @@ export const script: Script = {
     "david_sided": {
         "text": "",
         "next": [
-            {"name": "sided_with_chloe", "type": "eq", "value": true, "node": "david_sided_yes"},
-            {"name": "sided_with_chloe", "type": "eq", "value": false, "node": "david_sided_no"}
+            {
+                "name": "sided_with_chloe",
+                "type": "eq",
+                "value": true,
+                "node": "david_sided_yes"
+            },
+            {
+                "name": "sided_with_chloe",
+                "type": "eq",
+                "value": false,
+                "node": "david_sided_no"
+            }
         ]
     },
-    "david_sided_yes": {"text": "But...when Joyce kicked me out...I had nothing.", "next": "david_sided_a"},
-    "david_sided_no": {"text": "But...you saw how that went.", "next": "david_sided_b"},
+    "david_sided_yes": {
+        "text": "But...when Joyce kicked me out...I had nothing.",
+        "next": "david_sided_a"
+    },
+    "david_sided_no": {
+        "text": "But...you saw how that went.",
+        "next": "david_sided_b"
+    },
     "david_sided_a": {
         "choices": [
-            {"name": "I'm sorry.", "text": ["I'm so sorry about that... I didn't want that to happen...", "I should never have set up those surveillance cams. Or kept all those files..."], "next": "david_6"},
-            {"name": "I was pissed off.", "text": ["I was pissed off and wanted to rage.", "Yeah, I know the feeling. Too much."], "next": "david_6"}
+            {
+                "name": "I'm sorry.",
+                "text": ["I'm so sorry about that... I didn't want that to happen...", "I should never have set up those surveillance cams. Or kept all those files..."],
+                "next": "david_6"
+            },
+            {
+                "name": "I was pissed off.",
+                "text": ["I was pissed off and wanted to rage.", "Yeah, I know the feeling. Too much."],
+                "next": "david_6"
+            }
         ]
     },
     "david_sided_b": {
         "choices": [
-            {"name": "You tried.", "text": ["You tried. It's obvious you care, even if your methods are...", "Fucked up. I know."], "next": "david_6"},
-            {"name": "Chloe is tough.", "text": ["Chloe is tough...just like you.", "I'm glad we have something in common."], "next": "david_6"}
+            {
+                "name": "You tried.",
+                "text": ["You tried. It's obvious you care, even if your methods are...", "Fucked up. I know."],
+                "next": "david_6"
+            },
+            {
+                "name": "Chloe is tough.",
+                "text": ["Chloe is tough...just like you.", "I'm glad we have something in common."],
+                "next": "david_6"
+            }
         ]
     },
     "david_6": {
@@ -939,8 +1422,16 @@ export const script: Script = {
     },
     "warren_storm": {
         "choices": [
-            {"name": "I started the storm.", "text": ["I think that this storm started... everything started... when I found out I could rewind time... There's no way this is just a coincidence, right?", "Max, not only the storm but the eclipse, the birds, the whales... everything!"], "next": "warren_2"},
-            {"name": "He killed Chloe.", "text": ["I have to go back in time. Jefferson already ki—killed Chloe... I can't let that happen... I have to do something, Warren!", "Max, going back in time is what caused the storm!"], "next": "warren_2"}
+            {
+                "name": "I started the storm.",
+                "text": ["I think that this storm started... everything started... when I found out I could rewind time... There's no way this is just a coincidence, right?", "Max, not only the storm but the eclipse, the birds, the whales... everything!"],
+                "next": "warren_2"
+            },
+            {
+                "name": "He killed Chloe.",
+                "text": ["I have to go back in time. Jefferson already ki—killed Chloe... I can't let that happen... I have to do something, Warren!", "Max, going back in time is what caused the storm!"],
+                "next": "warren_2"
+            }
         ]
     },
     "warren_2": {
@@ -971,31 +1462,75 @@ export const script: Script = {
     "warren_jeff_status": {
         "text": "",
         "next": [
-            {"name": "david_killed_jefferson", "type": "eq", "value": true, "node": "warren_jeff_status_yes"},
-            {"name": "david_killed_jefferson", "type": "eq", "value": false, "node": "warren_jeff_status_no"}
+            {
+                "name": "david_killed_jefferson",
+                "type": "eq",
+                "value": true,
+                "node": "warren_jeff_status_yes"
+            },
+            {
+                "name": "david_killed_jefferson",
+                "type": "eq",
+                "value": false,
+                "node": "warren_jeff_status_no"
+            }
         ]
     },
-    "warren_jeff_status_yes": {"text": ["Dead.", "History. Which I need to change fast to make it right again... Is that bad?"], "next": "warren_3"},
-    "warren_jeff_status_no": {"text": ["Busted.", "History. Which I need to change fast to make it right again... Is that bad?"], "next": "warren_3"},
+    "warren_jeff_status_yes": {
+        "text": ["Dead.", "History. Which I need to change fast to make it right again... Is that bad?"],
+        "next": "warren_3"
+    },
+    "warren_jeff_status_no": {
+        "text": ["Busted.", "History. Which I need to change fast to make it right again... Is that bad?"],
+        "next": "warren_3"
+    },
 
     "warren_jeff_status2": {
         "text": "",
         "next": [
-            {"name": "david_killed_jefferson", "type": "eq", "value": true, "node": "warren_jeff_status2_yes"},
-            {"name": "david_killed_jefferson", "type": "eq", "value": false, "node": "warren_jeff_status2_no"}
+            {
+                "name": "david_killed_jefferson",
+                "type": "eq",
+                "value": true,
+                "node": "warren_jeff_status2_yes"
+            },
+            {
+                "name": "david_killed_jefferson",
+                "type": "eq",
+                "value": false,
+                "node": "warren_jeff_status2_no"
+            }
         ]
     },
-    "warren_jeff_status2_yes": {"text": ["He just needed mental help... Now... they're both dead.", "Jesus, Max! I want the whole story, but... I guess we really are out of time.", "But I can still change things. What do you think will happen?"], "next": "warren_3"},
-    "warren_jeff_status2_no": {"text": ["Nathan just needed mental help... Now he's dead... and Jefferson is done.", "Jesus, Max! I want the whole story, but... I guess we really are out of time.", "But I can still change things. What do you think will happen?"], "next": "warren_3"},
+    "warren_jeff_status2_yes": {
+        "text": ["He just needed mental help... Now... they're both dead.", "Jesus, Max! I want the whole story, but... I guess we really are out of time.", "But I can still change things. What do you think will happen?"],
+        "next": "warren_3"
+    },
+    "warren_jeff_status2_no": {
+        "text": ["Nathan just needed mental help... Now he's dead... and Jefferson is done.", "Jesus, Max! I want the whole story, but... I guess we really are out of time.", "But I can still change things. What do you think will happen?"],
+        "next": "warren_3"
+    },
     "warren_3": {
         "text": "For every action, there's... there's a reaction... Whenever you reversed or altered time, maybe you caused a chain reaction... even in the environment.",
         "next": "warren_believe"
     },
     "warren_believe": {
         "choices": [
-            {"name": "You believe me?", "text": ["You're my friend, Warren. You believe me, right?", "I know I can be a pain in the ass... I told you before that I'll always believe you...", "I just wish I could trust my powers..."], "next": "warren_4"},
-            {"name": "This is my fault?", "text": ["All this destruction... is my fault?", "Give me a break. You sure the hell didn't give yourself time travel powers..."], "next": "warren_4"},
-            {"name": "More time together.", "text": ["Warren, I know this all sounds insane... but you're the only other person who I can count on now... I wish we had more time together... Do you believe me?", "Max, of course I believe you. You're the most amazing person I've ever met... and I'm glad you trust me.", "Always. I just wish I could trust my powers..."], "next": "warren_4"}
+            {
+                "name": "You believe me?",
+                "text": ["You're my friend, Warren. You believe me, right?", "I know I can be a pain in the ass... I told you before that I'll always believe you...", "I just wish I could trust my powers..."],
+                "next": "warren_4"
+            },
+            {
+                "name": "This is my fault?",
+                "text": ["All this destruction... is my fault?", "Give me a break. You sure the hell didn't give yourself time travel powers..."],
+                "next": "warren_4"
+            },
+            {
+                "name": "More time together.",
+                "text": ["Warren, I know this all sounds insane... but you're the only other person who I can count on now... I wish we had more time together... Do you believe me?", "Max, of course I believe you. You're the most amazing person I've ever met... and I'm glad you trust me.", "Always. I just wish I could trust my powers..."],
+                "next": "warren_4"
+            }
         ]
     },
     "warren_4": {
@@ -1218,20 +1753,36 @@ export const script: Script = {
     "parking_alt": {
         "text": "",
         "next": [
-            {"name": "accepted_alt_chloe", "type": "eq", "value": true, "node": "parking_alt_yes"},
-            {"name": "accepted_alt_chloe", "type": "eq", "value": false, "node": "parking_alt_no"}
+            {
+                "name": "accepted_alt_chloe",
+                "type": "eq",
+                "value": true,
+                "node": "parking_alt_yes"
+            },
+            {
+                "name": "accepted_alt_chloe",
+                "type": "eq",
+                "value": false,
+                "node": "parking_alt_no"
+            }
         ]
     },
-    "parking_alt_yes": {"text": [
-        "And I did... for you. I didn't want you to suffer in any other timeline or reality... I couldn't bear the thought of you in any more pain...",
-        "God, Max... That must have been... That must have been awful for you... I'm so sorry I had to ask you that...",
-        "Of course I do. The important thing is that we're together again."
-    ], "next": "parking_join"},
-    "parking_alt_no": {"text": [
-        "But Chloe, there was no way I could do that... I had to return to this timeline... to see you again. I had to...",
-        "God, Max... That must have been awful for you... I'm so sorry I had to ask you that...",
-        "Of course I do. The important thing is that we're together again."
-    ], "next": "parking_join"},
+    "parking_alt_yes": {
+        "text": [
+            "And I did... for you. I didn't want you to suffer in any other timeline or reality... I couldn't bear the thought of you in any more pain...",
+            "God, Max... That must have been... That must have been awful for you... I'm so sorry I had to ask you that...",
+            "Of course I do. The important thing is that we're together again."
+        ],
+        "next": "parking_join"
+    },
+    "parking_alt_no": {
+        "text": [
+            "But Chloe, there was no way I could do that... I had to return to this timeline... to see you again. I had to...",
+            "God, Max... That must have been awful for you... I'm so sorry I had to ask you that...",
+            "Of course I do. The important thing is that we're together again."
+        ],
+        "next": "parking_join"
+    },
     "parking_join": {
         "text": [
             "You're right. That's why you should come with me so we can stay together... and stay alive.",
@@ -1244,12 +1795,28 @@ export const script: Script = {
     "parking_david": {
         "text": "",
         "next": [
-            {"name": "sided_with_chloe", "type": "eq", "value": true, "node": "parking_david_yes"},
-            {"name": "sided_with_chloe", "type": "eq", "value": false, "node": "parking_david_no"}
+            {
+                "name": "sided_with_chloe",
+                "type": "eq",
+                "value": true,
+                "node": "parking_david_yes"
+            },
+            {
+                "name": "sided_with_chloe",
+                "type": "eq",
+                "value": false,
+                "node": "parking_david_no"
+            }
         ]
     },
-    "parking_david_yes": {"text": "I don't get it... Why do you trust him, after you totally reamed him the other day? He's not even at our house anymore.", "next": "parking_david2"},
-    "parking_david_no": {"text": "Is that why you stuck up for him? Because you think he can help us? Really?", "next": "parking_david2"},
+    "parking_david_yes": {
+        "text": "I don't get it... Why do you trust him, after you totally reamed him the other day? He's not even at our house anymore.",
+        "next": "parking_david2"
+    },
+    "parking_david_no": {
+        "text": "Is that why you stuck up for him? Because you think he can help us? Really?",
+        "next": "parking_david2"
+    },
     "parking_david2": {
         "choices": [
             {
@@ -1363,18 +1930,34 @@ export const script: Script = {
     "nightmare_kate": {
         "text": "",
         "next": [
-            {"name": "saved_kate", "type": "eq", "value": true, "node": "nightmare_kate_yes"},
-            {"name": "saved_kate", "type": "eq", "value": false, "node": "nightmare_kate_no"}
+            {
+                "name": "saved_kate",
+                "type": "eq",
+                "value": true,
+                "node": "nightmare_kate_yes"
+            },
+            {
+                "name": "saved_kate",
+                "type": "eq",
+                "value": false,
+                "node": "nightmare_kate_no"
+            }
         ]
     },
-    "nightmare_kate_yes": {"text": [
-        "Max, why did you stop me from jumping? What kind of friend are you? You never understood me... Now my family will never leave me alone... And that means I'll always be alone... thanks to you.",
-        "Kate, that's not true! I've always been your friend..."
-    ], "next": "nightmare_darkroom"},
-    "nightmare_kate_no": {"text": [
-        "Max, how could you let me jump off a roof? You were the only person I trusted here... Now I'm never going to Heaven... Instead you've stuck me in Hell... Alone forever...",
-        "No, Kate, I was only trying to save you..."
-    ], "next": "nightmare_darkroom"},
+    "nightmare_kate_yes": {
+        "text": [
+            "Max, why did you stop me from jumping? What kind of friend are you? You never understood me... Now my family will never leave me alone... And that means I'll always be alone... thanks to you.",
+            "Kate, that's not true! I've always been your friend..."
+        ],
+        "next": "nightmare_darkroom"
+    },
+    "nightmare_kate_no": {
+        "text": [
+            "Max, how could you let me jump off a roof? You were the only person I trusted here... Now I'm never going to Heaven... Instead you've stuck me in Hell... Alone forever...",
+            "No, Kate, I was only trying to save you..."
+        ],
+        "next": "nightmare_darkroom"
+    },
     "nightmare_darkroom": {
         "text": [
             "This hall never ends... I better find something.",
@@ -1391,28 +1974,70 @@ export const script: Script = {
     "nightmare_warren": {
         "text": "",
         "next": [
-            {"name": "kissed_chloe", "type": "eq", "value": true, "node": "nightmare_warren_c"},
-            {"name": "kissed_chloe", "type": "eq", "value": false, "node": "nightmare_warren_noc"}
+            {
+                "name": "kissed_chloe",
+                "type": "eq",
+                "value": true,
+                "node": "nightmare_warren_c"
+            },
+            {
+                "name": "kissed_chloe",
+                "type": "eq",
+                "value": false,
+                "node": "nightmare_warren_noc"
+            }
         ]
     },
     "nightmare_warren_c": {
         "text": "",
         "next": [
-            {"name": "kissed_warren", "type": "eq", "value": true, "node": "nightmare_warren_both"},
-            {"name": "kissed_warren", "type": "eq", "value": false, "node": "nightmare_warren_onlychloe"}
+            {
+                "name": "kissed_warren",
+                "type": "eq",
+                "value": true,
+                "node": "nightmare_warren_both"
+            },
+            {
+                "name": "kissed_warren",
+                "type": "eq",
+                "value": false,
+                "node": "nightmare_warren_onlychloe"
+            }
         ]
     },
     "nightmare_warren_noc": {
         "text": "",
         "next": [
-            {"name": "kissed_warren", "type": "eq", "value": true, "node": "nightmare_warren_onlywarren"},
-            {"name": "kissed_warren", "type": "eq", "value": false, "node": "nightmare_warren_neither"}
+            {
+                "name": "kissed_warren",
+                "type": "eq",
+                "value": true,
+                "node": "nightmare_warren_onlywarren"
+            },
+            {
+                "name": "kissed_warren",
+                "type": "eq",
+                "value": false,
+                "node": "nightmare_warren_neither"
+            }
         ]
     },
-    "nightmare_warren_onlychloe": {"text": ["Booyah, Warren! I thought you were all over Max's shit...", "She's not all that... so who cares if she doesn't kiss me?", "You should have seen her make a move on me in my room... Hella lame.", "Max should see me make a move on you... Come here..."], "next": "diner_1"},
-    "nightmare_warren_onlywarren": {"text": ["Booyah, Warren! I thought you were all over Max's shit...", "Not after she kissed me... her breath was ass and no tongue...", "I hear that. I'm not into... nerds but you're pretty cute...", "I'm not into Max, anyway. So let's bust a move..."], "next": "diner_1"},
-    "nightmare_warren_neither": {"text": ["Booyah, Warren! I thought you were all over Max's shit...", "She's sure the hell not into me at all... who cares?", "I guess we're \"not her type\"... like Max has a fucking type?", "But she does... She's into Mr. Jefferson... Now come here..."], "next": "diner_1"},
-    "nightmare_warren_both": {"text": ["Holy shit, Warren! Max is trying to play us both!", "I guess she's not as innocent as she acts...", "Not when she's trying to hook up with both of us...", "I only want to go ape with you, Chloe... Come here..."], "next": "diner_1"},
+    "nightmare_warren_onlychloe": {
+        "text": ["Booyah, Warren! I thought you were all over Max's shit...", "She's not all that... so who cares if she doesn't kiss me?", "You should have seen her make a move on me in my room... Hella lame.", "Max should see me make a move on you... Come here..."],
+        "next": "diner_1"
+    },
+    "nightmare_warren_onlywarren": {
+        "text": ["Booyah, Warren! I thought you were all over Max's shit...", "Not after she kissed me... her breath was ass and no tongue...", "I hear that. I'm not into... nerds but you're pretty cute...", "I'm not into Max, anyway. So let's bust a move..."],
+        "next": "diner_1"
+    },
+    "nightmare_warren_neither": {
+        "text": ["Booyah, Warren! I thought you were all over Max's shit...", "She's sure the hell not into me at all... who cares?", "I guess we're \"not her type\"... like Max has a fucking type?", "But she does... She's into Mr. Jefferson... Now come here..."],
+        "next": "diner_1"
+    },
+    "nightmare_warren_both": {
+        "text": ["Holy shit, Warren! Max is trying to play us both!", "I guess she's not as innocent as she acts...", "Not when she's trying to hook up with both of us...", "I only want to go ape with you, Chloe... Come here..."],
+        "next": "diner_1"
+    },
 
     // ===================== Two Whales Diner (nightmare) =====================
     "diner_1": {
@@ -1444,30 +2069,70 @@ export const script: Script = {
     },
     "altmax_choice1": {
         "choices": [
-            {"name": "Wasn't my choice...", "text": "It wasn't my choice. I didn't ask to rewind time!", "next": "altmax_david"},
-            {"name": "I tried to help...", "text": ["I tried to help... I only wanted to do the right thing.", "No, you only wanted to be popular. And once you got these amazing powers, your big plan was to trick people into thinking you give a rat's ass."], "next": "altmax_care"}
+            {
+                "name": "Wasn't my choice...",
+                "text": "It wasn't my choice. I didn't ask to rewind time!",
+                "next": "altmax_david"
+            },
+            {
+                "name": "I tried to help...",
+                "text": ["I tried to help... I only wanted to do the right thing.", "No, you only wanted to be popular. And once you got these amazing powers, your big plan was to trick people into thinking you give a rat's ass."],
+                "next": "altmax_care"
+            }
         ]
     },
 
     "altmax_david": {
         "text": "",
         "next": [
-            {"name": "david_killed_jefferson", "type": "eq", "value": true, "node": "altmax_david_yes"},
-            {"name": "david_killed_jefferson", "type": "eq", "value": false, "node": "altmax_david_no"}
+            {
+                "name": "david_killed_jefferson",
+                "type": "eq",
+                "value": true,
+                "node": "altmax_david_yes"
+            },
+            {
+                "name": "david_killed_jefferson",
+                "type": "eq",
+                "value": false,
+                "node": "altmax_david_no"
+            }
         ]
     },
-    "altmax_david_yes": {"text": "Stop playing innocent. You've left a trail of death behind you. You even let that stalker Madsen kill Jefferson... That's sick! You're way more of a cold-blooded killer than him or Nathan.", "next": "altmax_selfdef"},
-    "altmax_david_no": {"text": "No, but you were happy to use it to get people to like you. As if you cared about them.", "next": "altmax_care"},
+    "altmax_david_yes": {
+        "text": "Stop playing innocent. You've left a trail of death behind you. You even let that stalker Madsen kill Jefferson... That's sick! You're way more of a cold-blooded killer than him or Nathan.",
+        "next": "altmax_selfdef"
+    },
+    "altmax_david_no": {
+        "text": "No, but you were happy to use it to get people to like you. As if you cared about them.",
+        "next": "altmax_care"
+    },
     "altmax_selfdef": {
         "choices": [
-            {"name": "Self-defense.", "text": ["Bullshit! That was self-defense! I never set out to kill anybody.", "That doesn't make you any less of a murderer."], "next": "altmax_2"},
-            {"name": "I'm a survivor.", "text": ["No. I'm a survivor. I did what I had to.", "Oh, the jury will love to hear about your mad time travel skills."], "next": "altmax_2"}
+            {
+                "name": "Self-defense.",
+                "text": ["Bullshit! That was self-defense! I never set out to kill anybody.", "That doesn't make you any less of a murderer."],
+                "next": "altmax_2"
+            },
+            {
+                "name": "I'm a survivor.",
+                "text": ["No. I'm a survivor. I did what I had to.", "Oh, the jury will love to hear about your mad time travel skills."],
+                "next": "altmax_2"
+            }
         ]
     },
     "altmax_care": {
         "choices": [
-            {"name": "I do care.", "text": ["I do care! That's why I was trying to make friends...", "By telling people what they want to hear? You were just looking for a shortcut, because you can't make friends on your own.", "That's not true. I have great friends. And I've used my powers for good."], "next": "altmax_2"},
-            {"name": "That's true.", "text": ["That's true... I wasted my power on trying to be friends with everybody.", "About time you admitted that. But it's way too late after everything you've done...", "But... I still have great friends. And my power helped some."], "next": "altmax_2"}
+            {
+                "name": "I do care.",
+                "text": ["I do care! That's why I was trying to make friends...", "By telling people what they want to hear? You were just looking for a shortcut, because you can't make friends on your own.", "That's not true. I have great friends. And I've used my powers for good."],
+                "next": "altmax_2"
+            },
+            {
+                "name": "That's true.",
+                "text": ["That's true... I wasted my power on trying to be friends with everybody.", "About time you admitted that. But it's way too late after everything you've done...", "But... I still have great friends. And my power helped some."],
+                "next": "altmax_2"
+            }
         ]
     },
     "altmax_2": {
@@ -1481,17 +2146,45 @@ export const script: Script = {
     "altmax_frank": {
         "text": "",
         "next": [
-            {"name": "chloe_killed_frank", "type": "eq", "value": true, "node": "altmax_frank_yes"},
-            {"name": "chloe_killed_frank", "type": "eq", "value": false, "node": "altmax_frank_no"}
+            {
+                "name": "chloe_killed_frank",
+                "type": "eq",
+                "value": true,
+                "node": "altmax_frank_yes"
+            },
+            {
+                "name": "chloe_killed_frank",
+                "type": "eq",
+                "value": false,
+                "node": "altmax_frank_no"
+            }
         ]
     },
-    "altmax_frank_yes": {"text": "And what about Frank? That bullet in him wasn't your fault?", "next": "altmax_worth"},
-    "altmax_frank_no": {"text": "What about the crap that was your fault?", "next": "altmax_worth"},
+    "altmax_frank_yes": {
+        "text": "And what about Frank? That bullet in him wasn't your fault?",
+        "next": "altmax_worth"
+    },
+    "altmax_frank_no": {
+        "text": "What about the crap that was your fault?",
+        "next": "altmax_worth"
+    },
     "altmax_worth": {
         "choices": [
-            {"name": "We all are.", "text": ["We all are. This isn't about Chloe... or even me anymore.", "Gosh, you're so selfless now, Mahatma Max. It's too bad you pissed your power away on high school drama."], "next": "altmax_3"},
-            {"name": "My best friend.", "text": ["Of course. She's my best friend.", "Oh yeah, you ignored your \"best friend\" for five years while she went through hell... Some friend."], "next": "altmax_3"},
-            {"name": "Destiny.", "text": ["This has to be my destiny to save her... I wouldn't be trapped in here if I didn't believe that...", "No kidding. Chloe trapped you with her drama. Guns, drugs, Rachel... She's just using you, dude."], "next": "altmax_3"}
+            {
+                "name": "We all are.",
+                "text": ["We all are. This isn't about Chloe... or even me anymore.", "Gosh, you're so selfless now, Mahatma Max. It's too bad you pissed your power away on high school drama."],
+                "next": "altmax_3"
+            },
+            {
+                "name": "My best friend.",
+                "text": ["Of course. She's my best friend.", "Oh yeah, you ignored your \"best friend\" for five years while she went through hell... Some friend."],
+                "next": "altmax_3"
+            },
+            {
+                "name": "Destiny.",
+                "text": ["This has to be my destiny to save her... I wouldn't be trapped in here if I didn't believe that...", "No kidding. Chloe trapped you with her drama. Guns, drugs, Rachel... She's just using you, dude."],
+                "next": "altmax_3"
+            }
         ]
     },
     "altmax_3": {
@@ -1507,12 +2200,28 @@ export const script: Script = {
     "altmax_kiss": {
         "text": "",
         "next": [
-            {"name": "kissed_chloe", "type": "eq", "value": true, "node": "altmax_kiss_yes"},
-            {"name": "kissed_chloe", "type": "eq", "value": false, "node": "altmax_kiss_no"}
+            {
+                "name": "kissed_chloe",
+                "type": "eq",
+                "value": true,
+                "node": "altmax_kiss_yes"
+            },
+            {
+                "name": "kissed_chloe",
+                "type": "eq",
+                "value": false,
+                "node": "altmax_kiss_no"
+            }
         ]
     },
-    "altmax_kiss_yes": {"text": "Max, do you really think she has any feelings for us? You're just another puppet...", "next": "altmax_end"},
-    "altmax_kiss_no": {"text": "Max, do you really think she's our friend? That she respects us in any way?", "next": "altmax_end"},
+    "altmax_kiss_yes": {
+        "text": "Max, do you really think she has any feelings for us? You're just another puppet...",
+        "next": "altmax_end"
+    },
+    "altmax_kiss_no": {
+        "text": "Max, do you really think she's our friend? That she respects us in any way?",
+        "next": "altmax_end"
+    },
     "altmax_end": {
         "text": [
             "Man, you are so stupid. I'm embarrassed to have the same name... And someday Chloe will destroy—",
@@ -1551,12 +2260,28 @@ export const script: Script = {
     "course_dare": {
         "text": "",
         "next": [
-            {"name": "kissed_chloe", "type": "eq", "value": true, "node": "course_dare_yes"},
-            {"name": "kissed_chloe", "type": "eq", "value": false, "node": "course_dare_no"}
+            {
+                "name": "kissed_chloe",
+                "type": "eq",
+                "value": true,
+                "node": "course_dare_yes"
+            },
+            {
+                "name": "kissed_chloe",
+                "type": "eq",
+                "value": false,
+                "node": "course_dare_no"
+            }
         ]
     },
-    "course_dare_yes": {"text": ["Damn, you're hardcore, Max! Now I can text Warren and tell him he doesn't stand a chance...", "You are such a dork."], "next": "course_2"},
-    "course_dare_no": {"text": ["Sorry, not that easy.", "Oh, like I am? Just admit that you already macked on me then used your rewind!", "You are such a dork."], "next": "course_2"},
+    "course_dare_yes": {
+        "text": ["Damn, you're hardcore, Max! Now I can text Warren and tell him he doesn't stand a chance...", "You are such a dork."],
+        "next": "course_2"
+    },
+    "course_dare_no": {
+        "text": ["Sorry, not that easy.", "Oh, like I am? Just admit that you already macked on me then used your rewind!", "You are such a dork."],
+        "next": "course_2"
+    },
     "course_2": {
         "text": [
             "It makes me ill that Rachel posed like this for Frank... I can't believe she was banging Frank! Why didn't she say anything?",
@@ -1623,12 +2348,28 @@ export const script: Script = {
     "sac_chloe_romance": {
         "text": "",
         "next": [
-            {"name": "romance_high", "type": "eq", "value": true, "node": "sac_chloe_romance_yes"},
-            {"name": "romance_high", "type": "eq", "value": false, "node": "sac_chloe_romance_no"}
+            {
+                "name": "romance_high",
+                "type": "eq",
+                "value": true,
+                "node": "sac_chloe_romance_yes"
+            },
+            {
+                "name": "romance_high",
+                "type": "eq",
+                "value": false,
+                "node": "sac_chloe_romance_no"
+            }
         ]
     },
-    "sac_chloe_romance_yes": {"text": "", "next": "sac_chloe_end"},
-    "sac_chloe_romance_no": {"text": "Oh, Chloe... I'm gonna miss you so much.", "next": "sac_chloe_end"},
+    "sac_chloe_romance_yes": {
+        "text": "",
+        "next": "sac_chloe_end"
+    },
+    "sac_chloe_romance_no": {
+        "text": "Oh, Chloe... I'm gonna miss you so much.",
+        "next": "sac_chloe_end"
+    },
     "sac_chloe_end": {
         "text": [
             "I'll always love you... Now, get out of here, please! Do it before I freak. And Max Caulfield? Don't you forget about me...",

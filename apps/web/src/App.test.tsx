@@ -4,7 +4,11 @@ import type {ScriptMeta, GraphResponse, GraphNode, TraverseResponse} from "@sdr/
 import App from "./App";
 import {fetchScripts, fetchGraph, postTraverse} from "./api";
 
-vi.mock("./api", () => ({fetchScripts: vi.fn(), fetchGraph: vi.fn(), postTraverse: vi.fn()}));
+vi.mock("./api", () => ({
+    fetchScripts: vi.fn(),
+    fetchGraph: vi.fn(),
+    postTraverse: vi.fn()
+}));
 
 // Stub the heavy canvas: expose the scriptId/node-count it received and a way to
 // fire a node click, so App's selection wiring can be exercised.
@@ -17,11 +21,33 @@ vi.mock("./components/GraphCanvas", () => ({
     ),
 }));
 
-const meta = (over: Partial<ScriptMeta> = {}): ScriptMeta => ({id: "g/e1", game: "g", episode: "e1", nodeCount: 5, ...over});
-const graph = (nodes: GraphNode[] = []): GraphResponse => ({scriptId: "g/e1", nodes, edges: []});
-const linear = (id: string): GraphNode => ({id, type: "linear", isTerminal: true, text: "hi"});
+const meta = (over: Partial<ScriptMeta> = {}): ScriptMeta => ({
+    id: "g/e1",
+    game: "g",
+    episode: "e1",
+    nodeCount: 5,
+    ...over
+});
+const graph = (nodes: GraphNode[] = []): GraphResponse => ({
+    scriptId: "g/e1",
+    nodes,
+    edges: []
+});
+const linear = (id: string): GraphNode => ({
+    id,
+    type: "linear",
+    isTerminal: true,
+    text: "hi"
+});
 const traversal = (over: Partial<TraverseResponse> = {}): TraverseResponse =>
-    ({length: 3, path: ["a"], context: {f: true}, visitedNodeIds: ["a"], cumulativeCounts: {a: 1}, ...over});
+    ({
+        length: 3,
+        path: ["a"],
+        context: {f: true},
+        visitedNodeIds: ["a"],
+        cumulativeCounts: {a: 1},
+        ...over
+    });
 
 // Default happy-path mocks so the chained mount effects never hit an undefined
 // return; individual tests override the specific call they exercise.
@@ -108,7 +134,12 @@ describe("App", () => {
     });
 
     it("reloads the graph when a different script is selected", async () => {
-        vi.mocked(fetchScripts).mockResolvedValue({scripts: [meta(), meta({id: "g/e2", episode: "e2"})]});
+        vi.mocked(fetchScripts).mockResolvedValue({
+            scripts: [meta(), meta({
+                id: "g/e2",
+                episode: "e2"
+            })]
+        });
         await renderLoaded();
         fireEvent.change(screen.getByRole("combobox"), {target: {value: "g/e2"}});
         await waitFor(() => expect(fetchGraph).toHaveBeenCalledWith("g", "e2"));

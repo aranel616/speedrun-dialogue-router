@@ -2,7 +2,12 @@ import {evaluateCondition} from "../evaluateCondition";
 import type {GetCondition} from "../types";
 
 const cond = (type: GetCondition["type"], name: string, value: boolean | number): GetCondition =>
-    ({name, type, value, node: "any"});
+    ({
+        name,
+        type,
+        value,
+        node: "any"
+    });
 
 describe("evaluateCondition", () => {
     describe("eq", () => {

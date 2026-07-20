@@ -2,7 +2,12 @@ import {getNextNode} from "../getNextNode";
 import type {GetCondition} from "../types";
 
 const cond = (name: string, type: GetCondition["type"], value: boolean | number, node: string): GetCondition =>
-    ({name, type, value, node});
+    ({
+        name,
+        type,
+        value,
+        node
+    });
 
 beforeAll(() => {
     jest.spyOn(console, "error").mockImplementation(() => {});

@@ -1,7 +1,14 @@
 import {Script, GetCondition} from "@sdr/engine";
 import {GraphNode, GraphEdge, GraphResponse} from "@sdr/shared";
 
-const OP: Record<string, string> = {eq: "=", ne: "≠", gt: ">", gte: "≥", lt: "<", lte: "≤"};
+const OP: Record<string, string> = {
+    eq: "=",
+    ne: "≠",
+    gt: ">",
+    gte: "≥",
+    lt: "<",
+    lte: "≤"
+};
 
 // Full "name op value" — used for the fallback (mixed-variable) fork display.
 function condLabel(c: GetCondition): string {
@@ -33,8 +40,18 @@ export function buildGraph(scriptId: string, script: Script): GraphResponse {
     function emitConditional(sourceId: string, conds: GetCondition[]): void {
         if (isSingleVariableFork(conds)) {
             const condId = `${sourceId}__cond`;
-            nodes.push({id: condId, type: "conditionItem", condition: conds[0]!.name, isTerminal: false});
-            edges.push({id: `${sourceId}__toc`, source: sourceId, target: condId, edgeType: "conditional"});
+            nodes.push({
+                id: condId,
+                type: "conditionItem",
+                condition: conds[0]!.name,
+                isTerminal: false
+            });
+            edges.push({
+                id: `${sourceId}__toc`,
+                source: sourceId,
+                target: condId,
+                edgeType: "conditional"
+            });
             conds.forEach((cond, j) => {
                 edges.push({
                     id: `${condId}__${j}__${cond.node}`,
@@ -47,16 +64,35 @@ export function buildGraph(scriptId: string, script: Script): GraphResponse {
         } else {
             conds.forEach((cond, j) => {
                 const condId = `${sourceId}__cond${j}`;
-                nodes.push({id: condId, type: "conditionItem", condition: condLabel(cond), isTerminal: false});
-                edges.push({id: `${sourceId}__toc${j}`, source: sourceId, target: condId, edgeType: "conditional"});
-                edges.push({id: `${condId}__${cond.node}`, source: condId, target: cond.node, edgeType: "conditional"});
+                nodes.push({
+                    id: condId,
+                    type: "conditionItem",
+                    condition: condLabel(cond),
+                    isTerminal: false
+                });
+                edges.push({
+                    id: `${sourceId}__toc${j}`,
+                    source: sourceId,
+                    target: condId,
+                    edgeType: "conditional"
+                });
+                edges.push({
+                    id: `${condId}__${cond.node}`,
+                    source: condId,
+                    target: cond.node,
+                    edgeType: "conditional"
+                });
             });
         }
     }
 
     for (const [nodeId, interaction] of Object.entries(script)) {
         if ("choices" in interaction) {
-            nodes.push({id: nodeId, type: "choice", isTerminal: false});
+            nodes.push({
+                id: nodeId,
+                type: "choice",
+                isTerminal: false
+            });
 
             interaction.choices.forEach((choice, i) => {
                 const ciId = `${nodeId}__ci${i}`;
@@ -68,22 +104,39 @@ export function buildGraph(scriptId: string, script: Script): GraphResponse {
                     isTerminal: choice.next === undefined,
                     ...(choice.set ? {
                         sets: (Array.isArray(choice.set) ? choice.set : [choice.set]).map((s) => ({
-                            name: s.name, type: s.type, value: s.value,
+                            name: s.name,
+                            type: s.type,
+                            value: s.value,
                         })),
                     } : {}),
                 });
 
-                edges.push({id: `${nodeId}__c${i}__ci`, source: nodeId, target: ciId, edgeType: "choice"});
+                edges.push({
+                    id: `${nodeId}__c${i}__ci`,
+                    source: nodeId,
+                    target: ciId,
+                    edgeType: "choice"
+                });
 
                 if (typeof choice.next === "string") {
-                    edges.push({id: `${ciId}__${choice.next}`, source: ciId, target: choice.next, edgeType: "choice"});
+                    edges.push({
+                        id: `${ciId}__${choice.next}`,
+                        source: ciId,
+                        target: choice.next,
+                        edgeType: "choice"
+                    });
                 } else if (Array.isArray(choice.next)) {
                     emitConditional(ciId, choice.next);
                 }
             });
         } else {
             const isTerminal = interaction.next === undefined;
-            nodes.push({id: nodeId, type: "linear", text: interaction.text, isTerminal});
+            nodes.push({
+                id: nodeId,
+                type: "linear",
+                text: interaction.text,
+                isTerminal
+            });
 
             if (typeof interaction.next === "string") {
                 edges.push({
@@ -98,5 +151,9 @@ export function buildGraph(scriptId: string, script: Script): GraphResponse {
         }
     }
 
-    return {scriptId, nodes, edges};
+    return {
+        scriptId,
+        nodes,
+        edges
+    };
 }

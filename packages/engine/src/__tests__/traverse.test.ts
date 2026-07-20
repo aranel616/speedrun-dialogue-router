@@ -30,12 +30,29 @@ describe("traverse — base cases", () => {
     });
 
     it("single choice node with two terminals picks the shorter one", () => {
-        const script: Script = {A: {choices: [{name: "short", text: "ab"}, {name: "long", text: "abcdefghij"}]}};
+        const script: Script = {
+            A: {
+                choices: [{
+                    name: "short",
+                    text: "ab"
+                }, {
+                    name: "long",
+                    text: "abcdefghij"
+                }]
+            }
+        };
         expect(traverse(script, "A", 0, {}, 0)).toEqual([2, ["short"], {}]);
     });
 
     it("path elements use choice.name not node ID", () => {
-        const script: Script = {A: {choices: [{name: "the choice", text: "abc"}]}};
+        const script: Script = {
+            A: {
+                choices: [{
+                    name: "the choice",
+                    text: "abc"
+                }]
+            }
+        };
         const [, path] = traverse(script, "A", 0, {}, 0);
         expect(path).toEqual(["the choice"]);
     });
@@ -46,7 +63,17 @@ describe("traverse — base cases", () => {
     });
 
     it("tie between two choices: first choice wins (strict < comparison)", () => {
-        const script: Script = {A: {choices: [{name: "first", text: "ab"}, {name: "second", text: "ab"}]}};
+        const script: Script = {
+            A: {
+                choices: [{
+                    name: "first",
+                    text: "ab"
+                }, {
+                    name: "second",
+                    text: "ab"
+                }]
+            }
+        };
         const [, path] = traverse(script, "A", 0, {}, 0);
         expect(path).toEqual(["first"]);
     });
@@ -54,14 +81,26 @@ describe("traverse — base cases", () => {
 
 describe("traverse — linear chains", () => {
     it("follows a two-node linear chain", () => {
-        const script: Script = {A: {text: "hello", next: "B"}, B: {text: "world"}};
+        const script: Script = {
+            A: {
+                text: "hello",
+                next: "B"
+            },
+            B: {text: "world"}
+        };
         expect(traverse(script, "A", 0, {}, 0)).toEqual([10, ["A", "B"], {}]);
     });
 
     it("follows a three-node linear chain", () => {
         const script: Script = {
-            A: {text: "ab", next: "B"},
-            B: {text: "cd", next: "C"},
+            A: {
+                text: "ab",
+                next: "B"
+            },
+            B: {
+                text: "cd",
+                next: "C"
+            },
             C: {text: "ef"},
         };
         expect(traverse(script, "A", 0, {}, 0)).toEqual([6, ["A", "B", "C"], {}]);
@@ -69,7 +108,10 @@ describe("traverse — linear chains", () => {
 
     it("sums array text on a linear node correctly", () => {
         const script: Script = {
-            A: {text: ["abc", "de"], next: "B"},
+            A: {
+                text: ["abc", "de"],
+                next: "B"
+            },
             B: {text: "f"},
         };
         expect(traverse(script, "A", 0, {}, 0)).toEqual([6, ["A", "B"], {}]);
@@ -81,8 +123,18 @@ describe("traverse — conditional routing on linear next", () => {
         A: {
             text: "x",
             next: [
-                {name: "flag", type: "eq", value: true, node: "B"},
-                {name: "flag", type: "eq", value: false, node: "C"},
+                {
+                    name: "flag",
+                    type: "eq",
+                    value: true,
+                    node: "B"
+                },
+                {
+                    name: "flag",
+                    type: "eq",
+                    value: false,
+                    node: "C"
+                },
             ],
         },
         B: {text: "ab"},
@@ -99,7 +151,15 @@ describe("traverse — conditional routing on linear next", () => {
 
     it("becomes terminal when no conditions match", () => {
         const s: Script = {
-            A: {text: "x", next: [{name: "flag", type: "eq", value: true, node: "B"}]},
+            A: {
+                text: "x",
+                next: [{
+                    name: "flag",
+                    type: "eq",
+                    value: true,
+                    node: "B"
+                }]
+            },
             B: {text: "ab"},
         };
         expect(traverse(s, "A", 0, {}, 0)).toEqual([1, ["A"], {}]);
@@ -109,7 +169,18 @@ describe("traverse — conditional routing on linear next", () => {
 describe("traverse — context mutation", () => {
     it("set action applies to forked context and is returned", () => {
         const script: Script = {
-            A: {choices: [{name: "c", text: "x", set: {name: "flag", type: "set", value: true}, next: "B"}]},
+            A: {
+                choices: [{
+                    name: "c",
+                    text: "x",
+                    set: {
+                        name: "flag",
+                        type: "set",
+                        value: true
+                    },
+                    next: "B"
+                }]
+            },
             B: {text: "y"},
         };
         expect(traverse(script, "A", 0, {}, 0)).toEqual([2, ["c", "B"], {flag: true}]);
@@ -117,7 +188,18 @@ describe("traverse — context mutation", () => {
 
     it("set action does not mutate the original context object", () => {
         const script: Script = {
-            A: {choices: [{name: "c", text: "x", set: {name: "flag", type: "set", value: true}, next: "B"}]},
+            A: {
+                choices: [{
+                    name: "c",
+                    text: "x",
+                    set: {
+                        name: "flag",
+                        type: "set",
+                        value: true
+                    },
+                    next: "B"
+                }]
+            },
             B: {text: "y"},
         };
         const original = {flag: false};
@@ -127,31 +209,86 @@ describe("traverse — context mutation", () => {
 
     it("add type is silently ignored", () => {
         const script: Script = {
-            A: {choices: [{name: "c", text: "x", set: {name: "count", type: "add", value: 99}}]},
+            A: {
+                choices: [{
+                    name: "c",
+                    text: "x",
+                    set: {
+                        name: "count",
+                        type: "add",
+                        value: 99
+                    }
+                }]
+            },
         };
         expect(traverse(script, "A", 0, {count: 5}, 0)).toEqual([1, ["c"], {count: 5}]);
     });
 
     it("applies all type:set entries from an array of set actions", () => {
         const script: Script = {
-            A: {choices: [{name: "c", text: "x", set: [{name: "a", type: "set", value: 1}, {name: "b", type: "set", value: true}], next: "B"}]},
+            A: {
+                choices: [{
+                    name: "c",
+                    text: "x",
+                    set: [{
+                        name: "a",
+                        type: "set",
+                        value: 1
+                    }, {
+                        name: "b",
+                        type: "set",
+                        value: true
+                    }],
+                    next: "B"
+                }]
+            },
             B: {text: "y"},
         };
-        expect(traverse(script, "A", 0, {}, 0)).toEqual([2, ["c", "B"], {a: 1, b: true}]);
+        expect(traverse(script, "A", 0, {}, 0)).toEqual([2, ["c", "B"], {
+            a: 1,
+            b: true
+        }]);
     });
 
     it("in a mixed set array, only type:set is applied and add is skipped", () => {
         const script: Script = {
-            A: {choices: [{name: "c", text: "x", set: [{name: "a", type: "set", value: 1}, {name: "b", type: "add", value: 99}]}]},
+            A: {
+                choices: [{
+                    name: "c",
+                    text: "x",
+                    set: [{
+                        name: "a",
+                        type: "set",
+                        value: 1
+                    }, {
+                        name: "b",
+                        type: "add",
+                        value: 99
+                    }]
+                }]
+            },
         };
-        expect(traverse(script, "A", 0, {b: 5}, 0)).toEqual([1, ["c"], {a: 1, b: 5}]);
+        expect(traverse(script, "A", 0, {b: 5}, 0)).toEqual([1, ["c"], {
+            a: 1,
+            b: 5
+        }]);
     });
 });
 
 describe("traverse — shortest-path selection", () => {
     it("selects shorter choice text when both continue to the same node", () => {
         const script: Script = {
-            A: {choices: [{name: "short", text: "ab", next: "C"}, {name: "long", text: "abcdefghij", next: "C"}]},
+            A: {
+                choices: [{
+                    name: "short",
+                    text: "ab",
+                    next: "C"
+                }, {
+                    name: "long",
+                    text: "abcdefghij",
+                    next: "C"
+                }]
+            },
             C: {text: "x"},
         };
         expect(traverse(script, "A", 0, {}, 0)).toEqual([3, ["short", "C"], {}]);
@@ -159,7 +296,17 @@ describe("traverse — shortest-path selection", () => {
 
     it("longer initial choice text loses even when it leads to the same continuation", () => {
         const script: Script = {
-            A: {choices: [{name: "c1", text: "x", next: "B"}, {name: "c2", text: "ab", next: "D"}]},
+            A: {
+                choices: [{
+                    name: "c1",
+                    text: "x",
+                    next: "B"
+                }, {
+                    name: "c2",
+                    text: "ab",
+                    next: "D"
+                }]
+            },
             B: {text: "abcdefghij"},
             D: {text: "a"},
         };
@@ -171,8 +318,28 @@ describe("traverse — shortest-path selection", () => {
 describe("traverse — cache correctness", () => {
     it("two branches reach same node: second uses cached marginal cost and total is correct", () => {
         const script: Script = {
-            start: {choices: [{name: "heavy", text: "abcdefghij", next: "fork"}, {name: "light", text: "ab", next: "fork"}]},
-            fork:  {choices: [{name: "fast", text: "hello", next: "end"}, {name: "slow", text: "helloworld", next: "end"}]},
+            start: {
+                choices: [{
+                    name: "heavy",
+                    text: "abcdefghij",
+                    next: "fork"
+                }, {
+                    name: "light",
+                    text: "ab",
+                    next: "fork"
+                }]
+            },
+            fork:  {
+                choices: [{
+                    name: "fast",
+                    text: "hello",
+                    next: "end"
+                }, {
+                    name: "slow",
+                    text: "helloworld",
+                    next: "end"
+                }]
+            },
             end:   {text: "!"},
         };
         // heavy: 10+5+1=16, light: 2+6(marginal)=8
@@ -183,19 +350,59 @@ describe("traverse — cache correctness", () => {
         const script: Script = {
             start: {
                 choices: [
-                    {name: "setOne", text: "a", set: {name: "x", type: "set", value: 1}, next: "fork"},
-                    {name: "setTwo", text: "a", set: {name: "x", type: "set", value: 2}, next: "fork"},
+                    {
+                        name: "setOne",
+                        text: "a",
+                        set: {
+                            name: "x",
+                            type: "set",
+                            value: 1
+                        },
+                        next: "fork"
+                    },
+                    {
+                        name: "setTwo",
+                        text: "a",
+                        set: {
+                            name: "x",
+                            type: "set",
+                            value: 2
+                        },
+                        next: "fork"
+                    },
                 ],
             },
             fork: {
                 choices: [
                     {
-                        name: "c1", text: "hi",
-                        next: [{name: "x", type: "eq", value: 1, node: "endA"}, {name: "x", type: "eq", value: 2, node: "endB"}],
+                        name: "c1",
+                        text: "hi",
+                        next: [{
+                            name: "x",
+                            type: "eq",
+                            value: 1,
+                            node: "endA"
+                        }, {
+                            name: "x",
+                            type: "eq",
+                            value: 2,
+                            node: "endB"
+                        }],
                     },
                     {
-                        name: "c2", text: "byebye",
-                        next: [{name: "x", type: "eq", value: 1, node: "endA"}, {name: "x", type: "eq", value: 2, node: "endB"}],
+                        name: "c2",
+                        text: "byebye",
+                        next: [{
+                            name: "x",
+                            type: "eq",
+                            value: 1,
+                            node: "endA"
+                        }, {
+                            name: "x",
+                            type: "eq",
+                            value: 2,
+                            node: "endB"
+                        }],
                     },
                 ],
             },
@@ -215,8 +422,28 @@ describe("traverse — cache correctness", () => {
         const spy = jest.spyOn(calcMod, "calculateDialogueLength");
         // Fresh script object → its own (empty) cache in the WeakMap.
         const script: Script = {
-            start: {choices: [{name: "heavy", text: "abcdefghij", next: "fork"}, {name: "light", text: "ab", next: "fork"}]},
-            fork:  {choices: [{name: "fast", text: "hello", next: "end"}, {name: "slow", text: "helloworld", next: "end"}]},
+            start: {
+                choices: [{
+                    name: "heavy",
+                    text: "abcdefghij",
+                    next: "fork"
+                }, {
+                    name: "light",
+                    text: "ab",
+                    next: "fork"
+                }]
+            },
+            fork:  {
+                choices: [{
+                    name: "fast",
+                    text: "hello",
+                    next: "end"
+                }, {
+                    name: "slow",
+                    text: "helloworld",
+                    next: "end"
+                }]
+            },
             end:   {text: "!"},
         };
 
@@ -233,7 +460,17 @@ describe("traverse — cache correctness", () => {
 describe("traverse — set action on terminal choice", () => {
     it("applies set action even when choice has no next", () => {
         const script: Script = {
-            A: {choices: [{name: "c", text: "x", set: {name: "flag", type: "set", value: true}}]},
+            A: {
+                choices: [{
+                    name: "c",
+                    text: "x",
+                    set: {
+                        name: "flag",
+                        type: "set",
+                        value: true
+                    }
+                }]
+            },
         };
         expect(traverse(script, "A", 0, {}, 0)).toEqual([1, ["c"], {flag: true}]);
     });
@@ -242,8 +479,24 @@ describe("traverse — set action on terminal choice", () => {
         const script: Script = {
             A: {
                 choices: [
-                    {name: "long",  text: "abcde", set: {name: "result", type: "set", value: "long"}},
-                    {name: "short", text: "ab",    set: {name: "result", type: "set", value: "short"}},
+                    {
+                        name: "long",
+                        text: "abcde",
+                        set: {
+                            name: "result",
+                            type: "set",
+                            value: "long"
+                        }
+                    },
+                    {
+                        name: "short",
+                        text: "ab",
+                        set: {
+                            name: "result",
+                            type: "set",
+                            value: "short"
+                        }
+                    },
                 ],
             },
         };
@@ -256,15 +509,26 @@ describe("traverse — set action on terminal choice", () => {
 
 describe("traverse — cycle detection", () => {
     it("returns Infinity for a direct self-cycle (A → A)", () => {
-        const script: Script = {A: {text: "x", next: "A"}};
+        const script: Script = {
+            A: {
+                text: "x",
+                next: "A"
+            }
+        };
         const [len] = traverse(script, "A", 0, {}, 0);
         expect(len).toBe(Infinity);
     });
 
     it("returns Infinity for a two-step cycle (A → B → A)", () => {
         const script: Script = {
-            A: {text: "x", next: "B"},
-            B: {text: "y", next: "A"},
+            A: {
+                text: "x",
+                next: "B"
+            },
+            B: {
+                text: "y",
+                next: "A"
+            },
         };
         const [len] = traverse(script, "A", 0, {}, 0);
         expect(len).toBe(Infinity);
@@ -272,7 +536,17 @@ describe("traverse — cycle detection", () => {
 
     it("a cyclic choice is rejected in favour of a non-cyclic choice", () => {
         const script: Script = {
-            A: {choices: [{name: "loop", text: "x", next: "A"}, {name: "exit", text: "ab", next: "B"}]},
+            A: {
+                choices: [{
+                    name: "loop",
+                    text: "x",
+                    next: "A"
+                }, {
+                    name: "exit",
+                    text: "ab",
+                    next: "B"
+                }]
+            },
             B: {text: "c"},
         };
         expect(traverse(script, "A", 0, {}, 0)).toEqual([3, ["exit", "B"], {}]);
@@ -280,7 +554,13 @@ describe("traverse — cycle detection", () => {
 
     it("a self-cycle choice is the only option — router picks it with Infinity cost", () => {
         const script: Script = {
-            A: {choices: [{name: "loop", text: "x", next: "A"}]},
+            A: {
+                choices: [{
+                    name: "loop",
+                    text: "x",
+                    next: "A"
+                }]
+            },
         };
         const [len] = traverse(script, "A", 0, {}, 0);
         expect(len).toBe(Infinity);
@@ -288,7 +568,17 @@ describe("traverse — cycle detection", () => {
 
     it("does not treat a diamond as a cycle", () => {
         const script: Script = {
-            A: {choices: [{name: "left", text: "x", next: "C"}, {name: "right", text: "y", next: "C"}]},
+            A: {
+                choices: [{
+                    name: "left",
+                    text: "x",
+                    next: "C"
+                }, {
+                    name: "right",
+                    text: "y",
+                    next: "C"
+                }]
+            },
             C: {text: "z"},
         };
         expect(traverse(script, "A", 0, {}, 0)).toEqual([2, ["left", "C"], {}]);
@@ -298,7 +588,12 @@ describe("traverse — cycle detection", () => {
 describe("traverse — malformed script", () => {
     it("logs and throws when a node references a non-existent node id", () => {
         const errSpy = jest.spyOn(console, "error").mockImplementation(() => {});
-        const script: Script = {A: {text: "x", next: "GHOST"}};
+        const script: Script = {
+            A: {
+                text: "x",
+                next: "GHOST"
+            }
+        };
         expect(() => traverse(script, "A", 0, {}, 0)).toThrow();
         expect(errSpy).toHaveBeenCalledWith("Node does not exist", "GHOST");
     });

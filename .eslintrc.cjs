@@ -21,7 +21,17 @@ module.exports = {
   settings: {react: {version: '18.3'}},
   rules: {
     'react-refresh/only-export-components': ['warn', {allowConstantExport: true}],
-    'indent': ['error', 4, {'SwitchCase': 1, 'ignoredNodes': ['JSXElement *']}],
+    // Readability: multi-property object literals fully expand, one per line.
+    // Destructuring and imports/exports are left as authored.
+    'object-property-newline': ['error', {allowAllPropertiesOnSameLine: false}],
+    'object-curly-newline': ['error', {ObjectExpression: {multiline: true, minProperties: 2, consistent: true}}],
+    // Ignore only JSX *structural* nodes (left to react/jsx-indent) so object
+    // literals nested inside JSX are still indented by the base rule.
+    'indent': ['error', 4, {'SwitchCase': 1, 'ignoredNodes': [
+      'JSXElement', 'JSXElement > *', 'JSXAttribute', 'JSXIdentifier', 'JSXMemberExpression',
+      'JSXNamespacedName', 'JSXOpeningElement', 'JSXClosingElement', 'JSXFragment',
+      'JSXOpeningFragment', 'JSXClosingFragment', 'JSXText', 'JSXEmptyExpression', 'JSXSpreadChild',
+    ]}],
     'react/jsx-indent': ['error', 4],
     'react/jsx-indent-props': ['error', 4],
     'linebreak-style': ['error', 'unix'],

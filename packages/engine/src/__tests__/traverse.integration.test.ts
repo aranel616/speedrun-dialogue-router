@@ -16,8 +16,21 @@ describe("traverse — integration", () => {
         // alpha(2) → middle(1) → end(2) = 5
         // beta(10) → middle(1) → end(2) = 13
         const script: Script = {
-            start:  {choices: [{name: "alpha", text: "ab", next: "middle"}, {name: "beta", text: "abcdefghij", next: "middle"}]},
-            middle: {text: "x", next: "end"},
+            start:  {
+                choices: [{
+                    name: "alpha",
+                    text: "ab",
+                    next: "middle"
+                }, {
+                    name: "beta",
+                    text: "abcdefghij",
+                    next: "middle"
+                }]
+            },
+            middle: {
+                text: "x",
+                next: "end"
+            },
             end:    {text: "zz"},
         };
         expect(traverse(script, "start", 0, {}, 0)).toEqual([5, ["alpha", "middle", "end"], {}]);
@@ -29,18 +42,54 @@ describe("traverse — integration", () => {
         const script: Script = {
             start: {
                 choices: [
-                    {name: "report", text: "Tell the truth", set: {name: "told_truth", type: "set", value: true},  next: "reaction"},
-                    {name: "hide",   text: "Say nothing",    set: {name: "told_truth", type: "set", value: false}, next: "reaction"},
+                    {
+                        name: "report",
+                        text: "Tell the truth",
+                        set: {
+                            name: "told_truth",
+                            type: "set",
+                            value: true
+                        },
+                        next: "reaction"
+                    },
+                    {
+                        name: "hide",
+                        text: "Say nothing",
+                        set: {
+                            name: "told_truth",
+                            type: "set",
+                            value: false
+                        },
+                        next: "reaction"
+                    },
                 ],
             },
             reaction: {
                 text: "You responded.",
                 next: [
-                    {name: "told_truth", type: "eq", value: true,  node: "good_end"},
-                    {name: "told_truth", type: "eq", value: false, node: "bad_end"},
+                    {
+                        name: "told_truth",
+                        type: "eq",
+                        value: true,
+                        node: "good_end"
+                    },
+                    {
+                        name: "told_truth",
+                        type: "eq",
+                        value: false,
+                        node: "bad_end"
+                    },
                 ],
             },
-            good_end: {choices: [{name: "ok", text: "OK"}, {name: "great", text: "Great!"}]},
+            good_end: {
+                choices: [{
+                    name: "ok",
+                    text: "OK"
+                }, {
+                    name: "great",
+                    text: "Great!"
+                }]
+            },
             bad_end:  {text: "You lied"},
         };
         expect(traverse(script, "start", 0, {}, 0)).toEqual([30, ["report", "reaction", "ok"], {told_truth: true}]);
@@ -53,8 +102,28 @@ describe("traverse — integration", () => {
         // light(2)  → fork (cache hit)         → end(1)
         // heavy: 10+5+1=16, light: 2+marginal(6)=8 → light wins
         const script: Script = {
-            start: {choices: [{name: "heavy", text: "abcdefghij", next: "fork"}, {name: "light", text: "ab", next: "fork"}]},
-            fork:  {choices: [{name: "fast", text: "hello", next: "end"}, {name: "slow", text: "helloworld", next: "end"}]},
+            start: {
+                choices: [{
+                    name: "heavy",
+                    text: "abcdefghij",
+                    next: "fork"
+                }, {
+                    name: "light",
+                    text: "ab",
+                    next: "fork"
+                }]
+            },
+            fork:  {
+                choices: [{
+                    name: "fast",
+                    text: "hello",
+                    next: "end"
+                }, {
+                    name: "slow",
+                    text: "helloworld",
+                    next: "end"
+                }]
+            },
             end:   {text: "!"},
         };
 
@@ -70,7 +139,10 @@ describe("traverse — integration", () => {
     it("array dialogue text in a linear chain is summed correctly", () => {
         // A: 'Hello'(5) + 'World!'(6) = 11, B: 'Bye'(3) + '!'(1) = 4 → total 15
         const script: Script = {
-            A: {text: ["Hello", "World!"], next: "B"},
+            A: {
+                text: ["Hello", "World!"],
+                next: "B"
+            },
             B: {text: ["Bye", "!"]},
         };
         expect(traverse(script, "A", 0, {}, 0)).toEqual([15, ["A", "B"], {}]);
@@ -81,8 +153,18 @@ describe("traverse — integration", () => {
             start: {
                 text: "x",
                 next: [
-                    {name: "score", type: "gte", value: 10, node: "win"},
-                    {name: "score", type: "lt",  value: 10, node: "lose"},
+                    {
+                        name: "score",
+                        type: "gte",
+                        value: 10,
+                        node: "win"
+                    },
+                    {
+                        name: "score",
+                        type: "lt",
+                        value: 10,
+                        node: "lose"
+                    },
                 ],
             },
             win:  {text: "ab"},

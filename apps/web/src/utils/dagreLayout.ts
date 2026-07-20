@@ -127,6 +127,9 @@ export function applyDagreLayout(nodes: Node[], edges: Edge[], nodeHeights: Map<
         });
     }
 
-    const result = nodes.map((n) => ({...n, position: pos.get(n.id)!}));
+    const result = nodes.map((n) => ({
+        ...n,
+        position: pos.get(n.id)!
+    }));
     return result;
 }

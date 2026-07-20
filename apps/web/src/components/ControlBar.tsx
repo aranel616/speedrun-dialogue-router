@@ -24,7 +24,7 @@ export function ControlBar({scripts, selectedId, onSelectScript, onTraverse, tra
                         <option key={s.id} value={s.id}>
                             {s.game} / {s.episode} ({s.nodeCount} nodes)
                         </option>
-          ))}
+                    ))}
                 </select>
             </div>
 
