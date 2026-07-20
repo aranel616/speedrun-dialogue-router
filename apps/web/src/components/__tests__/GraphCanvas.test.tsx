@@ -4,9 +4,19 @@ import {buildGraph, runTraverse} from "@sdr/graph";
 import {SCRIPTS} from "@sdr/scripts";
 import {GraphCanvas} from "../GraphCanvas";
 
+// Capture ResizeObserver callbacks so a test can fire them on demand (happy-dom
+// never invokes them itself) — needed to exercise the size-unchanged guard.
+const roCallbacks: ResizeObserverCallback[] = [];
+
 // happy-dom returns 0 for layout; give the canvas and cards real dimensions so
 // heights measure, posNodes lays out, and the full graph renders.
 beforeAll(() => {
+    globalThis.ResizeObserver = class {
+        constructor(cb: ResizeObserverCallback) { roCallbacks.push(cb); }
+        observe(): void {}
+        unobserve(): void {}
+        disconnect(): void {}
+    };
     Object.defineProperty(HTMLElement.prototype, "offsetHeight", {
         configurable: true,
         get: () => 50
@@ -119,6 +129,33 @@ describe("GraphCanvas", () => {
         // clicking a hidden measurement-layer card runs the NOOP handler
         const hidden = container.querySelector("[aria-hidden] .choice-item-node, [aria-hidden] .dialogue-node")!;
         fireEvent.click(hidden);
+    });
+
+    it("activates a node card via Enter/Space but ignores other keys", async () => {
+        const {onNodeClick, container} = renderCanvas();
+        await waitFor(() => expect(container.querySelector(".graph-canvas")).not.toBeNull());
+        const card = [...container.querySelectorAll(".choice-item-node, .dialogue-node")]
+            .find((el) => !el.closest("[aria-hidden]"))!;
+        expect(card).toHaveAttribute("role", "button");
+        expect(card).toHaveAttribute("tabindex", "0");
+
+        fireEvent.keyDown(card, {key: "Enter"});
+        expect(onNodeClick).toHaveBeenCalledTimes(1);
+        fireEvent.keyDown(card, {key: " "});
+        expect(onNodeClick).toHaveBeenCalledTimes(2);
+        fireEvent.keyDown(card, {key: "a"}); // non-activating key → no-op
+        expect(onNodeClick).toHaveBeenCalledTimes(2);
+    });
+
+    it("does not re-render when a ResizeObserver callback reports unchanged dimensions", async () => {
+        const before = roCallbacks.length;
+        const {container} = renderCanvas();
+        await waitFor(() => expect(container.querySelector(".graph-canvas")).not.toBeNull());
+        // The mount measure already set the size; firing again with the same
+        // (mocked) dimensions must hit the size-unchanged guard, not re-render.
+        const cb = roCallbacks[before]!;
+        act(() => cb([], {} as ResizeObserver));
+        expect(container.querySelector(".graph-canvas")).not.toBeNull();
     });
 
     it("ignores non-left drags and stops propagation on the panels", async () => {

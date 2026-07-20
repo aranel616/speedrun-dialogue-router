@@ -46,13 +46,32 @@ function cleanLabel(id: string): string {
     return id.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+// Node cards are div-based (not <button>) so their rich multi-line content lays
+// out freely, but they must still be reachable and operable by keyboard/AT — so
+// give them button semantics and Enter/Space activation.
+function cardProps(onClick: ()=> void): {
+    role: "button"; tabIndex: number; onClick: ()=> void; onKeyDown: (e: React.KeyboardEvent)=> void;
+} {
+    return {
+        role: "button",
+        tabIndex: 0,
+        onClick,
+        onKeyDown: (e): void => {
+            if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onClick();
+            }
+        },
+    };
+}
+
 function NodeCard({node, highlighted, selected, onClick, cumulative}: {
   node: GraphNode; highlighted: boolean; selected: boolean; onClick: ()=> void; cumulative?: number;
 }): JSX.Element {
     if (node.type === "choice") {
         return (
             <div
-                onClick={onClick}
+                {...cardProps(onClick)}
                 className={`dialogue-node choice-node${selected ? " selected" : ""}${highlighted ? " highlighted" : ""}`}
                 >
                 <div className="choice-node-header">
@@ -65,7 +84,7 @@ function NodeCard({node, highlighted, selected, onClick, cumulative}: {
     if (node.type === "conditionItem") {
         return (
             <div
-                onClick={onClick}
+                {...cardProps(onClick)}
                 className={`condition-item-node${selected ? " selected" : ""}${highlighted ? " highlighted" : ""}`}
                 >
                 <span className="condition-if">IF</span>
@@ -78,7 +97,7 @@ function NodeCard({node, highlighted, selected, onClick, cumulative}: {
         const charCount = lines.reduce((n, l) => n + l.length, 0);
         return (
             <div
-                onClick={onClick}
+                {...cardProps(onClick)}
                 className={`choice-item-node${selected ? " selected" : ""}${highlighted ? " highlighted" : ""}${node.isTerminal ? " terminal" : ""}`}
                 >
                 <div className="ci-name">{node.choiceName}</div>
@@ -100,7 +119,7 @@ function NodeCard({node, highlighted, selected, onClick, cumulative}: {
     const charCount = lines.reduce((n, l) => n + l.length, 0);
     return (
         <div
-            onClick={onClick}
+            {...cardProps(onClick)}
             className={`dialogue-node linear-node${selected ? " selected" : ""}${highlighted ? " highlighted" : ""}${node.isTerminal ? " terminal" : ""}`}
             >
             {lines.map((line, i) => <div key={i} className="node-dialogue-line">{line}</div>)}
@@ -233,6 +252,8 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
     const [heights, setHeights] = useState<Map<string, number>>(new Map());
     // Container pixel size, tracked in state so the minimap gets a real value
     // without reading the DOM ref during render (an impure render-time read).
+    // The initial 800x600 is a pre-measure placeholder; the layout effect below
+    // overwrites it with the real box before first paint.
     const [size, setSize] = useState<{ w: number; h: number }>({
         w: 800,
         h: 600
@@ -246,10 +267,15 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
         const el = containerRef.current;
         /* v8 ignore next -- defensive: the container ref is always attached on mount */
         if (!el) {return;}
-        const update = (): void => setSize({
-            w: el.offsetWidth,
-            h: el.offsetHeight
-        });
+        // Skip the state update (and the whole-canvas re-render) when the box is
+        // unchanged, so a resize storm doesn't re-render on every callback.
+        const update = (): void => setSize((prev) =>
+            prev.w === el.offsetWidth && prev.h === el.offsetHeight
+                ? prev
+                : {
+                    w: el.offsetWidth,
+                    h: el.offsetHeight
+                });
         update();
         const ro = new ResizeObserver(update);
         ro.observe(el);
@@ -323,12 +349,20 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
         };
     }, [graphNodes, graphEdges]);
 
+    // The edges actually drawn: both endpoints must be visible (setup-fork nodes
+    // are hidden). Single source of truth, shared by the dagre layout and the
+    // edge-path rendering so the two can't disagree about which edges exist.
+    const visibleEdges = useMemo(
+        () => graphEdges.filter((e) => !inherited.hidden.has(e.source) && !inherited.hidden.has(e.target)),
+        [graphEdges, inherited],
+    );
+
     // Layout — waits until every current node has a measured height, then lays out.
     const posNodes = useMemo<PosNode[]>(() => {
         if (graphNodes.length === 0) {return [];}
         const visNodes = graphNodes.filter((n) => !inherited.hidden.has(n.id));
         if (visNodes.some((n) => !heights.has(n.id))) {return [];} // heights not measured yet
-        const rfNodes: LayoutNode[] = visNodes.map((n) => ({
+        const rfNodes: LayoutNode<GraphNode>[] = visNodes.map((n) => ({
             id: n.id,
             type: n.type,
             position: {
@@ -336,15 +370,13 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
                 y: 0
             },
             style: {width: nodeWidth(n.type)},
-            data: n as unknown as Record<string, unknown>,
+            data: n,
         }));
-        const rfEdges: LayoutEdge[] = graphEdges
-            .filter((e) => !inherited.hidden.has(e.source) && !inherited.hidden.has(e.target))
-            .map((e) => ({
-                id: e.id,
-                source: e.source,
-                target: e.target
-            }));
+        const rfEdges: LayoutEdge[] = visibleEdges.map((e) => ({
+            id: e.id,
+            source: e.source,
+            target: e.target
+        }));
         const laid = applyDagreLayout(rfNodes, rfEdges, heights);
         return laid.map((n) => ({
             id: n.id,
@@ -352,9 +384,9 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
             y: n.position.y,
             w: n.style.width,
             h: heights.get(n.id)!,
-            node: n.data as unknown as GraphNode,
+            node: n.data,
         }));
-    }, [graphNodes, graphEdges, heights, inherited]);
+    }, [graphNodes, visibleEdges, heights, inherited]);
 
     // Initial viewport: centre the first real node (start may be a hidden fork)
     useEffect(() => {
@@ -514,9 +546,11 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
     const edgePaths = useMemo(() => {
         const byId = new Map(posNodes.map((n) => [n.id, n]));
         const visitedEdge = (e: GraphEdge): boolean => visitedNodeIds.has(e.source) && visitedNodeIds.has(e.target);
-        return graphEdges.map((e) => {
+        return visibleEdges.map((e) => {
             const src = byId.get(e.source);
             const tgt = byId.get(e.target);
+            // null only while the layout isn't ready yet (posNodes empty); a
+            // visible edge's endpoints are always laid out once heights measure.
             if (!src || !tgt) {return null;}
             const hl = visitedEdge(e);
             const stroke = hl ? "#22c55e"
@@ -537,7 +571,7 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
                 hl,
             };
         });
-    }, [posNodes, graphEdges, visitedNodeIds]);
+    }, [posNodes, visibleEdges, visitedNodeIds]);
 
     if (graphNodes.length === 0) {
         return <div className="canvas-empty"><p>Select a script to visualize its dialogue graph.</p></div>;
@@ -578,6 +612,9 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
     })();
 
     return (
+        // The canvas is a mouse/trackpad pan-drag surface; keyboard users pan
+        // and jump via the accessible button controls and table of contents.
+        // eslint-disable-next-line jsx-a11y/no-static-element-interactions
         <div
             ref={containerRef}
             className="graph-canvas"
@@ -688,6 +725,9 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
                 ))}
             </div>
             {toc.length > 0 && (
+            // onMouseDown only stops the drag from bubbling to the canvas; the
+            // interactive elements inside are native, accessible <button>s.
+            // eslint-disable-next-line jsx-a11y/no-static-element-interactions
             <div className="toc-panel" onMouseDown={(e) => e.stopPropagation()}>
                 <div className="toc-header">Contents</div>
                 <div className="toc-list">
@@ -710,6 +750,8 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
                 </div>
             </div>
             )}
+            {/* onMouseDown only stops the drag from bubbling; the controls inside are native buttons. */}
+            {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
             <div
                 className="canvas-controls"
                 onMouseDown={(e) => e.stopPropagation()}

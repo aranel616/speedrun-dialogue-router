@@ -6,7 +6,8 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:react-hooks/recommended',
     'plugin:react/recommended',
-    'plugin:react/jsx-runtime'
+    'plugin:react/jsx-runtime',
+    'plugin:jsx-a11y/recommended'
   ],
   ignorePatterns: ['dist', 'coverage', 'node_modules', '**/dist/**', '*.d.ts', '.eslintrc.cjs'],
   parser: '@typescript-eslint/parser',

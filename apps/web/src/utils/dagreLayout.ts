@@ -1,10 +1,12 @@
 // Minimal node/edge shapes for layout (no dependency on a graph-rendering lib).
-export interface LayoutNode {
+// `data` is generic so callers can round-trip their own node payload through the
+// layout without casting; it defaults to an opaque record for untyped callers.
+export interface LayoutNode<T = Record<string, unknown>> {
     id: string;
     type: string;
     position: {x: number; y: number};
     style: {width: number};
-    data: Record<string, unknown>;
+    data: T;
 }
 
 export interface LayoutEdge {
@@ -19,7 +21,7 @@ const V_GAP_STRAIGHT = 40; // gap below a linear rank
 const V_GAP_BRANCH = 80;   // gap below a rank that fans out to multiple nodes
 const FALLBACK_HEIGHT = 88;
 
-export function applyDagreLayout(nodes: LayoutNode[], edges: LayoutEdge[], nodeHeights: Map<string, number>): LayoutNode[] {
+export function applyDagreLayout<T>(nodes: LayoutNode<T>[], edges: LayoutEdge[], nodeHeights: Map<string, number>): LayoutNode<T>[] {
     if (nodes.length === 0) {return nodes;}
 
     const nodeIds = new Set(nodes.map((n) => n.id));
