@@ -30,7 +30,14 @@ type Result = [number, string[], Context];
 // than memoising a DFS.
 const caches = new WeakMap<Script, Map<string, Result>>();
 
-export const traverse = (script: Script, nodeId: string, currentLength: number, context: Context, visited: Set<string> = new Set()): Result => {
+// Public entry point: find the shortest onward route from `nodeId`. The cycle-
+// guard `visited` set is an internal recursion detail, so it's kept off this
+// signature — callers can't accidentally (or maliciously) seed it and poison
+// pathfinding to Infinity.
+export const traverse = (script: Script, nodeId: string, currentLength: number, context: Context): Result =>
+    traverseFrom(script, nodeId, currentLength, context, new Set());
+
+const traverseFrom = (script: Script, nodeId: string, currentLength: number, context: Context, visited: Set<string>): Result => {
     let cache = caches.get(script);
     if (!cache) {
         cache = new Map<string, Result>();
@@ -66,7 +73,7 @@ export const traverse = (script: Script, nodeId: string, currentLength: number, 
         if (!nextNodeId) {
             return [currentLength + dialogueLength, [nodeId], context];
         }
-        const [pathLength, path, newContext] = traverse(script, nextNodeId, currentLength + dialogueLength, context, childVisited);
+        const [pathLength, path, newContext] = traverseFrom(script, nextNodeId, currentLength + dialogueLength, context, childVisited);
         return [pathLength, [nodeId, ...path], newContext];
     }
 
@@ -89,7 +96,7 @@ export const traverse = (script: Script, nodeId: string, currentLength: number, 
             continue;
         }
 
-        const [pathLength, path, newContext] = traverse(script, nextNodeId, currentLength + dialogueLength, choiceContext, childVisited);
+        const [pathLength, path, newContext] = traverseFrom(script, nextNodeId, currentLength + dialogueLength, choiceContext, childVisited);
         if (pathLength < shortestLength) {
             shortestLength = pathLength;
             shortestPath = [choice.name, ...path];

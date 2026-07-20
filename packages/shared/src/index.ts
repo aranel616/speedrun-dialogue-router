@@ -1,5 +1,6 @@
-// API contract shared by the server and the web client. Keeping it in one
-// package prevents the two copies from drifting.
+// View/response types shared by the graph package and the web client. Keeping
+// them in one package prevents the two from drifting. (There is no server;
+// everything runs synchronously in the browser.)
 
 export interface ScriptMeta {
   id: string;
@@ -19,7 +20,7 @@ export interface GraphNode {
   isTerminal: boolean;
   // choiceItem-only fields
   choiceName?: string;
-  sets?: Array<{ name: string; type: string; value: boolean | number | string }>;
+  sets?: Array<{ name: string; type: "set"; value: boolean | number | string }>;
   // conditionItem-only field: human-readable branch condition (e.g. "took_photo_of_kate = true")
   condition?: string;
 }
