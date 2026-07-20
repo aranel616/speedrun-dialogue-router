@@ -1,4 +1,17 @@
-import type {Node, Edge} from "@xyflow/react";
+// Minimal node/edge shapes for layout (no dependency on a graph-rendering lib).
+export interface LayoutNode {
+    id: string;
+    type: string;
+    position: {x: number; y: number};
+    style: {width: number};
+    data: Record<string, unknown>;
+}
+
+export interface LayoutEdge {
+    id: string;
+    source: string;
+    target: string;
+}
 
 const NODE_WIDTH = 420;
 const H_GAP = 80;
@@ -6,7 +19,7 @@ const V_GAP_STRAIGHT = 40; // gap below a linear rank
 const V_GAP_BRANCH = 80;   // gap below a rank that fans out to multiple nodes
 const FALLBACK_HEIGHT = 88;
 
-export function applyDagreLayout(nodes: Node[], edges: Edge[], nodeHeights: Map<string, number>): Node[] {
+export function applyDagreLayout(nodes: LayoutNode[], edges: LayoutEdge[], nodeHeights: Map<string, number>): LayoutNode[] {
     if (nodes.length === 0) {return nodes;}
 
     const nodeIds = new Set(nodes.map((n) => n.id));

@@ -1,21 +1,22 @@
 import {describe, it, expect} from "vitest";
-import type {Node, Edge} from "@xyflow/react";
-import {applyDagreLayout} from "../dagreLayout";
+import {applyDagreLayout, type LayoutNode, type LayoutEdge} from "../dagreLayout";
 
-const n = (id: string): Node => ({
+const n = (id: string): LayoutNode => ({
     id,
+    type: "linear",
     position: {
         x: 0,
         y: 0
     },
+    style: {width: 420},
     data: {}
 });
-const e = (source: string, target: string): Edge => ({
+const e = (source: string, target: string): LayoutEdge => ({
     id: `${source}->${target}`,
     source,
     target
 });
-const rankY = (out: Node[], id: string): number => out.find((x) => x.id === id)!.position.y;
+const rankY = (out: LayoutNode[], id: string): number => out.find((x) => x.id === id)!.position.y;
 
 describe("applyDagreLayout", () => {
     it("returns the input untouched for an empty node list", () => {

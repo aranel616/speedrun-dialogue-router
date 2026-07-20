@@ -1,7 +1,6 @@
 import {useState, useCallback, useMemo, useEffect, useLayoutEffect, useRef, memo} from "react";
-import type {Node, Edge} from "@xyflow/react";
 import type {GraphNode, GraphEdge} from "@sdr/shared";
-import {applyDagreLayout} from "../utils/dagreLayout";
+import {applyDagreLayout, type LayoutNode, type LayoutEdge} from "../utils/dagreLayout";
 import {TOC} from "../toc";
 
 const MIN_ZOOM = 0.05;
@@ -307,7 +306,7 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
         if (graphNodes.length === 0) {return [];}
         const visNodes = graphNodes.filter((n) => !inherited.hidden.has(n.id));
         if (visNodes.some((n) => !heights.has(n.id))) {return [];} // heights not measured yet
-        const rfNodes: Node[] = visNodes.map((n) => ({
+        const rfNodes: LayoutNode[] = visNodes.map((n) => ({
             id: n.id,
             type: n.type,
             position: {
@@ -317,7 +316,7 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
             style: {width: nodeWidth(n.type)},
             data: n as unknown as Record<string, unknown>,
         }));
-        const rfEdges: Edge[] = graphEdges
+        const rfEdges: LayoutEdge[] = graphEdges
             .filter((e) => !inherited.hidden.has(e.source) && !inherited.hidden.has(e.target))
             .map((e) => ({
                 id: e.id,
@@ -329,7 +328,7 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
             id: n.id,
             x: n.position.x,
             y: n.position.y,
-            w: (n.style as { width: number }).width,
+            w: n.style.width,
             h: heights.get(n.id)!,
             node: n.data as unknown as GraphNode,
         }));
