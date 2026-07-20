@@ -2,7 +2,6 @@ import {Handle, Position, type NodeProps} from "@xyflow/react";
 import type {GraphNode} from "@sdr/shared";
 
 function preview(text: string | string[] | undefined): string {
-    if (!text) {return "";}
     const first = Array.isArray(text) ? text[0] : text;
     if (!first) {return "";}
     return first.length > 44 ? first.slice(0, 41) + "…" : first;
