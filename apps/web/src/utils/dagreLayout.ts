@@ -7,7 +7,6 @@ const V_GAP_BRANCH = 80;   // gap below a rank that fans out to multiple nodes
 const FALLBACK_HEIGHT = 88;
 
 export function applyDagreLayout(nodes: Node[], edges: Edge[], nodeHeights: Map<string, number>): Node[] {
-    console.log(`[dagreLayout] start — ${nodes.length} nodes, ${edges.length} edges`);
     if (nodes.length === 0) {return nodes;}
 
     const nodeIds = new Set(nodes.map((n) => n.id));
@@ -27,7 +26,6 @@ export function applyDagreLayout(nodes: Node[], edges: Edge[], nodeHeights: Map<
 
     const roots = nodes.filter((n) => parentsOf.get(n.id)!.length === 0);
     const starts = roots.length > 0 ? roots : [nodes[0]!];
-    console.log(`[dagreLayout] ${roots.length} root(s), detecting back-edges via DFS`);
 
     // Iterative DFS to find back-edges (edges to ancestors in the current DFS path).
     // Removing only back-edges breaks cycles while leaving all forward/cross edges intact,
@@ -61,7 +59,6 @@ export function applyDagreLayout(nodes: Node[], edges: Edge[], nodeHeights: Map<
             }
         }
     }
-    console.log(`[dagreLayout] found ${backEdges.size} back-edge(s), starting Bellman-Ford BFS`);
 
     // Bellman-Ford-style BFS: re-enqueue a node whenever its rank increases.
     // Terminates because back-edges are excluded, so the graph is now a DAG
@@ -83,12 +80,9 @@ export function applyDagreLayout(nodes: Node[], edges: Edge[], nodeHeights: Map<
             }
         }
     }
-    console.log(`[dagreLayout] BFS done in ${queue.length} steps`);
 
     // Any nodes unreachable from roots get placed at the bottom
     const maxRank = Math.max(0, ...rank.values());
-    const unreachable = nodes.filter((n) => !rank.has(n.id));
-    if (unreachable.length > 0) {console.log(`[dagreLayout] ${unreachable.length} unreachable node(s) placed at rank ${maxRank + 1}`);}
     for (const n of nodes) {
         if (!rank.has(n.id)) {rank.set(n.id, maxRank + 1);}
     }
@@ -133,6 +127,5 @@ export function applyDagreLayout(nodes: Node[], edges: Edge[], nodeHeights: Map<
     }
 
     const result = nodes.map((n) => ({...n, position: pos.get(n.id) ?? {x: 0, y: 0}}));
-    console.log(`[dagreLayout] done — ${byRank.size} rank levels, layout complete`);
     return result;
 }

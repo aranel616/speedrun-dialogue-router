@@ -16,6 +16,5 @@ export const getNextNode = (next: Next|undefined, context: Context): string | fa
         }
     }
 
-    console.error("No conditions matched", next, context);
     return false;
 }

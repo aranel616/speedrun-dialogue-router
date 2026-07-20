@@ -33,11 +33,10 @@ export default function App(): JSX.Element {
         setGraphData(null);
         setTraversalResult(null);
         setSelectedNodeId(null);
-        console.log(`[App] fetching graph for ${game}/${episode}`);
         fetchGraph(game, episode)
-            .then((data) => { console.log(`[App] graph received — ${data.nodes.length} nodes, ${data.edges.length} edges`); setGraphData(data); })
+            .then(setGraphData)
             .catch(console.error)
-            .finally(() => { console.log("[App] loading done"); setLoading(false); });
+            .finally(() => setLoading(false));
     }, [selectedId]);
 
     const handleTraverse = useCallback(async () => {

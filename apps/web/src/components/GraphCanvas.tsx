@@ -274,7 +274,6 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
         if (graphNodes.length === 0) {return [];}
         const visNodes = graphNodes.filter((n) => !inherited.hidden.has(n.id));
         if (visNodes.some((n) => !heights.has(n.id))) {return [];} // heights not measured yet
-        console.log(`[GraphCanvas] computing layout for ${visNodes.length} nodes, ${graphEdges.length} edges`);
         const rfNodes: Node[] = visNodes.map((n) => ({
             id: n.id,
             type: n.type,
@@ -286,7 +285,6 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
             .filter((e) => !inherited.hidden.has(e.source) && !inherited.hidden.has(e.target))
             .map((e) => ({id: e.id, source: e.source, target: e.target}));
         const laid = applyDagreLayout(rfNodes, rfEdges, heights);
-        console.log(`[GraphCanvas] layout returned ${laid.length} positioned nodes`);
         return laid.map((n) => ({
             id: n.id,
             x: n.position.x,
