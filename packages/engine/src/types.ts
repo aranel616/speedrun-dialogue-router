@@ -10,7 +10,7 @@ export interface GetCondition {
 
 export interface SetCondition {
     name: string;
-    type: "set" | "add" | "subtract";
+    type: "set";
     value: boolean | number | string;
 }
 

@@ -1,4 +1,4 @@
-import {traverse, getNextNode, evaluateCondition, calculateDialogueLength, Script, Context} from "@sdr/engine";
+import {traverse, getNextNode, evaluateCondition, calculateDialogueLength, Script, Context, applySets} from "@sdr/engine";
 import {TraverseResponse} from "@sdr/shared";
 import {isSingleVariableFork} from "./graphBuilder";
 
@@ -14,7 +14,7 @@ function computeVisited(
     const visited: string[] = [];
     const cumulativeCounts: Record<string, number> = {};
     let nodeId: string = startNode;
-    const context: Context = {...initialContext};
+    let context: Context = {...initialContext};
     let pathIdx = 0;
     let runningTotal = 0;
 
@@ -39,12 +39,7 @@ function computeVisited(
             runningTotal += calculateDialogueLength(choice.text);
             cumulativeCounts[ciId] = runningTotal;
 
-            if (choice.set) {
-                const sets = Array.isArray(choice.set) ? choice.set : [choice.set];
-                for (const s of sets) {
-                    if (s.type === "set") {context[s.name] = s.value;}
-                }
-            }
+            context = applySets(context, choice.set);
 
             if (choice.next === undefined) {break;}
             const next = getNextNode(choice.next, context);

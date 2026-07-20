@@ -1,6 +1,7 @@
 import {Script, Context} from "./types";
 import {calculateDialogueLength} from "./calculateDialogueLength";
 import {getNextNode} from "./getNextNode";
+import {applySets} from "./applySets";
 
 type Result = [number, string[], Context];
 
@@ -66,14 +67,7 @@ export const traverse = (script: Script, nodeId: string, currentLength: number, 
         const dialogueLength = calculateDialogueLength(choice.text);
         const nextNodeId = getNextNode(choice.next, context);
 
-        const choiceContext = {...context};
-        if (choice.set) {
-            for (const setAction of Array.isArray(choice.set) ? choice.set : [choice.set]) {
-                if (setAction.type === "set") {
-                    choiceContext[setAction.name] = setAction.value;
-                }
-            }
-        }
+        const choiceContext = applySets(context, choice.set);
 
         if (!nextNodeId) {
             if (currentLength + dialogueLength < shortestLength) {

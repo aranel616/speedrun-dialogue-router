@@ -59,7 +59,7 @@ traverse(script, nodeId, currentLength, context) → [totalLength, path[], final
 - `Next = string | ConditionalNext` — a node ID or an array of `GetCondition` (first matching condition wins, evaluated by `getNextNode`).
 - `GetCondition.type` supports `eq | ne | gt | gte | lt | lte`. `ne` (not-equal) is used to express "any value except X" against a multi-valued variable (see Inherited Decisions below).
 - Condition/context **values may be `boolean | number | string`.** String values model exclusive multi-way state (e.g. `suspended` ∈ `{nathan, david, jefferson, max, none}`) as one variable instead of several booleans.
-- `SetCondition` supports `set | add | subtract`, but only `"set"` is currently applied in `traverse.ts` (`packages/engine/src`). `add`/`subtract` are parsed but ignored.
+- `SetCondition.type` is `"set"` — the only supported mutation (assign `value` to `name`). Applied via the shared `applySets` helper in `packages/engine/src`.
 - `Context` is a flat `{[name]: boolean | number | string}` map passed immutably (spread-copied before mutations).
 
 ### Adding a New Script

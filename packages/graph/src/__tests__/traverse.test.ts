@@ -73,24 +73,6 @@ describe("runTraverse", () => {
         });
     });
 
-    it("ignores non-'set' set actions (add/subtract) when replaying the path", () => {
-        const script: Script = {
-            start: {
-                choices: [{
-                    name: "c",
-                    text: "x",
-                    set: {
-                        name: "n",
-                        type: "add",
-                        value: 99
-                    }
-                }]
-            },
-        };
-        const r = runTraverse(script, "start", {n: 5});
-        expect(r.context).toEqual({n: 5}); // add is parsed but not applied
-    });
-
     it("marks the single-variable condition node on a linear conditional route", () => {
         const script: Script = {
             start: {

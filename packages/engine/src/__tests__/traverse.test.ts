@@ -207,23 +207,6 @@ describe("traverse — context mutation", () => {
         expect(original).toEqual({flag: false});
     });
 
-    it("add type is silently ignored", () => {
-        const script: Script = {
-            A: {
-                choices: [{
-                    name: "c",
-                    text: "x",
-                    set: {
-                        name: "count",
-                        type: "add",
-                        value: 99
-                    }
-                }]
-            },
-        };
-        expect(traverse(script, "A", 0, {count: 5})).toEqual([1, ["c"], {count: 5}]);
-    });
-
     it("applies all type:set entries from an array of set actions", () => {
         const script: Script = {
             A: {
@@ -247,30 +230,6 @@ describe("traverse — context mutation", () => {
         expect(traverse(script, "A", 0, {})).toEqual([2, ["c", "B"], {
             a: 1,
             b: true
-        }]);
-    });
-
-    it("in a mixed set array, only type:set is applied and add is skipped", () => {
-        const script: Script = {
-            A: {
-                choices: [{
-                    name: "c",
-                    text: "x",
-                    set: [{
-                        name: "a",
-                        type: "set",
-                        value: 1
-                    }, {
-                        name: "b",
-                        type: "add",
-                        value: 99
-                    }]
-                }]
-            },
-        };
-        expect(traverse(script, "A", 0, {b: 5})).toEqual([1, ["c"], {
-            a: 1,
-            b: 5
         }]);
     });
 });

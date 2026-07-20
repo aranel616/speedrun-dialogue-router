@@ -3,6 +3,7 @@ export {traverse} from "./traverse";
 export {getNextNode} from "./getNextNode";
 export {evaluateCondition} from "./evaluateCondition";
 export {calculateDialogueLength} from "./calculateDialogueLength";
+export {applySets} from "./applySets";
 export type {
     Dialogue,
     Next,
