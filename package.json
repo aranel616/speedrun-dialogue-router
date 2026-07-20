@@ -1,6 +1,26 @@
 {
   "name": "speedrun-dialogue-router",
+  "version": "0.1.0",
   "private": true,
+  "description": "Finds the shortest path (by total character count) through a branching narrative dialogue script, with an interactive graph visualization. Built to analyze Life is Strange for speedrun route analysis.",
+  "keywords": [
+    "dialogue",
+    "speedrun",
+    "shortest-path",
+    "graph",
+    "narrative",
+    "visualization",
+    "life-is-strange"
+  ],
+  "author": "Sarah Day",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aranel616/speedrun-dialogue-router.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aranel616/speedrun-dialogue-router/issues"
+  },
+  "homepage": "https://github.com/aranel616/speedrun-dialogue-router#readme",
   "workspaces": [
     "packages/*",
     "apps/*"
