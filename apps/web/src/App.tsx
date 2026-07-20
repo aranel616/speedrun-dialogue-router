@@ -40,6 +40,7 @@ export default function App(): JSX.Element {
     }, [selectedId]);
 
     const handleTraverse = useCallback(async () => {
+        /* v8 ignore next -- defensive: the traverse button is disabled without a loaded graph (hence a selection) */
         if (!selectedId) {return;}
         setTraversing(true);
         try {
