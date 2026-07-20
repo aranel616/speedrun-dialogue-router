@@ -231,8 +231,30 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
     // Real DOM heights of each node card, measured from a hidden layer (no estimates).
     const measureRefs = useRef<Map<string, HTMLDivElement>>(new Map());
     const [heights, setHeights] = useState<Map<string, number>>(new Map());
+    // Container pixel size, tracked in state so the minimap gets a real value
+    // without reading the DOM ref during render (an impure render-time read).
+    const [size, setSize] = useState<{ w: number; h: number }>({
+        w: 800,
+        h: 600
+    });
 
     const syncVP = useCallback((v: Viewport) => { vpRef.current = v; setVP(v); }, []);
+
+    // Keep `size` in sync with the container's box via a ResizeObserver (also
+    // measured once synchronously on mount so the first paint isn't stale).
+    useLayoutEffect(() => {
+        const el = containerRef.current;
+        /* v8 ignore next -- defensive: the container ref is always attached on mount */
+        if (!el) {return;}
+        const update = (): void => setSize({
+            w: el.offsetWidth,
+            h: el.offsetHeight
+        });
+        update();
+        const ro = new ResizeObserver(update);
+        ro.observe(el);
+        return (): void => ro.disconnect();
+    }, []);
 
     // Measure the hidden layer's real card heights whenever the graph changes.
     // Runs before paint, so the positioned layout below uses true measurements.
@@ -734,8 +756,8 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
                 posNodes={posNodes}
                 visitedNodeIds={visitedNodeIds}
                 viewport={viewport}
-                containerW={containerRef.current?.offsetWidth ?? 800}
-                containerH={containerRef.current?.offsetHeight ?? 600}
+                containerW={size.w}
+                containerH={size.h}
                 onNavigate={syncVP}
       />
         </div>
