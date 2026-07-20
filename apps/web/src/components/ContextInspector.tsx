@@ -16,11 +16,11 @@ export function ContextInspector({result}: Props): JSX.Element | null {
                 <span className="inspector-length">{result.length} chars</span>
             </div>
 
-            <div className="inspector-path">
+            <ol className="inspector-path" aria-label="Shortest path, in order">
                 {result.path.map((step, i) => (
-                    <span key={i} className="path-step">{step}</span>
+                    <li key={i} className="path-step">{step}</li>
                 ))}
-            </div>
+            </ol>
 
             {contextEntries.length > 0 && (
             <div className="inspector-context">

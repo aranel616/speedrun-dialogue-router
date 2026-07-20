@@ -26,6 +26,10 @@ export function applyDagreLayout<T>(nodes: LayoutNode<T>[], edges: LayoutEdge[],
 
     const nodeIds = new Set(nodes.map((n) => n.id));
 
+    // Invariant used throughout: childrenOf, parentsOf, rank and byRank are all
+    // populated for EVERY node id below, so `map.get(id)!` on a known node id is
+    // total (never undefined). That's what the non-null assertions here rely on;
+    // `nodes[0]!` is likewise safe given the length>0 guard above.
     const childrenOf = new Map<string, string[]>();
     const parentsOf = new Map<string, string[]>();
     for (const n of nodes) {

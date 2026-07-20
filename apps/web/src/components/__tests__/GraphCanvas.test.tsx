@@ -464,6 +464,11 @@ describe("GraphCanvas — presentation branches", () => {
         );
         expect(c.querySelector(".choice-item-node.terminal")).not.toBeNull();
     });
+
+    it("labels a condition card by id when it carries no condition text", async () => {
+        const c = await renderGraph([gn("cX", {type: "conditionItem"})], []);
+        expect(c.querySelector(".condition-item-node")).toHaveAttribute("aria-label", "Condition cX");
+    });
 });
 
 // Behavioural assertions: instead of "renders without throwing", check the

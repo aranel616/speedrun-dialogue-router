@@ -42,19 +42,44 @@ function edgePath(sx: number, sy: number, tx: number, ty: number): string {
     return `M${sx},${sy} C${sx},${my} ${tx},${my} ${tx},${ty}`;
 }
 
+// Horizontal offset that places `node`'s centre at the middle of the container.
+function centerX(el: HTMLDivElement, node: PosNode, zoom: number): number {
+    return el.offsetWidth / 2 - (node.x + node.w / 2) * zoom;
+}
+
+// The initial/reset framing: `node` centred horizontally, its vertical middle a
+// third of the way down the container.
+function framedView(el: HTMLDivElement, node: PosNode, zoom: number): Viewport {
+    return {
+        x: centerX(el, node, zoom),
+        y: el.offsetHeight / 3 - (node.y + node.h / 2) * zoom,
+        zoom,
+    };
+}
+
 function cleanLabel(id: string): string {
     return id.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 // Node cards are div-based (not <button>) so their rich multi-line content lays
 // out freely, but they must still be reachable and operable by keyboard/AT — so
-// give them button semantics and Enter/Space activation.
-function cardProps(onClick: ()=> void): {
-    role: "button"; tabIndex: number; onClick: ()=> void; onKeyDown: (e: React.KeyboardEvent)=> void;
+// give them button semantics, an accessible name, Enter/Space activation, and
+// aria state for selected (pressed) and on-the-shortest-path (current).
+function cardProps(onClick: ()=> void, state: {label: string; selected: boolean; onPath: boolean}): {
+    role: "button";
+    tabIndex: number;
+    "aria-label": string;
+    "aria-pressed": boolean;
+    "aria-current": "step" | undefined;
+    onClick: ()=> void;
+    onKeyDown: (e: React.KeyboardEvent)=> void;
 } {
     return {
         role: "button",
         tabIndex: 0,
+        "aria-label": state.label,
+        "aria-pressed": state.selected,
+        "aria-current": state.onPath ? "step" : undefined,
         onClick,
         onKeyDown: (e): void => {
             if (e.key === "Enter" || e.key === " ") {
@@ -71,7 +96,11 @@ function NodeCard({node, highlighted, selected, onClick, cumulative}: {
     if (node.type === "choice") {
         return (
             <div
-                {...cardProps(onClick)}
+                {...cardProps(onClick, {
+                    label: `Branch ${cleanLabel(node.id)}`,
+                    selected,
+                    onPath: highlighted
+                })}
                 className={`dialogue-node choice-node${selected ? " selected" : ""}${highlighted ? " highlighted" : ""}`}
                 >
                 <div className="choice-node-header">
@@ -84,7 +113,11 @@ function NodeCard({node, highlighted, selected, onClick, cumulative}: {
     if (node.type === "conditionItem") {
         return (
             <div
-                {...cardProps(onClick)}
+                {...cardProps(onClick, {
+                    label: `Condition ${node.condition ?? node.id}`,
+                    selected,
+                    onPath: highlighted
+                })}
                 className={`condition-item-node${selected ? " selected" : ""}${highlighted ? " highlighted" : ""}`}
                 >
                 <span className="condition-if">IF</span>
@@ -97,7 +130,11 @@ function NodeCard({node, highlighted, selected, onClick, cumulative}: {
         const charCount = lines.reduce((n, l) => n + l.length, 0);
         return (
             <div
-                {...cardProps(onClick)}
+                {...cardProps(onClick, {
+                    label: `Choice ${node.choiceName ?? node.id}`,
+                    selected,
+                    onPath: highlighted
+                })}
                 className={`choice-item-node${selected ? " selected" : ""}${highlighted ? " highlighted" : ""}${node.isTerminal ? " terminal" : ""}`}
                 >
                 <div className="ci-name">{node.choiceName}</div>
@@ -119,7 +156,11 @@ function NodeCard({node, highlighted, selected, onClick, cumulative}: {
     const charCount = lines.reduce((n, l) => n + l.length, 0);
     return (
         <div
-            {...cardProps(onClick)}
+            {...cardProps(onClick, {
+                label: `Dialogue ${node.id}`,
+                selected,
+                onPath: highlighted
+            })}
             className={`dialogue-node linear-node${selected ? " selected" : ""}${highlighted ? " highlighted" : ""}${node.isTerminal ? " terminal" : ""}`}
             >
             {lines.map((line, i) => <div key={i} className="node-dialogue-line">{line}</div>)}
@@ -201,6 +242,9 @@ function Minimap({posNodes, visitedNodeIds, viewport, containerW, containerH, on
     return (
         <svg
             className="minimap"
+            // Decorative overview + mouse-only navigation aid; keyboard/AT users
+            // navigate via the pan controls and table of contents instead.
+            aria-hidden="true"
             width={MM_W}
             height={MM_H}
             onMouseDown={(e) => { dragging.current = true; navigate(e); e.stopPropagation(); }}
@@ -361,7 +405,9 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
     const posNodes = useMemo<PosNode[]>(() => {
         if (graphNodes.length === 0) {return [];}
         const visNodes = graphNodes.filter((n) => !inherited.hidden.has(n.id));
-        if (visNodes.some((n) => !heights.has(n.id))) {return [];} // heights not measured yet
+        // Bail until every visible node has a measured height; after this guard
+        // `heights.get(n.id)!` below is total for the current node set.
+        if (visNodes.some((n) => !heights.has(n.id))) {return [];}
         const rfNodes: LayoutNode<GraphNode>[] = visNodes.map((n) => ({
             id: n.id,
             type: n.type,
@@ -393,14 +439,7 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
         const el = containerRef.current;
         if (!el || posNodes.length === 0) {return;}
         const root = posNodes.find((n) => n.id === inherited.contentRoot) ?? posNodes[0]!;
-        const zoom = 1.2;
-        const x = el.offsetWidth / 2 - (root.x + root.w / 2) * zoom;
-        const y = el.offsetHeight / 3 - (root.y + root.h / 2) * zoom;
-        syncVP({
-            x,
-            y,
-            zoom
-        });
+        syncVP(framedView(el, root, 1.2));
     }, [posNodes, syncVP, inherited.contentRoot]);
 
     // Wheel zoom/pan (needs a non-passive listener so preventDefault works).
@@ -498,12 +537,7 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
         if (!el || posNodes.length === 0) {return;}
         /* v8 ignore next -- defensive: contentRoot is always a laid-out node */
         const root = posNodes.find((n) => n.id === inherited.contentRoot) ?? posNodes[0]!;
-        const zoom = 1.2;
-        syncVP({
-            x: el.offsetWidth / 2 - (root.x + root.w / 2) * zoom,
-            y: el.offsetHeight / 3 - (root.y + root.h / 2) * zoom,
-            zoom,
-        });
+        syncVP(framedView(el, root, 1.2));
     }, [posNodes, syncVP, inherited.contentRoot]);
 
     const handleNodeClick = useCallback((id: string) => {
@@ -519,7 +553,7 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
         const zoom = vpRef.current.zoom;
         const TOP_PAD = 24;
         syncVP({
-            x: el.offsetWidth / 2 - (n.x + n.w / 2) * zoom,
+            x: centerX(el, n, zoom),
             y: TOP_PAD - n.y * zoom,
             zoom,
         });
@@ -652,8 +686,9 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
                 transform: `translate(${x}px,${y}px) scale(${zoom})`,
                 transformOrigin: "0 0"
             }}>
-                {/* SVG edge layer */}
-                <svg style={{
+                {/* SVG edge layer — decorative; adjacency/route is conveyed to AT
+                    by the node cards' aria-current and the Shortest Path list. */}
+                <svg aria-hidden="true" style={{
                     position: "absolute",
                     inset: 0,
                     width: 0,

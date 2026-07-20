@@ -72,4 +72,33 @@ describe("Sidebar", () => {
         expect(screen.getByRole("heading", {name: "n1"})).toBeInTheDocument();
         expect(screen.queryByText("Sets")).not.toBeInTheDocument();
     });
+
+    it("moves focus into the panel when it opens", () => {
+        render(<Sidebar node={node({
+            type: "linear",
+            text: "hi"
+        })} onClose={() => {}} />);
+        const panel = screen.getByRole("complementary", {name: /Node details/});
+        expect(panel).toHaveFocus();
+    });
+
+    it("closes on Escape but ignores other keys", () => {
+        const onClose = vi.fn();
+        render(<Sidebar node={node({
+            type: "linear",
+            text: "hi"
+        })} onClose={onClose} />);
+        fireEvent.keyDown(document, {key: "a"});
+        expect(onClose).not.toHaveBeenCalled();
+        fireEvent.keyDown(document, {key: "Escape"});
+        expect(onClose).toHaveBeenCalledTimes(1);
+    });
+
+    it("labels the close button for assistive tech", () => {
+        render(<Sidebar node={node({
+            type: "linear",
+            text: "hi"
+        })} onClose={() => {}} />);
+        expect(screen.getByRole("button", {name: "Close node details"})).toBeInTheDocument();
+    });
 });

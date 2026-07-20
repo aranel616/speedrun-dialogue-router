@@ -18,7 +18,10 @@ export function ControlBar({scripts, selectedId, onSelectScript, onTraverse, has
                     value={selectedId}
                     onChange={(e) => onSelectScript(e.target.value)}
         >
-                    <option value="">— select a script —</option>
+                    {/* Placeholder for the brief pre-selection state; not a
+                        re-selectable choice (disabled), and kept out of the
+                        open dropdown (hidden) so it can't be picked back. */}
+                    <option value="" disabled hidden>— select a script —</option>
                     {scripts.map((s) => (
                         <option key={s.id} value={s.id}>
                             {s.game} / {s.episode} ({s.nodeCount} nodes)
