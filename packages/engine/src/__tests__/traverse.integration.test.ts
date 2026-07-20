@@ -33,7 +33,7 @@ describe("traverse — integration", () => {
             },
             end:    {text: "zz"},
         };
-        expect(traverse(script, "start", 0, {}, 0)).toEqual([5, ["alpha", "middle", "end"], {}]);
+        expect(traverse(script, "start", 0, {})).toEqual([5, ["alpha", "middle", "end"], {}]);
     });
 
     it("context-dependent routing: set action forks context, conditional linear next routes to different terminals", () => {
@@ -92,7 +92,7 @@ describe("traverse — integration", () => {
             },
             bad_end:  {text: "You lied"},
         };
-        expect(traverse(script, "start", 0, {}, 0)).toEqual([30, ["report", "reaction", "ok"], {told_truth: true}]);
+        expect(traverse(script, "start", 0, {})).toEqual([30, ["report", "reaction", "ok"], {told_truth: true}]);
     });
 
     it("cache re-use across branches: spy confirms fork choices not re-evaluated on cache hit", () => {
@@ -127,7 +127,7 @@ describe("traverse — integration", () => {
             end:   {text: "!"},
         };
 
-        const result = traverse(script, "start", 0, {}, 0);
+        const result = traverse(script, "start", 0, {});
         expect(result).toEqual([8, ["light", "fast", "end"], {}]);
         // heavy(1) + fork.fast(1) + end via fast(1) + fork.slow(1) + end via slow(1) + light(1) = 6 calls
         // linear nodes are not cached, so end is called twice within fork's evaluation
@@ -145,7 +145,7 @@ describe("traverse — integration", () => {
             },
             B: {text: ["Bye", "!"]},
         };
-        expect(traverse(script, "A", 0, {}, 0)).toEqual([15, ["A", "B"], {}]);
+        expect(traverse(script, "A", 0, {})).toEqual([15, ["A", "B"], {}]);
     });
 
     it("pre-populated context drives conditional routing without any set actions", () => {
@@ -171,9 +171,9 @@ describe("traverse — integration", () => {
             lose: {text: "abcdef"},
         };
 
-        expect(traverse(script, "start", 0, {score: 10}, 0)).toEqual([3, ["start", "win"],  {score: 10}]);
+        expect(traverse(script, "start", 0, {score: 10})).toEqual([3, ["start", "win"],  {score: 10}]);
         // Different context → different cache key ({"score":5} vs {"score":10}), so
         // the second call recomputes and routes to the other branch.
-        expect(traverse(script, "start", 0, {score: 5}, 0)).toEqual([7, ["start", "lose"], {score: 5}]);
+        expect(traverse(script, "start", 0, {score: 5})).toEqual([7, ["start", "lose"], {score: 5}]);
     });
 });

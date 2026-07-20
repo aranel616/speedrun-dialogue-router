@@ -9,6 +9,6 @@ describe("@sdr/engine public API", () => {
     });
 
     it("the barrel functions work end to end", () => {
-        expect(engine.traverse({A: {text: "hi"}}, "A", 0, {}, 0)).toEqual([2, ["A"], {}]);
+        expect(engine.traverse({A: {text: "hi"}}, "A", 0, {})).toEqual([2, ["A"], {}]);
     });
 });

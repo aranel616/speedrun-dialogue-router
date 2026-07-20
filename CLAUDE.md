@@ -47,12 +47,12 @@ Root scripts: `npm run lint`, `npm run typecheck`, `npm test` (with coverage). I
 Recursive depth-first search over the script graph. Signature:
 
 ```
-traverse(script, nodeId, currentLength, context, depth) → [totalLength, path[], finalContext]
+traverse(script, nodeId, currentLength, context) → [totalLength, path[], finalContext]
 ```
 
 - **Choice nodes** (`InteractionWithChoices`): tries all branches, returns the shortest. Each choice may carry `set` mutations that fork the `context` immutably before recursing.
 - **Linear nodes** (`InteractionWithoutChoices`): follows `next`, which is either a node ID string or a `ConditionalNext` array evaluated by `getNextNode`.
-- **Memoization**: cache is keyed on `${nodeId}-${JSON.stringify(context)}` and held in a `WeakMap<Script, Map>` so each script gets its own cache — different scripts sharing node ids (e.g. `start`) never contaminate each other in a long-lived server process. Both cache reads and writes are active; results are stored as marginal cost (`shortestLength - currentLength`) and re-based on read.
+- **Memoization**: cache is keyed on `${nodeId}-${JSON.stringify(context)}` in a `WeakMap<Script, Map>` so different scripts sharing node ids (e.g. `start`) never collide. Results are stored as marginal cost (`shortestLength - currentLength`) and re-based on read. A `visited` set guards cycles: revisiting a node on the current path returns `Infinity`, so the pathfinder avoids back-edges. Scripts are expected to be DAGs; the memo is exact for them and for the corpus's occasional back-edge on a never-optimal branch (see the soundness note in `traverse.ts`).
 
 ### Type System (`packages/engine/src/types.ts`)
 
@@ -64,7 +64,7 @@ traverse(script, nodeId, currentLength, context, depth) → [totalLength, path[]
 
 ### Adding a New Script
 
-Create a file under `packages/scripts/<game>/episodeN.ts` exporting a `Script` object. The server's `scriptLoader` auto-discovers it (no registration needed); optionally add a table-of-contents outline in `apps/web/src/toc.ts`. Each key in the `Script` map is a node ID. A node is either:
+Create a file under `packages/scripts/<game>/episodeN.ts` exporting a `Script` object, then register it in `packages/scripts/index.ts` (add a `SCRIPTS` entry); optionally add a table-of-contents outline in `apps/web/src/toc.ts`. Each key in the `Script` map is a node ID. A node is either:
 
 - `{ text, next? }` — linear dialogue
 - `{ choices: [{ name, text, set?, next? }] }` — branching choice point
@@ -129,7 +129,7 @@ Life is Strange's time-rewind means Max replays scenes. The correct approach is 
 - Each pass through a scene (first attempt, rewind, second attempt) is a separate bridge node.
 - The first pass often has Max failing (trying wrong answers), the second pass has the correct path.
 - This is how `jefferson_2_bridge` works: it contains the full first corridor + first bathroom + rewind + second lecture as one long linear node, because the player has no choices during that entire sequence.
-- Never model a rewind as a cycle back to an earlier node — that causes the cycle-detection in `traverse` to return `Infinity`.
+- Never model a rewind as a cycle back to an earlier node — the cycle guard in `traverse` prunes such a back-edge to `Infinity`, so a route that loops is treated as unreachable.
 
 ### Conditional Routing on Linear Nodes
 
@@ -204,7 +204,7 @@ Flags propagate forward through the graph — the context is forked (spread-copi
 4. Between choice points: all NPC and player dialogue is mandatory and needs to be in a bridge node.
 5. After transcribing, run the router and verify:
    - No `Error: node not found` (missing node reference)
-   - No `Infinity` shortest path (accidental cycle)
+   - No `Infinity` shortest path (would signal an accidental cycle on the optimal route)
    - The optimal path visits every major scene in story order
 6. To audit choices specifically: write a Python script that extracts all `"choices"` keys from the TS file and cross-references against the audit output's choice points.
 

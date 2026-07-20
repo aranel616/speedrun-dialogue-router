@@ -82,7 +82,7 @@ export function runTraverse(
     startNode = "start",
     initialContext: Context = {},
 ): TraverseResponse {
-    const [length, path, context] = traverse(script, startNode, 0, initialContext, 0);
+    const [length, path, context] = traverse(script, startNode, 0, initialContext);
     const {visitedNodeIds, cumulativeCounts} = computeVisited(script, path, startNode, initialContext);
     return {
         length,

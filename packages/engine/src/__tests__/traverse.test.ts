@@ -13,7 +13,7 @@ afterAll(() => {
 
 describe("traverse — base cases", () => {
     it("returns currentLength and empty path when nodeId is empty string", () => {
-        const [len, path, ctx] = traverse({}, "", 7, {}, 0);
+        const [len, path, ctx] = traverse({}, "", 7, {});
         expect(len).toBe(7);
         expect(path).toEqual([]);
         expect(ctx).toEqual({});
@@ -21,12 +21,12 @@ describe("traverse — base cases", () => {
 
     it("single linear terminal node returns its text length", () => {
         const script: Script = {A: {text: "hello"}};
-        expect(traverse(script, "A", 0, {}, 0)).toEqual([5, ["A"], {}]);
+        expect(traverse(script, "A", 0, {})).toEqual([5, ["A"], {}]);
     });
 
     it("single linear terminal node with empty text returns 0", () => {
         const script: Script = {A: {text: ""}};
-        expect(traverse(script, "A", 0, {}, 0)).toEqual([0, ["A"], {}]);
+        expect(traverse(script, "A", 0, {})).toEqual([0, ["A"], {}]);
     });
 
     it("single choice node with two terminals picks the shorter one", () => {
@@ -41,7 +41,7 @@ describe("traverse — base cases", () => {
                 }]
             }
         };
-        expect(traverse(script, "A", 0, {}, 0)).toEqual([2, ["short"], {}]);
+        expect(traverse(script, "A", 0, {})).toEqual([2, ["short"], {}]);
     });
 
     it("path elements use choice.name not node ID", () => {
@@ -53,13 +53,13 @@ describe("traverse — base cases", () => {
                 }]
             }
         };
-        const [, path] = traverse(script, "A", 0, {}, 0);
+        const [, path] = traverse(script, "A", 0, {});
         expect(path).toEqual(["the choice"]);
     });
 
     it("currentLength offset is preserved in the total", () => {
         const script: Script = {A: {text: "ab"}};
-        expect(traverse(script, "A", 10, {}, 0)).toEqual([12, ["A"], {}]);
+        expect(traverse(script, "A", 10, {})).toEqual([12, ["A"], {}]);
     });
 
     it("tie between two choices: first choice wins (strict < comparison)", () => {
@@ -74,7 +74,7 @@ describe("traverse — base cases", () => {
                 }]
             }
         };
-        const [, path] = traverse(script, "A", 0, {}, 0);
+        const [, path] = traverse(script, "A", 0, {});
         expect(path).toEqual(["first"]);
     });
 });
@@ -88,7 +88,7 @@ describe("traverse — linear chains", () => {
             },
             B: {text: "world"}
         };
-        expect(traverse(script, "A", 0, {}, 0)).toEqual([10, ["A", "B"], {}]);
+        expect(traverse(script, "A", 0, {})).toEqual([10, ["A", "B"], {}]);
     });
 
     it("follows a three-node linear chain", () => {
@@ -103,7 +103,7 @@ describe("traverse — linear chains", () => {
             },
             C: {text: "ef"},
         };
-        expect(traverse(script, "A", 0, {}, 0)).toEqual([6, ["A", "B", "C"], {}]);
+        expect(traverse(script, "A", 0, {})).toEqual([6, ["A", "B", "C"], {}]);
     });
 
     it("sums array text on a linear node correctly", () => {
@@ -114,7 +114,7 @@ describe("traverse — linear chains", () => {
             },
             B: {text: "f"},
         };
-        expect(traverse(script, "A", 0, {}, 0)).toEqual([6, ["A", "B"], {}]);
+        expect(traverse(script, "A", 0, {})).toEqual([6, ["A", "B"], {}]);
     });
 });
 
@@ -142,11 +142,11 @@ describe("traverse — conditional routing on linear next", () => {
     };
 
     it("takes the true branch when flag is true", () => {
-        expect(traverse(script, "A", 0, {flag: true}, 0)).toEqual([3, ["A", "B"], {flag: true}]);
+        expect(traverse(script, "A", 0, {flag: true})).toEqual([3, ["A", "B"], {flag: true}]);
     });
 
     it("takes the false branch when flag is false", () => {
-        expect(traverse(script, "A", 0, {flag: false}, 0)).toEqual([9, ["A", "C"], {flag: false}]);
+        expect(traverse(script, "A", 0, {flag: false})).toEqual([9, ["A", "C"], {flag: false}]);
     });
 
     it("becomes terminal when no conditions match", () => {
@@ -162,7 +162,7 @@ describe("traverse — conditional routing on linear next", () => {
             },
             B: {text: "ab"},
         };
-        expect(traverse(s, "A", 0, {}, 0)).toEqual([1, ["A"], {}]);
+        expect(traverse(s, "A", 0, {})).toEqual([1, ["A"], {}]);
     });
 });
 
@@ -183,7 +183,7 @@ describe("traverse — context mutation", () => {
             },
             B: {text: "y"},
         };
-        expect(traverse(script, "A", 0, {}, 0)).toEqual([2, ["c", "B"], {flag: true}]);
+        expect(traverse(script, "A", 0, {})).toEqual([2, ["c", "B"], {flag: true}]);
     });
 
     it("set action does not mutate the original context object", () => {
@@ -203,7 +203,7 @@ describe("traverse — context mutation", () => {
             B: {text: "y"},
         };
         const original = {flag: false};
-        traverse(script, "A", 0, original, 0);
+        traverse(script, "A", 0, original);
         expect(original).toEqual({flag: false});
     });
 
@@ -221,7 +221,7 @@ describe("traverse — context mutation", () => {
                 }]
             },
         };
-        expect(traverse(script, "A", 0, {count: 5}, 0)).toEqual([1, ["c"], {count: 5}]);
+        expect(traverse(script, "A", 0, {count: 5})).toEqual([1, ["c"], {count: 5}]);
     });
 
     it("applies all type:set entries from an array of set actions", () => {
@@ -244,7 +244,7 @@ describe("traverse — context mutation", () => {
             },
             B: {text: "y"},
         };
-        expect(traverse(script, "A", 0, {}, 0)).toEqual([2, ["c", "B"], {
+        expect(traverse(script, "A", 0, {})).toEqual([2, ["c", "B"], {
             a: 1,
             b: true
         }]);
@@ -268,7 +268,7 @@ describe("traverse — context mutation", () => {
                 }]
             },
         };
-        expect(traverse(script, "A", 0, {b: 5}, 0)).toEqual([1, ["c"], {
+        expect(traverse(script, "A", 0, {b: 5})).toEqual([1, ["c"], {
             a: 1,
             b: 5
         }]);
@@ -291,7 +291,7 @@ describe("traverse — shortest-path selection", () => {
             },
             C: {text: "x"},
         };
-        expect(traverse(script, "A", 0, {}, 0)).toEqual([3, ["short", "C"], {}]);
+        expect(traverse(script, "A", 0, {})).toEqual([3, ["short", "C"], {}]);
     });
 
     it("longer initial choice text loses even when it leads to the same continuation", () => {
@@ -311,7 +311,7 @@ describe("traverse — shortest-path selection", () => {
             D: {text: "a"},
         };
         // c1: 1+10=11, c2: 2+1=3
-        expect(traverse(script, "A", 0, {}, 0)).toEqual([3, ["c2", "D"], {}]);
+        expect(traverse(script, "A", 0, {})).toEqual([3, ["c2", "D"], {}]);
     });
 });
 
@@ -343,7 +343,7 @@ describe("traverse — cache correctness", () => {
             end:   {text: "!"},
         };
         // heavy: 10+5+1=16, light: 2+6(marginal)=8
-        expect(traverse(script, "start", 0, {}, 0)).toEqual([8, ["light", "fast", "end"], {}]);
+        expect(traverse(script, "start", 0, {})).toEqual([8, ["light", "fast", "end"], {}]);
     });
 
     it("different contexts produce separate cache entries and do not bleed", () => {
@@ -412,7 +412,7 @@ describe("traverse — cache correctness", () => {
         // Both choices at start cost 1 char + fork('hi'=2 + endX=1 = 3) = total 4 each
         // setOne path: 1 + 2 + 1 = 4, context {x:1}
         // setTwo path: 1 + 2 + 1 = 4, context {x:2} — tie, first wins
-        const [len, path, ctx] = traverse(script, "start", 0, {}, 0);
+        const [len, path, ctx] = traverse(script, "start", 0, {});
         expect(len).toBe(4);
         expect(path).toEqual(["setOne", "c1", "endA"]);
         expect(ctx).toEqual({x: 1});
@@ -447,7 +447,7 @@ describe("traverse — cache correctness", () => {
             end:   {text: "!"},
         };
 
-        traverse(script, "start", 0, {}, 0);
+        traverse(script, "start", 0, {});
 
         // heavy(1) + fork.fast(1) + end via fast(1) + fork.slow(1) + end via slow(1) + light(1) = 6
         // linear nodes are not cached, so end is called twice within fork's evaluation
@@ -472,7 +472,7 @@ describe("traverse — set action on terminal choice", () => {
                 }]
             },
         };
-        expect(traverse(script, "A", 0, {}, 0)).toEqual([1, ["c"], {flag: true}]);
+        expect(traverse(script, "A", 0, {})).toEqual([1, ["c"], {flag: true}]);
     });
 
     it("picks shortest terminal choice and applies its set action", () => {
@@ -500,7 +500,7 @@ describe("traverse — set action on terminal choice", () => {
                 ],
             },
         };
-        const [len, path, ctx] = traverse(script, "A", 0, {}, 0);
+        const [len, path, ctx] = traverse(script, "A", 0, {});
         expect(len).toBe(2);
         expect(path).toEqual(["short"]);
         expect(ctx).toEqual({result: "short"});
@@ -508,18 +508,17 @@ describe("traverse — set action on terminal choice", () => {
 });
 
 describe("traverse — cycle detection", () => {
-    it("returns Infinity for a direct self-cycle (A → A)", () => {
-        const script: Script = {
+    it("returns Infinity for a direct self-cycle (A -> A)", () => {
+        const [len] = traverse({
             A: {
                 text: "x",
                 next: "A"
             }
-        };
-        const [len] = traverse(script, "A", 0, {}, 0);
+        }, "A", 0, {});
         expect(len).toBe(Infinity);
     });
 
-    it("returns Infinity for a two-step cycle (A → B → A)", () => {
+    it("returns Infinity for a two-step cycle (A -> B -> A)", () => {
         const script: Script = {
             A: {
                 text: "x",
@@ -528,13 +527,13 @@ describe("traverse — cycle detection", () => {
             B: {
                 text: "y",
                 next: "A"
-            },
+            }
         };
-        const [len] = traverse(script, "A", 0, {}, 0);
+        const [len] = traverse(script, "A", 0, {});
         expect(len).toBe(Infinity);
     });
 
-    it("a cyclic choice is rejected in favour of a non-cyclic choice", () => {
+    it("rejects a cyclic choice in favour of a non-cyclic one", () => {
         const script: Script = {
             A: {
                 choices: [{
@@ -549,10 +548,10 @@ describe("traverse — cycle detection", () => {
             },
             B: {text: "c"},
         };
-        expect(traverse(script, "A", 0, {}, 0)).toEqual([3, ["exit", "B"], {}]);
+        expect(traverse(script, "A", 0, {})).toEqual([3, ["exit", "B"], {}]);
     });
 
-    it("a self-cycle choice is the only option — router picks it with Infinity cost", () => {
+    it("returns Infinity when a self-cycle is the only option", () => {
         const script: Script = {
             A: {
                 choices: [{
@@ -560,13 +559,13 @@ describe("traverse — cycle detection", () => {
                     text: "x",
                     next: "A"
                 }]
-            },
+            }
         };
-        const [len] = traverse(script, "A", 0, {}, 0);
+        const [len] = traverse(script, "A", 0, {});
         expect(len).toBe(Infinity);
     });
 
-    it("does not treat a diamond as a cycle", () => {
+    it("does not treat a diamond (shared successor) as a cycle", () => {
         const script: Script = {
             A: {
                 choices: [{
@@ -581,20 +580,18 @@ describe("traverse — cycle detection", () => {
             },
             C: {text: "z"},
         };
-        expect(traverse(script, "A", 0, {}, 0)).toEqual([2, ["left", "C"], {}]);
+        expect(traverse(script, "A", 0, {})).toEqual([2, ["left", "C"], {}]);
     });
 });
 
 describe("traverse — malformed script", () => {
-    it("logs and throws when a node references a non-existent node id", () => {
-        const errSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+    it("throws a clear error when a node references a non-existent node id", () => {
         const script: Script = {
             A: {
                 text: "x",
                 next: "GHOST"
             }
         };
-        expect(() => traverse(script, "A", 0, {}, 0)).toThrow();
-        expect(errSpy).toHaveBeenCalledWith("Node does not exist", "GHOST");
+        expect(() => traverse(script, "A", 0, {})).toThrow(/Node not found: "GHOST"/);
     });
 });
