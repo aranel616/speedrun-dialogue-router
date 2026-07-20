@@ -294,3 +294,12 @@ describe("traverse — cycle detection", () => {
         expect(traverse(script, "A", 0, {}, 0)).toEqual([2, ["left", "C"], {}]);
     });
 });
+
+describe("traverse — malformed script", () => {
+    it("logs and throws when a node references a non-existent node id", () => {
+        const errSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+        const script: Script = {A: {text: "x", next: "GHOST"}};
+        expect(() => traverse(script, "A", 0, {}, 0)).toThrow();
+        expect(errSpy).toHaveBeenCalledWith("Node does not exist", "GHOST");
+    });
+});

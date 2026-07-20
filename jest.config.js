@@ -17,4 +17,8 @@ module.exports = {
     '!apps/web/**',
   ],
   coverageReporters: ['text', 'text-summary', 'html', 'lcov'],
+  // The covered packages are held at 100%; `npm test` fails if that regresses.
+  coverageThreshold: {
+    global: {statements: 100, branches: 100, functions: 100, lines: 100},
+  },
 };

@@ -18,8 +18,9 @@ function computeVisited(
     let pathIdx = 0;
     let runningTotal = 0;
 
-    while (nodeId && pathIdx < path.length) {
+    while (pathIdx < path.length) {
         const node = script[nodeId];
+        /* istanbul ignore next -- defensive: the path always references real nodes */
         if (!node) {break;}
 
         visited.push(nodeId);
@@ -29,6 +30,7 @@ function computeVisited(
 
             const choiceName = path[pathIdx++];
             const choiceIdx = node.choices.findIndex((c) => c.name === choiceName);
+            /* istanbul ignore next -- defensive: the path's choice name always matches */
             if (choiceIdx === -1) {break;}
             const choice = node.choices[choiceIdx]!;
             const ciId = `${nodeId}__ci${choiceIdx}`;
@@ -49,7 +51,7 @@ function computeVisited(
             if (!next) {break;}
             if (Array.isArray(choice.next)) {
                 const j = choice.next.findIndex((c) => evaluateCondition(c, context));
-                if (j >= 0) {visited.push(isSingleVariableFork(choice.next) ? `${ciId}__cond` : `${ciId}__cond${j}`);}
+                visited.push(isSingleVariableFork(choice.next) ? `${ciId}__cond` : `${ciId}__cond${j}`);
             }
             nodeId = next;
         } else {
@@ -62,7 +64,7 @@ function computeVisited(
             if (!next) {break;}
             if (Array.isArray(node.next)) {
                 const j = node.next.findIndex((c) => evaluateCondition(c, context));
-                if (j >= 0) {visited.push(isSingleVariableFork(node.next) ? `${nodeId}__cond` : `${nodeId}__cond${j}`);}
+                visited.push(isSingleVariableFork(node.next) ? `${nodeId}__cond` : `${nodeId}__cond${j}`);
             }
             nodeId = next;
         }

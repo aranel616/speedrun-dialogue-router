@@ -31,6 +31,20 @@ describe("evaluateCondition", () => {
         });
     });
 
+    describe("ne", () => {
+        it("returns true when values differ", () => {
+            expect(evaluateCondition(cond("ne", "x", 5), {x: 4})).toBe(true);
+        });
+
+        it("returns false when values match", () => {
+            expect(evaluateCondition(cond("ne", "x", 5), {x: 5})).toBe(false);
+        });
+
+        it("returns true when the key is absent (undefined !== value)", () => {
+            expect(evaluateCondition(cond("ne", "missing", 5), {})).toBe(true);
+        });
+    });
+
     describe("gt", () => {
         it("returns true when value is greater", () => {
             expect(evaluateCondition(cond("gt", "x", 3), {x: 4})).toBe(true);
