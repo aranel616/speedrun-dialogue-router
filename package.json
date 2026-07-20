@@ -13,7 +13,8 @@
     "typecheck": "tsc -p . --noEmit",
     "test": "jest --coverage",
     "test:web": "npm run test --workspace @sdr/web",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "test:all": "npm test && npm run test:web"
   },
   "devDependencies": {
     "@types/jest": "^29.5.0",

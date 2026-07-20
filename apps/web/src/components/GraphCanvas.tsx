@@ -354,6 +354,7 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
     // Zoom around the canvas centre (used by the +/- buttons)
     const zoomBy = useCallback((factor: number) => {
         const el = containerRef.current;
+        /* v8 ignore next -- defensive: the zoom controls only exist while the canvas is mounted */
         if (!el) {return;}
         const cx = el.offsetWidth / 2;
         const cy = el.offsetHeight / 2;
@@ -371,7 +372,9 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
     // Reset to the initial view (centre the "start" node at 1.2x)
     const resetView = useCallback(() => {
         const el = containerRef.current;
+        /* v8 ignore next -- defensive: reset only runs with a mounted, laid-out canvas */
         if (!el || posNodes.length === 0) {return;}
+        /* v8 ignore next -- defensive: contentRoot is always a laid-out node */
         const root = posNodes.find((n) => n.id === inherited.contentRoot) ?? posNodes[0]!;
         const zoom = 1.2;
         syncVP({
@@ -389,6 +392,7 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
     const focusNode = useCallback((nodeId: string) => {
         const el = containerRef.current;
         const n = posNodes.find((p) => p.id === nodeId);
+        /* v8 ignore next -- defensive: focusNode is only called with present TOC node ids */
         if (!el || !n) {return;}
         const zoom = vpRef.current.zoom;
         const TOP_PAD = 24;
@@ -409,6 +413,7 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
     useEffect(() => { setTocIdx(0); }, [scriptId]);
 
     const goToToc = useCallback((idx: number) => {
+        /* v8 ignore next -- defensive: the TOC nav only renders when there are entries */
         if (toc.length === 0) {return;}
         const i = clamp(idx, 0, toc.length - 1);
         setTocIdx(i);
@@ -458,6 +463,7 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
     const inheritedCards = ((): Array<{id: string; variable: string; height: number; options: {label: string; onPath: boolean}[]; left: number; top: number}> => {
         if (inherited.forks.length === 0 || posNodes.length === 0) {return [];}
         const topY = Math.min(...posNodes.map((n) => n.y));
+        /* v8 ignore next -- defensive: contentRoot is always a laid-out node */
         const root = posNodes.find((n) => n.id === inherited.contentRoot) ?? posNodes[0]!;
         const cx = root.x + root.w / 2;
         const heights = inherited.forks.map((f) => inhCardH(f.options.length));
