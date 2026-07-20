@@ -2,15 +2,6 @@ import type {Script} from "../types";
 import {traverse} from "../traverse";
 import * as calcMod from "../calculateDialogueLength";
 
-beforeAll(() => {
-    jest.spyOn(console, "log").mockImplementation(() => {});
-    jest.spyOn(console, "error").mockImplementation(() => {});
-});
-
-afterAll(() => {
-    jest.restoreAllMocks();
-});
-
 describe("traverse — base cases", () => {
     it("returns currentLength and empty path when nodeId is empty string", () => {
         const [len, path, ctx] = traverse({}, "", 7, {});

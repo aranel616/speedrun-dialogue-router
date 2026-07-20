@@ -9,14 +9,25 @@ type Result = [number, string[], Context];
 // "start") never collide.
 //
 // Soundness note: a node's shortest onward cost is memoised on (nodeId,
-// context). Scripts are expected to be DAGs (rewinds are modelled as forward
-// nodes), but the corpus does contain the occasional back-edge on a branch the
-// shortest path never takes — the `visited` guard below prunes such a branch to
-// Infinity so the pathfinder avoids it. This is correct for the current corpus;
-// a script where a cheap route is only reachable by re-entering an already-
-// visited node from a *different* entry could in theory read a stale cached
-// cost. A fully general fix would search the (node, context) state space
-// directly (e.g. Dijkstra) rather than memoising a DFS.
+// context) — the `visited` set is deliberately NOT part of the key. This is
+// exact for any DAG. The proof: the cached suffix cost of a node X could only
+// depend on the current path's visited set if X's cheapest suffix routes back
+// to a node already on that path; because node ids are unique, "routing back"
+// is necessarily a back-edge (a cycle). So on a DAG the memo is always exact.
+//
+// The only way to poison the cache is a genuine back-edge that lies on some
+// node's cheapest suffix — and even then the failure mode is safe: the
+// `visited` guard below prunes the re-entry to Infinity, so a poisoned entry
+// can only make a route look UNREACHABLE (over-prune), never cheaper than it
+// is. The pathfinder therefore never returns a too-low cost; at worst it would
+// miss a route that is only reachable by re-entering an already-visited node.
+// The shipped corpus contains back-edges (self-loops, and one 2-node back-edge
+// in episode 4) but none lie on an optimal path, so every script resolves to a
+// finite shortest route — a property the corpus finiteness test locks in.
+//
+// A fully general fix (supporting a cheap route reachable only via a back-edge)
+// would search the (node, context) state space directly, e.g. Dijkstra, rather
+// than memoising a DFS.
 const caches = new WeakMap<Script, Map<string, Result>>();
 
 export const traverse = (script: Script, nodeId: string, currentLength: number, context: Context, visited: Set<string> = new Set()): Result => {

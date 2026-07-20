@@ -2,15 +2,6 @@ import type {Script} from "../types";
 import {traverse} from "../traverse";
 import * as calcMod from "../calculateDialogueLength";
 
-beforeAll(() => {
-    jest.spyOn(console, "log").mockImplementation(() => {});
-    jest.spyOn(console, "error").mockImplementation(() => {});
-});
-
-afterAll(() => {
-    jest.restoreAllMocks();
-});
-
 describe("traverse — integration", () => {
     it("diamond with shared suffix: shorter initial choice wins", () => {
         // alpha(2) → middle(1) → end(2) = 5

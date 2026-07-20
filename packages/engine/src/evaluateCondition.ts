@@ -3,22 +3,27 @@ import {GetCondition, Context} from "./types";
 export const evaluateCondition = (condition: GetCondition, context: Context): boolean => {
     const variableValue = context[condition.name];
 
+    if (condition.type === "eq") { return variableValue === condition.value; }
+    if (condition.type === "ne") { return variableValue !== condition.value; }
+
+    // The remaining types are ordering comparisons, which are numeric-only: if
+    // either side isn't a number (an unset flag, or a boolean/string value) the
+    // condition is non-matching rather than being coerced into a nonsensical
+    // comparison (e.g. "foo" > 3). The guard also narrows both to `number`.
+    if (typeof variableValue !== "number" || typeof condition.value !== "number") {
+        return false;
+    }
+
     switch (condition.type) {
-        case "eq":
-            return variableValue === condition.value;
-        case "ne":
-            return variableValue !== condition.value;
-        // Ordering comparisons treat an unset flag (undefined) as non-matching
-        // rather than coercing it — a flag that was never set can't be greater
-        // or less than a threshold.
         case "gt":
-            return variableValue !== undefined && variableValue > condition.value;
+            return variableValue > condition.value;
         case "gte":
-            return variableValue !== undefined && variableValue >= condition.value;
+            return variableValue >= condition.value;
         case "lt":
-            return variableValue !== undefined && variableValue < condition.value;
+            return variableValue < condition.value;
         case "lte":
-            return variableValue !== undefined && variableValue <= condition.value;
+            return variableValue <= condition.value;
+        /* istanbul ignore next -- unreachable: eq/ne return above and Next only produces these six condition types */
         default:
             return false;
     }

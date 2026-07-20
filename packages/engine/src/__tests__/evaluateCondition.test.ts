@@ -1,7 +1,7 @@
 import {evaluateCondition} from "../evaluateCondition";
 import type {GetCondition} from "../types";
 
-const cond = (type: GetCondition["type"], name: string, value: boolean | number): GetCondition =>
+const cond = (type: GetCondition["type"], name: string, value: boolean | number | string): GetCondition =>
     ({
         name,
         type,
@@ -103,6 +103,20 @@ describe("evaluateCondition", () => {
 
         it("returns false when greater", () => {
             expect(evaluateCondition(cond("lte", "x", 5), {x: 6})).toBe(false);
+        });
+    });
+
+    describe("ordering comparisons are numeric-only", () => {
+        it("returns false when the context value is unset (not a number)", () => {
+            expect(evaluateCondition(cond("gt", "missing", 3), {})).toBe(false);
+        });
+
+        it("returns false when the context value is a boolean, not a number", () => {
+            expect(evaluateCondition(cond("gte", "flag", 3), {flag: true})).toBe(false);
+        });
+
+        it("returns false when the condition value is a string, not a number", () => {
+            expect(evaluateCondition(cond("lt", "x", "high"), {x: 5})).toBe(false);
         });
     });
 
