@@ -4,11 +4,18 @@ import {ContextInspector} from "../ContextInspector";
 import type {TraverseResponse} from "@sdr/shared";
 
 const result = (over: Partial<TraverseResponse> = {}): TraverseResponse => ({
-    length: 5,
+    metric: "syllables",
+    counts: {
+        chars: 5,
+        syllables: 2
+    },
     path: ["a", "b"],
     context: {},
     visitedNodeIds: [],
-    cumulativeCounts: {},
+    cumulativeCounts: {
+        chars: {},
+        syllables: {}
+    },
     ...over,
 });
 
@@ -18,11 +25,18 @@ describe("ContextInspector", () => {
         expect(container).toBeEmptyDOMElement();
     });
 
-    it("renders the length and each path step", () => {
+    it("renders the syllable count (primary metric) and the char count as an aside", () => {
         render(<ContextInspector result={result()} />);
-        expect(screen.getByText("5 chars")).toBeInTheDocument();
+        expect(screen.getByText("2 syllables", {exact: false})).toBeInTheDocument();
+        expect(screen.getByText("(5 chars)")).toBeInTheDocument();
         expect(screen.getByText("a")).toBeInTheDocument();
         expect(screen.getByText("b")).toBeInTheDocument();
+    });
+
+    it("renders the char count as primary when metric is 'chars'", () => {
+        render(<ContextInspector result={result({metric: "chars"})} />);
+        expect(screen.getByText("5 chars", {exact: false})).toBeInTheDocument();
+        expect(screen.getByText("(2 syllables)")).toBeInTheDocument();
     });
 
     it("omits the context table when context is empty", () => {

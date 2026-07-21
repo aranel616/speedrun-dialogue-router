@@ -3,6 +3,8 @@ export {traverse} from "./traverse";
 export {getNextNode} from "./getNextNode";
 export {evaluateCondition} from "./evaluateCondition";
 export {calculateDialogueLength} from "./calculateDialogueLength";
+export {calculateDialogueSyllables} from "./calculateDialogueSyllables";
+export {weighDialogue} from "./weighDialogue";
 export {applySets} from "./applySets";
 export type {
     Dialogue,
@@ -16,4 +18,5 @@ export type {
     InteractionWithoutChoices,
     Script,
     Context,
+    Metric,
 } from "./types";

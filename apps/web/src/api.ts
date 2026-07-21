@@ -26,5 +26,5 @@ export function getGraph(game: string, episode: string): GraphResponse {
 export function getShortestPath(request: TraverseRequest): TraverseResponse {
     const entry = SCRIPTS.find((s) => s.id === request.scriptId);
     if (!entry) {throw new Error(`Script not found: ${request.scriptId}`);}
-    return runTraverse(entry.script, request.startNode ?? "start", request.initialContext ?? {});
+    return runTraverse(entry.script, request.startNode ?? "start", request.initialContext ?? {}, request.metric);
 }

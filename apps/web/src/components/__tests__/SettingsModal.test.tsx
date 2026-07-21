@@ -2,23 +2,28 @@ import {describe, it, expect, vi} from "vitest";
 import {render, screen, fireEvent} from "@testing-library/react";
 import {SettingsModal} from "../SettingsModal";
 import type {LayoutDirection} from "../../utils/dagreLayout";
+import type {Metric} from "@sdr/shared";
 
 function renderModal(over: Partial<React.ComponentProps<typeof SettingsModal>> = {}): {
-  onChange: ReturnType<typeof vi.fn>; onClose: ReturnType<typeof vi.fn>;
+  onChange: ReturnType<typeof vi.fn>; onChangeMetric: ReturnType<typeof vi.fn>; onClose: ReturnType<typeof vi.fn>;
 } {
     const onChange = vi.fn();
+    const onChangeMetric = vi.fn();
     const onClose = vi.fn();
     render(
         <SettingsModal
             open
             layoutDirection={"vertical" as LayoutDirection}
             onChangeLayoutDirection={onChange}
+            metric={"syllables" as Metric}
+            onChangeMetric={onChangeMetric}
             onClose={onClose}
             {...over}
         />,
     );
     return {
         onChange,
+        onChangeMetric,
         onClose
     };
 }
@@ -26,7 +31,14 @@ function renderModal(over: Partial<React.ComponentProps<typeof SettingsModal>> =
 describe("SettingsModal", () => {
     it("renders nothing when closed", () => {
         const {container} = render(
-            <SettingsModal open={false} layoutDirection="vertical" onChangeLayoutDirection={() => {}} onClose={() => {}} />,
+            <SettingsModal
+                open={false}
+                layoutDirection="vertical"
+                onChangeLayoutDirection={() => {}}
+                metric="syllables"
+                onChangeMetric={() => {}}
+                onClose={() => {}}
+            />,
         );
         expect(container).toBeEmptyDOMElement();
     });
@@ -43,6 +55,14 @@ describe("SettingsModal", () => {
         const {onChange} = renderModal();
         fireEvent.click(screen.getByRole("radio", {name: "Horizontal"}));
         expect(onChange).toHaveBeenCalledWith("horizontal");
+    });
+
+    it("defaults to Syllables and fires onChangeMetric when Characters is picked", () => {
+        const {onChangeMetric} = renderModal();
+        expect(screen.getByRole("radio", {name: "Syllables"})).toHaveAttribute("aria-checked", "true");
+        expect(screen.getByRole("radio", {name: "Characters"})).toHaveAttribute("aria-checked", "false");
+        fireEvent.click(screen.getByRole("radio", {name: "Characters"}));
+        expect(onChangeMetric).toHaveBeenCalledWith("chars");
     });
 
     it("closes via the close button", () => {

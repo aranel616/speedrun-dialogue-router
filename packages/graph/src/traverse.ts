@@ -1,22 +1,29 @@
-import {traverse, getNextNode, evaluateCondition, calculateDialogueLength, Script, Context, applySets} from "@sdr/engine";
+import {traverse, getNextNode, evaluateCondition, calculateDialogueLength, calculateDialogueSyllables, Script, Context, Metric, applySets} from "@sdr/engine";
 import {TraverseResponse} from "@sdr/shared";
 import {isSingleVariableFork} from "./graphBuilder";
 
 // Replay the chosen path to record which node ids (and synthetic choice/
-// condition ids) the shortest route visits, plus the running character total
-// at each — the data the UI highlights.
+// condition ids) the shortest route visits, plus the running totals — under
+// BOTH metrics, regardless of which one drove the routing decision — at each,
+// so the UI can always show chars and syllables side by side.
 function computeVisited(
     script: Script,
     path: string[],
     startNode: string,
     initialContext: Context,
-): { visitedNodeIds: string[]; cumulativeCounts: Record<string, number> } {
+): {
+    visitedNodeIds: string[];
+    cumulativeCounts: { chars: Record<string, number>; syllables: Record<string, number> };
+    totals: { chars: number; syllables: number };
+} {
     const visited: string[] = [];
-    const cumulativeCounts: Record<string, number> = {};
+    const cumulativeChars: Record<string, number> = {};
+    const cumulativeSyllables: Record<string, number> = {};
     let nodeId: string = startNode;
     let context: Context = {...initialContext};
     let pathIdx = 0;
-    let runningTotal = 0;
+    let runningChars = 0;
+    let runningSyllables = 0;
 
     while (pathIdx < path.length) {
         const node = script[nodeId];
@@ -26,7 +33,8 @@ function computeVisited(
         visited.push(nodeId);
 
         if ("choices" in node) {
-            cumulativeCounts[nodeId] = runningTotal;
+            cumulativeChars[nodeId] = runningChars;
+            cumulativeSyllables[nodeId] = runningSyllables;
 
             const choiceName = path[pathIdx++];
             const choiceIdx = node.choices.findIndex((c) => c.name === choiceName);
@@ -36,8 +44,10 @@ function computeVisited(
             const ciId = `${nodeId}__ci${choiceIdx}`;
             visited.push(ciId);
 
-            runningTotal += calculateDialogueLength(choice.text);
-            cumulativeCounts[ciId] = runningTotal;
+            runningChars += calculateDialogueLength(choice.text);
+            runningSyllables += calculateDialogueSyllables(choice.text);
+            cumulativeChars[ciId] = runningChars;
+            cumulativeSyllables[ciId] = runningSyllables;
 
             context = applySets(context, choice.set);
 
@@ -50,8 +60,10 @@ function computeVisited(
             }
             nodeId = next;
         } else {
-            runningTotal += calculateDialogueLength(node.text);
-            cumulativeCounts[nodeId] = runningTotal;
+            runningChars += calculateDialogueLength(node.text);
+            runningSyllables += calculateDialogueSyllables(node.text);
+            cumulativeChars[nodeId] = runningChars;
+            cumulativeSyllables[nodeId] = runningSyllables;
 
             pathIdx++;
             if (node.next === undefined) {break;}
@@ -67,20 +79,31 @@ function computeVisited(
 
     return {
         visitedNodeIds: visited,
-        cumulativeCounts
+        cumulativeCounts: {
+            chars: cumulativeChars,
+            syllables: cumulativeSyllables
+        },
+        totals: {
+            chars: runningChars,
+            syllables: runningSyllables
+        }
     };
 }
 
 // Run the shortest-path search and package the full response the UI needs.
+// `metric` selects which unit the search minimizes; defaults to syllables (a
+// closer proxy for spoken duration than raw character count).
 export function runTraverse(
     script: Script,
     startNode = "start",
     initialContext: Context = {},
+    metric: Metric = "syllables",
 ): TraverseResponse {
-    const [length, path, context] = traverse(script, startNode, 0, initialContext);
-    const {visitedNodeIds, cumulativeCounts} = computeVisited(script, path, startNode, initialContext);
+    const [, path, context] = traverse(script, startNode, 0, initialContext, metric);
+    const {visitedNodeIds, cumulativeCounts, totals} = computeVisited(script, path, startNode, initialContext);
     return {
-        length,
+        metric,
+        counts: totals,
         path,
         context,
         visitedNodeIds,

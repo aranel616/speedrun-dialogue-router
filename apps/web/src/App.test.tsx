@@ -41,11 +41,18 @@ const linear = (id: string): GraphNode => ({
 });
 const traversal = (over: Partial<TraverseResponse> = {}): TraverseResponse =>
     ({
-        length: 3,
+        metric: "syllables",
+        counts: {
+            chars: 3,
+            syllables: 1
+        },
         path: ["a"],
         context: {f: true},
         visitedNodeIds: ["a"],
-        cumulativeCounts: {a: 1},
+        cumulativeCounts: {
+            chars: {a: 3},
+            syllables: {a: 1}
+        },
         ...over
     });
 

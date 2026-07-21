@@ -13,7 +13,11 @@ export function ContextInspector({result}: Props): JSX.Element | null {
         <div className="context-inspector">
             <div className="inspector-header">
                 <span className="inspector-title">Shortest Path</span>
-                <span className="inspector-length">{result.length} chars</span>
+                <span className="inspector-length">
+                    {result.metric === "syllables"
+                        ? <>{result.counts.syllables.toLocaleString()} syllables <span className="inspector-length-alt">({result.counts.chars.toLocaleString()} chars)</span></>
+                        : <>{result.counts.chars.toLocaleString()} chars <span className="inspector-length-alt">({result.counts.syllables.toLocaleString()} syllables)</span></>}
+                </span>
             </div>
 
             <ol className="inspector-path" aria-label="Shortest path, in order">

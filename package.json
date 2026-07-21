@@ -2,7 +2,7 @@
   "name": "speedrun-dialogue-router",
   "version": "0.1.0",
   "private": true,
-  "description": "Finds the shortest path (by total character count) through a branching narrative dialogue script, with an interactive graph visualization. Built to analyze Life is Strange for speedrun route analysis.",
+  "description": "Finds the shortest path (by character count or estimated spoken syllables) through a branching narrative dialogue script, with an interactive graph visualization. Built to analyze Life is Strange for speedrun route analysis.",
   "keywords": [
     "dialogue",
     "speedrun",

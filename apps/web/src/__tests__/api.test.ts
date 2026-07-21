@@ -27,19 +27,23 @@ describe("getGraph", () => {
 });
 
 describe("getShortestPath", () => {
-    it("runs a traversal for an existing script (default start/context)", () => {
+    it("runs a traversal for an existing script (default start/context/metric)", () => {
         const r = getShortestPath({scriptId: "lifeisstrange/episode1"});
-        expect(r.length).toBeGreaterThan(0);
+        expect(r.metric).toBe("syllables");
+        expect(r.counts.syllables).toBeGreaterThan(0);
+        expect(r.counts.chars).toBeGreaterThan(0);
         expect(r.path.length).toBeGreaterThan(0);
     });
 
-    it("honours an explicit startNode and initialContext", () => {
+    it("honours an explicit startNode, initialContext and metric", () => {
         const r = getShortestPath({
             scriptId: "lifeisstrange/episode1",
             startNode: "start",
-            initialContext: {}
+            initialContext: {},
+            metric: "chars"
         });
-        expect(r.length).toBeGreaterThan(0);
+        expect(r.metric).toBe("chars");
+        expect(r.counts.chars).toBeGreaterThan(0);
     });
 
     it("throws for an unknown script", () => {

@@ -8,6 +8,11 @@ import {GraphCanvas} from "../GraphCanvas";
 // never invokes them itself) — needed to exercise the size-unchanged guard.
 const roCallbacks: ResizeObserverCallback[] = [];
 
+const EMPTY_COUNTS = {
+    chars: {},
+    syllables: {}
+};
+
 // happy-dom returns 0 for layout; give the canvas and cards real dimensions so
 // heights measure, posNodes lays out, and the full graph renders.
 beforeAll(() => {
@@ -296,7 +301,7 @@ describe("GraphCanvas — presentation branches", () => {
             graphNodes: nodes,
             graphEdges: edges,
             onNodeClick: vi.fn(),
-            cumulativeCounts: {},
+            cumulativeCounts: EMPTY_COUNTS,
         };
         const {container, rerender} = render(
             <GraphCanvas {...base} visitedNodeIds={new Set(["ch", "ci"])} selectedNodeId="ch" />,
@@ -388,7 +393,7 @@ describe("GraphCanvas — presentation branches", () => {
         ];
         for (let i = 0; i < almostForks.length; i++) {
             const {container, unmount} = render(
-                <GraphCanvas scriptId={undefined} graphNodes={almostForks[i]!} graphEdges={forkEdges[i]!} visitedNodeIds={new Set()} selectedNodeId={null} onNodeClick={vi.fn()} cumulativeCounts={{}} />,
+                <GraphCanvas scriptId={undefined} graphNodes={almostForks[i]!} graphEdges={forkEdges[i]!} visitedNodeIds={new Set()} selectedNodeId={null} onNodeClick={vi.fn()} cumulativeCounts={EMPTY_COUNTS} />,
             );
             await waitFor(() => expect(container.querySelector(".graph-canvas")).not.toBeNull());
             expect(container.querySelector(".inherited-card")).toBeNull(); // no fork detected
@@ -398,7 +403,7 @@ describe("GraphCanvas — presentation branches", () => {
 
     const renderGraph = async (n: N[], e: E[]): Promise<HTMLElement> => {
         const {container} = render(
-            <GraphCanvas scriptId="none" graphNodes={n} graphEdges={e} visitedNodeIds={new Set()} selectedNodeId={null} onNodeClick={vi.fn()} cumulativeCounts={{}} />,
+            <GraphCanvas scriptId="none" graphNodes={n} graphEdges={e} visitedNodeIds={new Set()} selectedNodeId={null} onNodeClick={vi.fn()} cumulativeCounts={EMPTY_COUNTS} />,
         );
         await waitFor(() => expect(container.querySelector(".graph-canvas")).not.toBeNull());
         return container;
@@ -540,7 +545,7 @@ describe("GraphCanvas — behaviour", () => {
         const nodes = [linear("n0"), linear("n1"), linear("n2a", {isTerminal: true}), linear("n2b", {isTerminal: true})];
         const edges = [ge("n0", "n1", "linear"), ge("n1", "n2a", "choice"), ge("n1", "n2b", "choice")];
         const {container} = render(
-            <GraphCanvas scriptId="none" graphNodes={nodes} graphEdges={edges} visitedNodeIds={new Set()} selectedNodeId={null} onNodeClick={vi.fn()} cumulativeCounts={{}} />,
+            <GraphCanvas scriptId="none" graphNodes={nodes} graphEdges={edges} visitedNodeIds={new Set()} selectedNodeId={null} onNodeClick={vi.fn()} cumulativeCounts={EMPTY_COUNTS} />,
         );
         await waitFor(() => expect(container.querySelector(".graph-canvas")).not.toBeNull());
 

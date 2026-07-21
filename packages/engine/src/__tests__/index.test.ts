@@ -6,6 +6,9 @@ describe("@sdr/engine public API", () => {
         expect(typeof engine.getNextNode).toBe("function");
         expect(typeof engine.evaluateCondition).toBe("function");
         expect(typeof engine.calculateDialogueLength).toBe("function");
+        expect(typeof engine.calculateDialogueSyllables).toBe("function");
+        expect(typeof engine.weighDialogue).toBe("function");
+        expect(typeof engine.applySets).toBe("function");
     });
 
     it("the barrel functions work end to end", () => {

@@ -1,10 +1,13 @@
 import {useEffect, useRef} from "react";
 import type {LayoutDirection} from "../utils/dagreLayout";
+import type {Metric} from "@sdr/shared";
 
 interface Props {
   open: boolean;
   layoutDirection: LayoutDirection;
   onChangeLayoutDirection: (d: LayoutDirection)=> void;
+  metric: Metric;
+  onChangeMetric: (m: Metric)=> void;
   onClose: ()=> void;
 }
 
@@ -19,7 +22,18 @@ const DIRECTIONS: {value: LayoutDirection; label: string}[] = [
     },
 ];
 
-export function SettingsModal({open, layoutDirection, onChangeLayoutDirection, onClose}: Props): JSX.Element | null {
+const METRICS: {value: Metric; label: string}[] = [
+    {
+        value: "syllables",
+        label: "Syllables"
+    },
+    {
+        value: "chars",
+        label: "Characters"
+    },
+];
+
+export function SettingsModal({open, layoutDirection, onChangeLayoutDirection, metric, onChangeMetric, onClose}: Props): JSX.Element | null {
     const ref = useRef<HTMLDivElement>(null);
 
     // Move focus into the dialog on open and let Escape dismiss it.
@@ -67,6 +81,24 @@ export function SettingsModal({open, layoutDirection, onChangeLayoutDirection, o
                                     onClick={() => onChangeLayoutDirection(d.value)}
                                 >
                                     {d.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="setting-row">
+                        <span className="setting-label" id="routing-metric-label">Route by</span>
+                        <div className="segmented" role="radiogroup" aria-labelledby="routing-metric-label">
+                            {METRICS.map((m) => (
+                                <button
+                                    key={m.value}
+                                    type="button"
+                                    role="radio"
+                                    aria-checked={metric === m.value}
+                                    className={`segmented-option${metric === m.value ? " active" : ""}`}
+                                    onClick={() => onChangeMetric(m.value)}
+                                >
+                                    {m.label}
                                 </button>
                             ))}
                         </div>

@@ -1,6 +1,10 @@
 export type Dialogue = string | string[];
 export type Next = string | ConditionalNext;
 
+// Which unit `traverse` minimizes: raw character count, or an estimated
+// spoken-syllable count (a closer proxy for how long a line takes to say).
+export type Metric = "chars" | "syllables";
+
 export interface GetCondition {
     name: string;
     type: "eq" | "ne" | "gt" | "gte" | "lt" | "lte";

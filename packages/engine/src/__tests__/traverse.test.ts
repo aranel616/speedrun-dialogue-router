@@ -534,6 +534,40 @@ describe("traverse — cycle detection", () => {
     });
 });
 
+describe("traverse — metric selection", () => {
+    it("defaults to the chars metric", () => {
+        const script: Script = {A: {text: "hello"}};
+        expect(traverse(script, "A", 0, {})).toEqual([5, ["A"], {}]);
+    });
+
+    it("routes on syllable count when metric is 'syllables'", () => {
+        // "settings" = 8 chars / 2 syllables, "idea" = 4 chars / 2 syllables —
+        // under chars "idea" wins, under syllables it's a tie won by the first choice.
+        const script: Script = {
+            A: {
+                choices: [{
+                    name: "settings",
+                    text: "settings"
+                }, {
+                    name: "idea",
+                    text: "idea"
+                }]
+            }
+        };
+        expect(traverse(script, "A", 0, {}, "chars")).toEqual([4, ["idea"], {}]);
+        expect(traverse(script, "A", 0, {}, "syllables")).toEqual([2, ["settings"], {}]);
+    });
+
+    it("keeps chars and syllables cache entries for the same node/context separate", () => {
+        const script: Script = {A: {text: "settings"}};
+        expect(traverse(script, "A", 0, {}, "chars")).toEqual([8, ["A"], {}]);
+        expect(traverse(script, "A", 0, {}, "syllables")).toEqual([2, ["A"], {}]);
+        // Re-run in reverse order to prove neither cache entry clobbered the other.
+        expect(traverse(script, "A", 0, {}, "syllables")).toEqual([2, ["A"], {}]);
+        expect(traverse(script, "A", 0, {}, "chars")).toEqual([8, ["A"], {}]);
+    });
+});
+
 describe("traverse — malformed script", () => {
     it("throws a clear error when a node references a non-existent node id", () => {
         const script: Script = {

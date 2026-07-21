@@ -1,5 +1,6 @@
 import {useState, useCallback, useMemo, useEffect, useLayoutEffect, useRef, memo} from "react";
-import type {GraphNode, GraphEdge} from "@sdr/shared";
+import type {GraphNode, GraphEdge, Metric} from "@sdr/shared";
+import {calculateDialogueLength, calculateDialogueSyllables} from "@sdr/engine";
 import {applyDagreLayout, type LayoutDirection, type LayoutNode, type LayoutEdge} from "../utils/dagreLayout";
 import {TOC} from "../toc";
 
@@ -99,8 +100,10 @@ function cardProps(onClick: ()=> void, state: {label: string; selected: boolean;
     };
 }
 
-function NodeCard({node, highlighted, selected, onClick, cumulative}: {
-  node: GraphNode; highlighted: boolean; selected: boolean; onClick: ()=> void; cumulative?: number;
+interface Counts { chars: number; syllables: number }
+
+function NodeCard({node, highlighted, selected, onClick, cumulative, metric = "syllables"}: {
+  node: GraphNode; highlighted: boolean; selected: boolean; onClick: ()=> void; cumulative?: Counts; metric?: Metric;
 }): JSX.Element {
     if (node.type === "choice") {
         return (
@@ -136,7 +139,8 @@ function NodeCard({node, highlighted, selected, onClick, cumulative}: {
     }
     if (node.type === "choiceItem") {
         const lines = Array.isArray(node.text) ? node.text : node.text ? [node.text] : [];
-        const charCount = lines.reduce((n, l) => n + l.length, 0);
+        const charCount = calculateDialogueLength(lines);
+        const syllableCount = calculateDialogueSyllables(lines);
         return (
             <div
                 {...cardProps(onClick, {
@@ -153,16 +157,14 @@ function NodeCard({node, highlighted, selected, onClick, cumulative}: {
                     {node.sets.map((s, i) => <span key={i} className="set-badge">{s.name}={String(s.value)}</span>)}
                 </div>
                 )}
-                <div className="node-stats-row">
-                    <span className="node-char-count">{charCount.toLocaleString()} chars</span>
-                    {cumulative !== undefined && <span className="node-cumulative-count">{cumulative.toLocaleString()} total</span>}
-                </div>
+                <NodeStats charCount={charCount} syllableCount={syllableCount} cumulative={cumulative} metric={metric} />
             </div>
         );
     }
     // linear — show every dialogue line in full, no truncation
     const lines = Array.isArray(node.text) ? node.text : node.text ? [node.text] : [];
-    const charCount = lines.reduce((n, l) => n + l.length, 0);
+    const charCount = calculateDialogueLength(lines);
+    const syllableCount = calculateDialogueSyllables(lines);
     return (
         <div
             {...cardProps(onClick, {
@@ -173,11 +175,28 @@ function NodeCard({node, highlighted, selected, onClick, cumulative}: {
             className={`dialogue-node linear-node${selected ? " selected" : ""}${highlighted ? " highlighted" : ""}${node.isTerminal ? " terminal" : ""}`}
             >
             {lines.map((line, i) => <div key={i} className="node-dialogue-line">{line}</div>)}
-            <div className="node-stats-row">
-                <span className="node-id-tag">{node.id}</span>
-                <span className="node-char-count">{charCount.toLocaleString()} chars</span>
-                {cumulative !== undefined && <span className="node-cumulative-count">{cumulative.toLocaleString()} total</span>}
-            </div>
+            <NodeStats idTag={node.id} charCount={charCount} syllableCount={syllableCount} cumulative={cumulative} metric={metric} />
+        </div>
+    );
+}
+
+// Both metrics are always shown; the one currently driving routing gets the
+// "total so far" (cumulative) figure since that's the number find-shortest-path
+// actually minimized.
+function NodeStats({idTag, charCount, syllableCount, cumulative, metric}: {
+  idTag?: string; charCount: number; syllableCount: number; cumulative?: Counts; metric: Metric;
+}): JSX.Element {
+    return (
+        <div className="node-stats-row">
+            {idTag !== undefined && <span className="node-id-tag">{idTag}</span>}
+            <span className="node-char-count">
+                {charCount.toLocaleString()} chars
+                {cumulative !== undefined && metric === "chars" && ` (${cumulative.chars.toLocaleString()} total)`}
+            </span>
+            <span className="node-syllable-count">
+                {syllableCount.toLocaleString()} syl
+                {cumulative !== undefined && metric === "syllables" && ` (${cumulative.syllables.toLocaleString()} total)`}
+            </span>
         </div>
     );
 }
@@ -303,11 +322,12 @@ interface Props {
   visitedNodeIds: Set<string>;
   selectedNodeId: string | null;
   onNodeClick: (id: string)=> void;
-  cumulativeCounts: Record<string, number>;
+  cumulativeCounts: { chars: Record<string, number>; syllables: Record<string, number> };
+  metric?: Metric;
   layoutDirection?: LayoutDirection;
 }
 
-export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, selectedNodeId, onNodeClick, cumulativeCounts, layoutDirection = "vertical"}: Props): JSX.Element {
+export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, selectedNodeId, onNodeClick, cumulativeCounts, metric = "syllables", layoutDirection = "vertical"}: Props): JSX.Element {
     const horizontal = layoutDirection === "horizontal";
     const containerRef = useRef<HTMLDivElement>(null);
     const vpRef = useRef<Viewport>({
@@ -770,7 +790,11 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
                             highlighted={visitedNodeIds.has(n.id)}
                             selected={selectedNodeId === n.id}
                             onClick={() => handleNodeClick(n.id)}
-                            cumulative={cumulativeCounts[n.id]}
+                            cumulative={n.id in cumulativeCounts.chars ? {
+                                chars: cumulativeCounts.chars[n.id]!,
+                                syllables: cumulativeCounts.syllables[n.id]!
+                            } : undefined}
+                            metric={metric}
             />
                     </div>
                 ))}

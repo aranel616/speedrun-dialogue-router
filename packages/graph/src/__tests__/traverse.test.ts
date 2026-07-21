@@ -2,7 +2,7 @@ import {runTraverse} from "../index";
 import type {Script} from "@sdr/engine";
 
 describe("runTraverse", () => {
-    it("packages length, path, context, visited ids and cumulative counts for a linear chain", () => {
+    it("packages counts, path, context, visited ids and cumulative counts for a linear chain", () => {
         const script: Script = {
             start: {
                 text: "ab",
@@ -10,14 +10,45 @@ describe("runTraverse", () => {
             },
             end: {text: "c"}
         };
-        const r = runTraverse(script, "start", {});
-        expect(r.length).toBe(3);
+        const r = runTraverse(script, "start", {}, "chars");
+        expect(r.metric).toBe("chars");
+        expect(r.counts.chars).toBe(3);
         expect(r.path).toEqual(["start", "end"]);
         expect(r.visitedNodeIds).toEqual(["start", "end"]);
-        expect(r.cumulativeCounts).toEqual({
+        expect(r.cumulativeCounts.chars).toEqual({
             start: 2,
             end: 3
         });
+    });
+
+    it("defaults the routing metric to syllables", () => {
+        const script: Script = {
+            start: {
+                choices: [{
+                    name: "settings",
+                    text: "settings"
+                }, {
+                    name: "idea",
+                    text: "idea"
+                }]
+            }
+        };
+        const r = runTraverse(script, "start", {});
+        expect(r.metric).toBe("syllables");
+        // "idea" is fewer chars but the same syllable count as "settings" (2 each);
+        // syllables routing keeps the first (tied) option rather than the char-shortest one.
+        expect(r.path).toEqual(["settings"]);
+    });
+
+    it("reports both chars and syllables counts for the chosen path regardless of routing metric", () => {
+        const script: Script = {start: {text: "settings"}};
+        const r = runTraverse(script, "start", {}, "syllables");
+        expect(r.counts).toEqual({
+            chars: 8,
+            syllables: 2
+        });
+        expect(r.cumulativeCounts.chars.start).toBe(8);
+        expect(r.cumulativeCounts.syllables.start).toBe(2);
     });
 
     it("defaults startNode to 'start' and context to {}", () => {
@@ -42,10 +73,10 @@ describe("runTraverse", () => {
             },
             end: {text: "!"},
         };
-        const r = runTraverse(script, "start", {});
+        const r = runTraverse(script, "start", {}, "chars");
         expect(r.visitedNodeIds).toEqual(expect.arrayContaining(["start", "start__ci0", "end"]));
         expect(r.context).toEqual({f: true});
-        expect(r.cumulativeCounts["start__ci0"]).toBe(2); // "hi"
+        expect(r.cumulativeCounts.chars["start__ci0"]).toBe(2); // "hi"
     });
 
     it("applies an array of set actions on the taken choice", () => {

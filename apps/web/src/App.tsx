@@ -1,6 +1,6 @@
 import {useState, useEffect, useCallback, useMemo} from "react";
 import {listScripts, getGraph, getShortestPath} from "./api";
-import type {ScriptMeta, GraphResponse, GraphNode, TraverseResponse} from "@sdr/shared";
+import type {ScriptMeta, GraphResponse, GraphNode, TraverseResponse, Metric} from "@sdr/shared";
 import {ControlBar} from "./components/ControlBar";
 import {GraphCanvas} from "./components/GraphCanvas";
 import {Sidebar} from "./components/Sidebar";
@@ -17,6 +17,7 @@ export default function App(): JSX.Element {
     const [traversalResult, setTraversalResult] = useState<TraverseResponse | null>(null);
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [layoutDirection, setLayoutDirection] = useState<LayoutDirection>("vertical");
+    const [metric, setMetric] = useState<Metric>("syllables");
 
     useEffect(() => {
         const {scripts: list} = listScripts();
@@ -38,8 +39,11 @@ export default function App(): JSX.Element {
     const handleTraverse = useCallback(() => {
         /* v8 ignore next -- defensive: the traverse button is disabled without a loaded graph (hence a selection) */
         if (!selectedId) {return;}
-        setTraversalResult(getShortestPath({scriptId: selectedId}));
-    }, [selectedId]);
+        setTraversalResult(getShortestPath({
+            scriptId: selectedId,
+            metric
+        }));
+    }, [selectedId, metric]);
 
     const selectedNode: GraphNode | null = selectedNodeId && graphData
         ? graphData.nodes.find((n) => n.id === selectedNodeId) ?? null
@@ -51,7 +55,10 @@ export default function App(): JSX.Element {
     );
 
     const cumulativeCounts = useMemo(
-        () => traversalResult?.cumulativeCounts ?? {},
+        () => traversalResult?.cumulativeCounts ?? {
+            chars: {},
+            syllables: {}
+        },
         [traversalResult],
     );
 
@@ -75,6 +82,7 @@ export default function App(): JSX.Element {
                     selectedNodeId={selectedNodeId}
                     onNodeClick={setSelectedNodeId}
                     cumulativeCounts={cumulativeCounts}
+                    metric={traversalResult?.metric ?? metric}
                     layoutDirection={layoutDirection}
                 />
 
@@ -90,6 +98,8 @@ export default function App(): JSX.Element {
                 open={settingsOpen}
                 layoutDirection={layoutDirection}
                 onChangeLayoutDirection={setLayoutDirection}
+                metric={metric}
+                onChangeMetric={(m) => { setMetric(m); setTraversalResult(null); }}
                 onClose={() => setSettingsOpen(false)}
             />
         </div>

@@ -1,5 +1,5 @@
-import {Script, Context} from "./types";
-import {calculateDialogueLength} from "./calculateDialogueLength";
+import {Script, Context, Metric} from "./types";
+import {weighDialogue} from "./weighDialogue";
 import {getNextNode} from "./getNextNode";
 import {applySets} from "./applySets";
 
@@ -34,17 +34,24 @@ const caches = new WeakMap<Script, Map<string, Result>>();
 // guard `visited` set is an internal recursion detail, so it's kept off this
 // signature — callers can't accidentally (or maliciously) seed it and poison
 // pathfinding to Infinity.
-export const traverse = (script: Script, nodeId: string, currentLength: number, context: Context): Result =>
-    traverseFrom(script, nodeId, currentLength, context, new Set());
+//
+// `metric` selects the unit being minimized — defaults to "chars" so this
+// stays the same pure character-counting engine it always was; callers that
+// want syllable-based (speech-time) routing pass metric explicitly.
+export const traverse = (script: Script, nodeId: string, currentLength: number, context: Context, metric: Metric = "chars"): Result =>
+    traverseFrom(script, nodeId, currentLength, context, new Set(), metric);
 
-const traverseFrom = (script: Script, nodeId: string, currentLength: number, context: Context, visited: Set<string>): Result => {
+const traverseFrom = (script: Script, nodeId: string, currentLength: number, context: Context, visited: Set<string>, metric: Metric): Result => {
     let cache = caches.get(script);
     if (!cache) {
         cache = new Map<string, Result>();
         caches.set(script, cache);
     }
 
-    const cacheKey = `${nodeId}-${JSON.stringify(context)}`;
+    // Metric is part of the key: the same (nodeId, context) has a different
+    // marginal cost under each metric, and both may be queried against the
+    // same script (the UI shows chars and syllables side by side).
+    const cacheKey = `${metric}-${nodeId}-${JSON.stringify(context)}`;
     if (cache.has(cacheKey)) {
         const cacheHit = cache.get(cacheKey)!;
         return [currentLength + cacheHit[0], cacheHit[1], cacheHit[2]];
@@ -68,12 +75,12 @@ const traverseFrom = (script: Script, nodeId: string, currentLength: number, con
     }
 
     if ("text" in currentNode) {
-        const dialogueLength = calculateDialogueLength(currentNode.text);
+        const dialogueLength = weighDialogue(currentNode.text, metric);
         const nextNodeId = getNextNode(currentNode.next, context);
         if (!nextNodeId) {
             return [currentLength + dialogueLength, [nodeId], context];
         }
-        const [pathLength, path, newContext] = traverseFrom(script, nextNodeId, currentLength + dialogueLength, context, childVisited);
+        const [pathLength, path, newContext] = traverseFrom(script, nextNodeId, currentLength + dialogueLength, context, childVisited, metric);
         return [pathLength, [nodeId, ...path], newContext];
     }
 
@@ -82,7 +89,7 @@ const traverseFrom = (script: Script, nodeId: string, currentLength: number, con
     let shortestContext: Context = context;
 
     for (const choice of currentNode.choices) {
-        const dialogueLength = calculateDialogueLength(choice.text);
+        const dialogueLength = weighDialogue(choice.text, metric);
         const nextNodeId = getNextNode(choice.next, context);
 
         const choiceContext = applySets(context, choice.set);
@@ -96,7 +103,7 @@ const traverseFrom = (script: Script, nodeId: string, currentLength: number, con
             continue;
         }
 
-        const [pathLength, path, newContext] = traverseFrom(script, nextNodeId, currentLength + dialogueLength, choiceContext, childVisited);
+        const [pathLength, path, newContext] = traverseFrom(script, nextNodeId, currentLength + dialogueLength, choiceContext, childVisited, metric);
         if (pathLength < shortestLength) {
             shortestLength = pathLength;
             shortestPath = [choice.name, ...path];
