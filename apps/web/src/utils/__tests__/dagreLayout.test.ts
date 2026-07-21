@@ -90,4 +90,29 @@ describe("applyDagreLayout", () => {
         // B sits further down when A is taller
         expect(rankY(tall, "B")).toBeGreaterThan(rankY(short, "B"));
     });
+
+    describe("horizontal direction", () => {
+        const rankX = (out: LayoutNode[], id: string): number => out.find((x) => x.id === id)!.position.x;
+
+        it("advances ranks along X and stacks siblings down Y", () => {
+            const nodes = [n("A"), n("B"), n("C"), n("D")];
+            const edges = [e("A", "B"), e("A", "C"), e("B", "D"), e("C", "D")];
+            const out = applyDagreLayout(nodes, edges, new Map(), "horizontal");
+            // A left of B/C left of D (ranks advance rightward)
+            expect(rankX(out, "A")).toBeLessThan(rankX(out, "B"));
+            expect(rankX(out, "B")).toBeLessThan(rankX(out, "D"));
+            // B and C share a column, stacked vertically and centred on 0
+            const by = out.find((x) => x.id === "B")!.position.y;
+            const cy = out.find((x) => x.id === "C")!.position.y;
+            expect(by).toBeLessThan(cy);
+            expect(by).toBeLessThan(0);
+            expect(cy).toBeGreaterThan(0);
+        });
+
+        it("widens the column gap for a taller node in horizontal mode", () => {
+            const wide = applyDagreLayout([n("A"), n("B")], [e("A", "B")], new Map(), "horizontal");
+            // B is to the right of A by at least A's width
+            expect(rankX(wide, "B")).toBeGreaterThanOrEqual(rankX(wide, "A") + 420);
+        });
+    });
 });

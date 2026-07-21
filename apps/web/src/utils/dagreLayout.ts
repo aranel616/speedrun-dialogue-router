@@ -15,13 +15,23 @@ export interface LayoutEdge {
     target: string;
 }
 
+// Flow direction of the graph. "vertical" = ranks stack top→bottom (siblings
+// spread across a row); "horizontal" = ranks advance left→right (siblings stack
+// down a column). Chosen by the user in Settings; defaults to vertical.
+export type LayoutDirection = "vertical" | "horizontal";
+
 const NODE_WIDTH = 420;
 const H_GAP = 80;
 const V_GAP_STRAIGHT = 40; // gap below a linear rank
 const V_GAP_BRANCH = 80;   // gap below a rank that fans out to multiple nodes
 const FALLBACK_HEIGHT = 88;
 
-export function applyDagreLayout<T>(nodes: LayoutNode<T>[], edges: LayoutEdge[], nodeHeights: Map<string, number>): LayoutNode<T>[] {
+// Horizontal-mode spacing: gap between columns (ranks) and rows (siblings).
+const COL_GAP_STRAIGHT = 100;
+const COL_GAP_BRANCH = 180;
+const ROW_GAP = 28;
+
+export function applyDagreLayout<T>(nodes: LayoutNode<T>[], edges: LayoutEdge[], nodeHeights: Map<string, number>, direction: LayoutDirection = "vertical"): LayoutNode<T>[] {
     if (nodes.length === 0) {return nodes;}
 
     const nodeIds = new Set(nodes.map((n) => n.id));
@@ -114,36 +124,67 @@ export function applyDagreLayout<T>(nodes: LayoutNode<T>[], edges: LayoutEdge[],
     byRank.get(r)!.push(id);
     }
 
-    // Compute cumulative y-positions: each rank's y is the sum of all prior ranks'
-    // max-heights + gaps, so variable-height nodes never overlap the row below.
     const sortedRanks = [...byRank.keys()].sort((a, b) => a - b);
-    let cumY = 0;
-    const rankY = new Map<number, number>();
-    for (let i = 0; i < sortedRanks.length; i++) {
+    const heightOf = (id: string): number => nodeHeights.get(id) ?? FALLBACK_HEIGHT;
+    const widthMap = new Map(nodes.map((n) => [n.id, n.style.width]));
+    // Wider gap across a boundary that fans out (a node here has >1 child) or fans
+    // in (a node in the next rank has >1 parent), to give diverging/merging edges
+    // room; tight gap for straight linear chains.
+    const isBranchBoundary = (i: number): boolean => {
         const r = sortedRanks[i]!;
-        rankY.set(r, cumY);
-        const maxH = Math.max(...byRank.get(r)!.map((id) => nodeHeights.get(id) ?? FALLBACK_HEIGHT));
-        // Wider gap across a boundary that fans out (a node here has >1 child) or fans
-        // in (a node in the next rank has >1 parent), to give diverging/merging edges
-        // room; tight gap for straight linear chains.
         const fanOut = byRank.get(r)!.some((id) => childrenOf.get(id)!.length > 1);
         const nextRank = sortedRanks[i + 1];
         const fanIn = nextRank !== undefined &&
       byRank.get(nextRank)!.some((id) => parentsOf.get(id)!.length > 1);
-        cumY += maxH + (fanOut || fanIn ? V_GAP_BRANCH : V_GAP_STRAIGHT);
-    }
+        return fanOut || fanIn;
+    };
 
-    // Position: center each rank horizontally
     const pos = new Map<string, { x: number; y: number }>();
-    for (const [r, ids] of byRank) {
-        const totalW = ids.length * (NODE_WIDTH + H_GAP) - H_GAP;
-        const startX = -totalW / 2;
-        ids.forEach((id, i) => {
-            pos.set(id, {
-                x: startX + i * (NODE_WIDTH + H_GAP),
-                y: rankY.get(r)!,
+
+    if (direction === "horizontal") {
+        // Ranks advance along X (each column's x = prior columns' max-widths +
+        // gaps); siblings stack down Y using their real measured heights.
+        let cumX = 0;
+        const rankX = new Map<number, number>();
+        for (let i = 0; i < sortedRanks.length; i++) {
+            const r = sortedRanks[i]!;
+            rankX.set(r, cumX);
+            const maxW = Math.max(...byRank.get(r)!.map((id) => widthMap.get(id)!));
+            cumX += maxW + (isBranchBoundary(i) ? COL_GAP_BRANCH : COL_GAP_STRAIGHT);
+        }
+        for (const [r, ids] of byRank) {
+            const totalH = ids.reduce((s, id) => s + heightOf(id), 0) + ROW_GAP * (ids.length - 1);
+            let y = -totalH / 2;
+            for (const id of ids) {
+                pos.set(id, {
+                    x: rankX.get(r)!,
+                    y
+                });
+                y += heightOf(id) + ROW_GAP;
+            }
+        }
+    } else {
+        // Vertical: each rank's y is the sum of all prior ranks' max-heights +
+        // gaps, so variable-height nodes never overlap the row below; siblings
+        // spread across a centred row.
+        let cumY = 0;
+        const rankY = new Map<number, number>();
+        for (let i = 0; i < sortedRanks.length; i++) {
+            const r = sortedRanks[i]!;
+            rankY.set(r, cumY);
+            const maxH = Math.max(...byRank.get(r)!.map((id) => heightOf(id)));
+            cumY += maxH + (isBranchBoundary(i) ? V_GAP_BRANCH : V_GAP_STRAIGHT);
+        }
+        for (const [r, ids] of byRank) {
+            const totalW = ids.length * (NODE_WIDTH + H_GAP) - H_GAP;
+            const startX = -totalW / 2;
+            ids.forEach((id, i) => {
+                pos.set(id, {
+                    x: startX + i * (NODE_WIDTH + H_GAP),
+                    y: rankY.get(r)!,
+                });
             });
-        });
+        }
     }
 
     const result = nodes.map((n) => ({

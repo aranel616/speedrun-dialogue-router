@@ -572,3 +572,26 @@ describe("GraphCanvas — behaviour", () => {
         expect(after.y).not.toBeCloseTo(before.y); // the view scrolled to it
     });
 });
+
+describe("GraphCanvas — horizontal layout", () => {
+    it("renders a wide minimap and navigates along X", async () => {
+        const {container} = renderCanvas({layoutDirection: "horizontal"});
+        const mm = await waitFor(() => container.querySelector(".minimap") as SVGElement);
+        // Minimap runs wide-and-short in horizontal mode.
+        expect(mm.getAttribute("width")).toBe("720");
+        expect(mm.getAttribute("height")).toBe("140");
+        // Dragging navigates along the flow (X) axis without throwing.
+        fireEvent.mouseDown(mm, {
+            clientX: 30,
+            clientY: 10
+        });
+        fireEvent.mouseMove(mm, {
+            clientX: 90,
+            clientY: 10
+        });
+        fireEvent.mouseUp(mm);
+        // Edges render with horizontal geometry (no NaN in the path data).
+        const path = container.querySelector(".graph-canvas svg path");
+        expect(path?.getAttribute("d") ?? "").not.toContain("NaN");
+    });
+});

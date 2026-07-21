@@ -80,6 +80,86 @@ html, body, #root { height: 100%; font-family: "Inter", system-ui, sans-serif; b
 .traverse-btn:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
 .traverse-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
+.icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface2);
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.icon-btn:hover { color: var(--text); border-color: var(--text-dim); }
+
+/* --- Modal --- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(2, 6, 23, 0.6);
+  backdrop-filter: blur(2px);
+}
+.modal {
+  width: 380px;
+  max-width: calc(100vw - 32px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+.modal-body { padding: 16px; }
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.setting-label { font-size: 13px; color: var(--text-dim); }
+
+.segmented {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.segmented-option {
+  padding: 6px 14px;
+  border: none;
+  background: var(--surface2);
+  color: var(--text-dim);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.segmented-option + .segmented-option { border-left: 1px solid var(--border); }
+.segmented-option:hover:not(.active) { color: var(--text); }
+.segmented-option.active {
+  background: var(--accent-choice);
+  color: #fff;
+  font-weight: 600;
+}
+
 /* ── Graph Canvas ── */
 .graph-canvas { flex: 1; height: 100%; position: relative; }
 
@@ -87,8 +167,8 @@ html, body, #root { height: 100%; font-family: "Inter", system-ui, sans-serif; b
   position: absolute;
   bottom: 16px;
   right: 16px;
-  width: 140px;
-  height: 720px;
+  /* Box size comes from the SVG width/height attributes (MM_W/MM_H, driven by
+     LAYOUT_DIRECTION) so the panel matches the graph's orientation. */
   border-radius: 8px;
   border: 1px solid var(--border);
   background: rgba(15, 23, 42, 0.88);

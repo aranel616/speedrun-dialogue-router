@@ -14,6 +14,7 @@ const props = (over = {}): React.ComponentProps<typeof ControlBar> => ({
     selectedId: "",
     onSelectScript: (): void => {},
     onTraverse: (): void => {},
+    onOpenSettings: (): void => {},
     hasGraph: false,
     ...over,
 });
@@ -33,12 +34,19 @@ describe("ControlBar", () => {
             onTraverse,
             hasGraph: false
         })} />);
-        expect(screen.getByRole("button")).toBeDisabled();
+        expect(screen.getByRole("button", {name: "Find Shortest Path"})).toBeDisabled();
         rerender(<ControlBar {...props({
             onTraverse,
             hasGraph: true
         })} />);
-        fireEvent.click(screen.getByRole("button"));
+        fireEvent.click(screen.getByRole("button", {name: "Find Shortest Path"}));
         expect(onTraverse).toHaveBeenCalled();
+    });
+
+    it("fires onOpenSettings when the cog is clicked", () => {
+        const onOpenSettings = vi.fn();
+        render(<ControlBar {...props({onOpenSettings})} />);
+        fireEvent.click(screen.getByRole("button", {name: "Options"}));
+        expect(onOpenSettings).toHaveBeenCalled();
     });
 });

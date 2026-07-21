@@ -118,4 +118,14 @@ describe("App", () => {
         fireEvent.change(screen.getByRole("combobox"), {target: {value: "g/e2"}});
         await waitFor(() => expect(getGraph).toHaveBeenCalledWith("g", "e2"));
     });
+
+    it("opens settings, changes the layout direction, and closes", async () => {
+        await renderLoaded();
+        fireEvent.click(screen.getByRole("button", {name: "Options"}));
+        expect(screen.getByRole("dialog", {name: "Options"})).toBeInTheDocument();
+        fireEvent.click(screen.getByRole("radio", {name: "Horizontal"}));
+        expect(screen.getByRole("radio", {name: "Horizontal"})).toHaveAttribute("aria-checked", "true");
+        fireEvent.click(screen.getByRole("button", {name: "Close options"}));
+        expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
 });

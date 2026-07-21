@@ -5,6 +5,8 @@ import {ControlBar} from "./components/ControlBar";
 import {GraphCanvas} from "./components/GraphCanvas";
 import {Sidebar} from "./components/Sidebar";
 import {ContextInspector} from "./components/ContextInspector";
+import {SettingsModal} from "./components/SettingsModal";
+import type {LayoutDirection} from "./utils/dagreLayout";
 import "./styles.css";
 
 export default function App(): JSX.Element {
@@ -13,6 +15,8 @@ export default function App(): JSX.Element {
     const [graphData, setGraphData] = useState<GraphResponse | null>(null);
     const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
     const [traversalResult, setTraversalResult] = useState<TraverseResponse | null>(null);
+    const [settingsOpen, setSettingsOpen] = useState(false);
+    const [layoutDirection, setLayoutDirection] = useState<LayoutDirection>("vertical");
 
     useEffect(() => {
         const {scripts: list} = listScripts();
@@ -58,6 +62,7 @@ export default function App(): JSX.Element {
                 selectedId={selectedId}
                 onSelectScript={(id) => { setSelectedId(id); setTraversalResult(null); }}
                 onTraverse={handleTraverse}
+                onOpenSettings={() => setSettingsOpen(true)}
                 hasGraph={graphData !== null}
             />
 
@@ -70,6 +75,7 @@ export default function App(): JSX.Element {
                     selectedNodeId={selectedNodeId}
                     onNodeClick={setSelectedNodeId}
                     cumulativeCounts={cumulativeCounts}
+                    layoutDirection={layoutDirection}
                 />
 
                 <Sidebar
@@ -79,6 +85,13 @@ export default function App(): JSX.Element {
             </div>
 
             <ContextInspector result={traversalResult} />
+
+            <SettingsModal
+                open={settingsOpen}
+                layoutDirection={layoutDirection}
+                onChangeLayoutDirection={setLayoutDirection}
+                onClose={() => setSettingsOpen(false)}
+            />
         </div>
     );
 }

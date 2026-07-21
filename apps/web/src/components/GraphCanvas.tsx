@@ -1,6 +1,6 @@
 import {useState, useCallback, useMemo, useEffect, useLayoutEffect, useRef, memo} from "react";
 import type {GraphNode, GraphEdge} from "@sdr/shared";
-import {applyDagreLayout, type LayoutNode, type LayoutEdge} from "../utils/dagreLayout";
+import {applyDagreLayout, type LayoutDirection, type LayoutNode, type LayoutEdge} from "../utils/dagreLayout";
 import {TOC} from "../toc";
 
 const MIN_ZOOM = 0.05;
@@ -37,14 +37,23 @@ interface PosNode { id: string; x: number; y: number; w: number; h: number; node
 
 function clamp(v: number, lo: number, hi: number): number { return Math.max(lo, Math.min(hi, v)); }
 
-function edgePath(sx: number, sy: number, tx: number, ty: number): string {
+function edgePath(sx: number, sy: number, tx: number, ty: number, horizontal: boolean): string {
+    if (horizontal) {
+        // S-curve with horizontal tangents (flow left→right).
+        const mx = (sx + tx) / 2;
+        return `M${sx},${sy} C${mx},${sy} ${mx},${ty} ${tx},${ty}`;
+    }
+    // S-curve with vertical tangents (flow top→bottom).
     const my = (sy + ty) / 2;
     return `M${sx},${sy} C${sx},${my} ${tx},${my} ${tx},${ty}`;
 }
 
-// Horizontal offset that places `node`'s centre at the middle of the container.
+// Offsets that place `node`'s centre at the middle of the container, per axis.
 function centerX(el: HTMLDivElement, node: PosNode, zoom: number): number {
     return el.offsetWidth / 2 - (node.x + node.w / 2) * zoom;
+}
+function centerY(el: HTMLDivElement, node: PosNode, zoom: number): number {
+    return el.offsetHeight / 2 - (node.y + node.h / 2) * zoom;
 }
 
 // The initial/reset framing: `node` centred horizontally, its vertical middle a
@@ -175,20 +184,26 @@ function NodeCard({node, highlighted, selected, onClick, cumulative}: {
 
 const MemoCard = memo(NodeCard);
 
-const MM_W = 140;
-const MM_H = 720;
+// Minimap runs long along the graph's flow axis: tall & narrow when vertical,
+// wide & short when horizontal (see MM_W/MM_H inside Minimap).
 const MM_PAD = 8;
+const MM_LONG = 720;
+const MM_SHORT = 140;
 
-function Minimap({posNodes, visitedNodeIds, viewport, containerW, containerH, onNavigate}: {
+function Minimap({posNodes, visitedNodeIds, viewport, containerW, containerH, horizontal, onNavigate}: {
   posNodes: PosNode[];
   visitedNodeIds: Set<string>;
   viewport: Viewport;
   containerW: number;
   containerH: number;
+  horizontal: boolean;
   onNavigate: (v: Viewport)=> void;
 }): JSX.Element | null {
     const dragging = useRef(false);
     if (posNodes.length === 0) {return null;}
+
+    const MM_W = horizontal ? MM_LONG : MM_SHORT;
+    const MM_H = horizontal ? MM_SHORT : MM_LONG;
 
     const gx0 = Math.min(...posNodes.map((n) => n.x));
     const gy0 = Math.min(...posNodes.map((n) => n.y));
@@ -213,23 +228,36 @@ function Minimap({posNodes, visitedNodeIds, viewport, containerW, containerH, on
         };
     }
 
-    const {y: vy, zoom: vz} = viewport;
-    const vpTopGraphY = -vy / vz;
+    const {x: vx, y: vy, zoom: vz} = viewport;
 
-    // Viewport indicator: a full-width band that only moves vertically.
-    const vpMY = MM_PAD + (vpTopGraphY - gy0) * scaleY;
-    const vpMH = (containerH / vz) * scaleY;
+    // Viewport indicator: a band spanning the cross-axis that slides along the
+    // flow axis — a vertical band moving horizontally when the graph flows
+    // left→right, a horizontal band moving vertically when it flows top→down.
+    const vpMX = horizontal ? MM_PAD + (-vx / vz - gx0) * scaleX : MM_PAD;
+    const vpMY = horizontal ? MM_PAD : MM_PAD + (-vy / vz - gy0) * scaleY;
+    const vpMW = horizontal ? (containerW / vz) * scaleX : innerW;
+    const vpMH = horizontal ? innerH : (containerH / vz) * scaleY;
 
-    // Navigation is vertical-only; the graph stays horizontally centred.
+    // Navigation follows the flow axis; the cross axis stays centred.
     function navigate(e: React.MouseEvent<SVGSVGElement>): void {
         const rect = e.currentTarget.getBoundingClientRect();
-        const gy = (e.clientY - rect.top - MM_PAD) / scaleY + gy0;
-        const gxc = gx0 + gW / 2;
-        onNavigate({
-            x: containerW / 2 - gxc * vz,
-            y: containerH / 2 - gy * vz,
-            zoom: vz
-        });
+        if (horizontal) {
+            const gx = (e.clientX - rect.left - MM_PAD) / scaleX + gx0;
+            const gyc = gy0 + gH / 2;
+            onNavigate({
+                x: containerW / 2 - gx * vz,
+                y: containerH / 2 - gyc * vz,
+                zoom: vz
+            });
+        } else {
+            const gy = (e.clientY - rect.top - MM_PAD) / scaleY + gy0;
+            const gxc = gx0 + gW / 2;
+            onNavigate({
+                x: containerW / 2 - gxc * vz,
+                y: containerH / 2 - gy * vz,
+                zoom: vz
+            });
+        }
     }
 
     function nodeColor(n: PosNode): string {
@@ -260,8 +288,9 @@ function Minimap({posNodes, visitedNodeIds, viewport, containerW, containerH, on
                         fill={nodeColor(n)} opacity={0.75} rx={1} />
                 );
             })}
-            <rect x={MM_PAD} y={vpMY}
-                width={innerW} height={Math.max(6, vpMH)}
+            <rect x={vpMX} y={vpMY}
+                width={horizontal ? Math.max(6, vpMW) : vpMW}
+                height={horizontal ? vpMH : Math.max(6, vpMH)}
                 fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.5)" strokeWidth={1.5} rx={2} />
         </svg>
     );
@@ -275,9 +304,11 @@ interface Props {
   selectedNodeId: string | null;
   onNodeClick: (id: string)=> void;
   cumulativeCounts: Record<string, number>;
+  layoutDirection?: LayoutDirection;
 }
 
-export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, selectedNodeId, onNodeClick, cumulativeCounts}: Props): JSX.Element {
+export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, selectedNodeId, onNodeClick, cumulativeCounts, layoutDirection = "vertical"}: Props): JSX.Element {
+    const horizontal = layoutDirection === "horizontal";
     const containerRef = useRef<HTMLDivElement>(null);
     const vpRef = useRef<Viewport>({
         x: 0,
@@ -423,7 +454,7 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
             source: e.source,
             target: e.target
         }));
-        const laid = applyDagreLayout(rfNodes, rfEdges, heights);
+        const laid = applyDagreLayout(rfNodes, rfEdges, heights, layoutDirection);
         return laid.map((n) => ({
             id: n.id,
             x: n.position.x,
@@ -432,7 +463,7 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
             h: heights.get(n.id)!,
             node: n.data,
         }));
-    }, [graphNodes, visibleEdges, heights, inherited]);
+    }, [graphNodes, visibleEdges, heights, inherited, layoutDirection]);
 
     // Initial viewport: centre the first real node (start may be a hidden fork)
     useEffect(() => {
@@ -544,17 +575,16 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
         if (!movedRef.current) {onNodeClick(id);}
     }, [onNodeClick]);
 
-    // Align a node near the top of the view, horizontally centred (keeps zoom).
+    // Centre a node in the view, both axes (keeps the current zoom).
     const focusNode = useCallback((nodeId: string) => {
         const el = containerRef.current;
         const n = posNodes.find((p) => p.id === nodeId);
         /* v8 ignore next -- defensive: focusNode is only called with present TOC node ids */
         if (!el || !n) {return;}
         const zoom = vpRef.current.zoom;
-        const TOP_PAD = 24;
         syncVP({
             x: centerX(el, n, zoom),
-            y: TOP_PAD - n.y * zoom,
+            y: centerY(el, n, zoom),
             zoom,
         });
     }, [posNodes, syncVP]);
@@ -591,11 +621,17 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
                 : e.edgeType === "conditional" ? "#f59e0b"
                     : e.edgeType === "choice" ? "#818cf8"
                         : "#475569";
-            const sx = src.x + src.w / 2, sy = src.y + src.h;
-            const tx = tgt.x + tgt.w / 2, ty = tgt.y;
+            // Attach edges on the flow-facing sides: bottom→top when vertical,
+            // right→left when horizontal.
+            const [sx, sy] = horizontal
+                ? [src.x + src.w, src.y + src.h / 2]
+                : [src.x + src.w / 2, src.y + src.h];
+            const [tx, ty] = horizontal
+                ? [tgt.x, tgt.y + tgt.h / 2]
+                : [tgt.x + tgt.w / 2, tgt.y];
             return {
                 id: e.id,
-                d: edgePath(sx, sy, tx, ty),
+                d: edgePath(sx, sy, tx, ty, horizontal),
                 stroke,
                 strokeWidth: hl ? 2.5 : 1.5,
                 animated: hl,
@@ -605,7 +641,7 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
                 hl,
             };
         });
-    }, [posNodes, visibleEdges, visitedNodeIds]);
+    }, [posNodes, visibleEdges, visitedNodeIds, horizontal]);
 
     if (graphNodes.length === 0) {
         return <div className="canvas-empty"><p>Select a script to visualize its dialogue graph.</p></div>;
@@ -835,6 +871,7 @@ export function GraphCanvas({scriptId, graphNodes, graphEdges, visitedNodeIds, s
                 viewport={viewport}
                 containerW={size.w}
                 containerH={size.h}
+                horizontal={horizontal}
                 onNavigate={syncVP}
       />
         </div>
